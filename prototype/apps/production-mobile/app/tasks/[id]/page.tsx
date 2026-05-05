@@ -1,10 +1,17 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Button, Card, CardContent, CardHeader, CardTitle, OrderStatusBadge } from '@uniprint/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, OrderStatusBadge, Select } from '@uniprint/ui';
+import type { SelectOption } from '@uniprint/ui';
+import { Play, Square } from 'lucide-react';
 import type { Order } from '@uniprint/types';
 
-const OPERATIONS = ['Печать баннера', 'Резка оракала', 'Монтаж', 'Ламинация'];
+const OPERATION_OPTIONS: SelectOption[] = [
+  { value: 'Печать баннера', label: 'Печать баннера' },
+  { value: 'Резка оракала', label: 'Резка оракала' },
+  { value: 'Монтаж', label: 'Монтаж' },
+  { value: 'Ламинация', label: 'Ламинация' },
+];
 
 export default function TaskDetail() {
   const { id } = useParams<{ id: string }>();
@@ -32,7 +39,7 @@ export default function TaskDetail() {
   };
 
   return (
-    <main className="mx-auto max-w-md px-4 py-6">
+    <div className="mx-auto max-w-md py-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{order.number}</h1>
         <OrderStatusBadge status={order.status} />
@@ -42,15 +49,14 @@ export default function TaskDetail() {
       <Card className="mt-4">
         <CardHeader><CardTitle>Операция</CardTitle></CardHeader>
         <CardContent>
-          <select
-            className="h-12 w-full rounded-md border border-[var(--color-border)] px-3 text-base"
+          <Select
+            placeholder="— выберите операцию —"
+            options={OPERATION_OPTIONS}
+            size="touch"
             value={op ?? ''}
             onChange={(e) => setOp(e.target.value || null)}
             disabled={startedAt !== null}
-          >
-            <option value="">— выберите —</option>
-            {OPERATIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-          </select>
+          />
 
           {!startedAt && (
             <Button
@@ -59,7 +65,8 @@ export default function TaskDetail() {
               disabled={!op}
               onClick={() => setStartedAt(new Date())}
             >
-              ▶ Начать работу
+              <Play className="mr-2 h-5 w-5" />
+              Начать работу
             </Button>
           )}
 
@@ -77,7 +84,8 @@ export default function TaskDetail() {
                   setOp(null);
                 }}
               >
-                ⏹ Завершить работу
+                <Square className="mr-2 h-5 w-5 fill-current" />
+                Завершить работу
               </Button>
             </>
           )}
@@ -87,6 +95,6 @@ export default function TaskDetail() {
       <p className="mt-4 text-xs text-[var(--color-fg-muted)]">
         BR-03: брак фиксирует только складщик. Если обнаружили брак — передайте складщику с описанием.
       </p>
-    </main>
+    </div>
   );
 }

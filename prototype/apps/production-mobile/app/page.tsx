@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@uniprint/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, PageHeader } from '@uniprint/ui';
+import { UserCircle } from 'lucide-react';
 
 export default function FaceControlLoginPage() {
   const router = useRouter();
@@ -17,22 +18,21 @@ export default function FaceControlLoginPage() {
     router.push('/tasks');
   };
   return (
-    <main className="mx-auto max-w-md px-4 py-12">
-      <h1 className="sr-only">Начало смены</h1>
-      <Card>
-        <CardHeader><CardTitle>Начало смены</CardTitle></CardHeader>
+    <div className="mx-auto max-w-md py-8">
+      <PageHeader title="Начало смены" />
+      <Card className="mt-6">
+        <CardHeader><CardTitle>Face Control</CardTitle></CardHeader>
         <CardContent>
           <p className="text-sm text-[var(--color-fg-muted)]">
             Подойдите к камере Face Control. Вход зафиксируется автоматически.
           </p>
-          <p className="mt-2 text-xs text-[var(--color-fg-muted)]">
-            <em>Q2 ⏸: vendor TBD. В прототипе — мок (3 секунды → имитация распознавания).</em>
-          </p>
+          {/* Q2: vendor TBD. В прототипе — мок (3 секунды → имитация распознавания). */}
           <Button size="touch" className="mt-6 w-full" onClick={handleLogin} disabled={pending}>
-            {pending ? 'Распознавание…' : '👤 Войти на смену (mock)'}
+            <UserCircle className="mr-2 h-5 w-5" />
+            {pending ? 'Распознавание…' : 'Войти на смену (mock)'}
           </Button>
         </CardContent>
       </Card>
-    </main>
+    </div>
   );
 }
