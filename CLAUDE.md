@@ -478,6 +478,11 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 
 ### Последние вехи
 
+- **2026-05-05** — **Design system overhaul Phase 1+2+3** (`feature/prototype`).
+  12 компонентов (warm cream + coral + Manrope), AppShell во всех 6 кабинетах,
+  15+ эмодзи → lucide icons. Исправлены 2 бага Phase 2 (двойной disabled-placeholder
+  в warehouse-mobile Select). Pipeline (Rule C): typecheck 10/10, lint 10/10,
+  build 6/6, unit 9/9, e2e **44/44** PASS in 13.4s. Подробнее — `Docs/log.md`.
 - **2026-05-05** — **Прототип готов** (`feature/prototype`, 17 задач за один день).
   Turborepo + Next.js 16 + 6 кабинетов на моках MSW. 16/16 Playwright smoke
   pass. BR-01/02/03/09/21/31 enforced в handlers и UI. Pipeline:

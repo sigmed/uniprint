@@ -5,6 +5,36 @@
 
 ## 2026-05-05
 
+### Design system overhaul — Phase 1+2+3 complete
+
+Применён Claude-inspired design system во все 6 кабинетов. Бренд: warm
+cream + coral primary + Manrope/Inter Tight типографика. 12 компонентов
+(6 переписаны, 6 новых). Заменено 15+ эмодзи на lucide-react иконки.
+Каждый кабинет обёрнут в AppShell с семантической навигацией (sidebar +
+mobile drawer/bottom-nav). Исправлены UX C5 (mobile-tables overflow-x-auto),
+C6 (price preview client-portal), I11 (manager-web redirect TODO).
+
+Исправлены 2 реальных бага Phase 2 (двойной disabled-placeholder в `<Select>`
+warehouse-mobile/writeoff и warehouse-mobile/defect — опции `{ value: '', disabled: true }`
+дублировались в массиве `options` и в `placeholder`-проп Select-компонента).
+
+Pipeline (Rule C):
+- typecheck: 10/10 packages PASS (1.6s)
+- lint:      10/10 packages PASS (0.4s)
+- build:     6/6 apps PASS (11.7s)
+- unit:      9/9 mocks tests PASS (0.5s)
+- e2e:       44/44 playwright PASS in 13.4s
+
+Коммиты:
+- `970303d` feat(proto/design): tokens + 12 components
+- `add9af1` feat(proto/client-portal): integrate design system + AppShell + price preview
+- `e5db381` feat(proto/manager-web): integrate design system + AppShell + redirect fix
+- `9925269` feat(proto/production-mobile): integrate design system + AppShell mobile bottom-nav
+- `ab806d7` feat(proto/warehouse-mobile): integrate design system + AppShell mobile bottom-nav
+- `a16d238` feat(proto/admin-panel): integrate design system + AppShell + mobile tables
+- `3c2f4dc` feat(proto/owner-dashboard): integrate design system + AppShell + KpiCard hero
+- + Phase 3 commit (smoke updates + bug fixes)
+
 ### Прототип на моках готов (feature/prototype)
 
 17 задач плана `Docs/superpowers/plans/prototype.md` выполнены через
