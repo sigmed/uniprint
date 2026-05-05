@@ -444,6 +444,16 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 
 ### Последние вехи
 
+- **2026-05-05** — **Прототип готов** (`feature/prototype`, 17 задач за один день).
+  Turborepo + Next.js 16 + 6 кабинетов на моках MSW. 16/16 Playwright smoke
+  pass. BR-01/02/03/09/21/31 enforced в handlers и UI. Pipeline:
+  10 packages typecheck PASS, 6 apps build PASS. Готово к manual Vercel
+  deploy владельцем (плюс merge в `main`).
+- **2026-05-05** — Spec pack: `Docs/00-summary.md` … `10-bpmn.md`,
+  `BUSINESS_RULES.md` (36 BR), скелеты `03/05/09`. ~9700 строк документации
+  через делегирование cs-product-strategist + cs-product-manager +
+  cs-senior-engineer (opus). Plan `Docs/superpowers/plans/prototype.md`
+  + execution через subagent-driven-development.
 - **2026-05-05** — Owner answers (14/20 закрыто): Mobile=PWA,
   Telegram out of product, Yandex Maps + Yandex Object Storage,
   GitHub Issues, 2-нед спринты, Vercel preview, документооборот = PDF,
@@ -451,29 +461,22 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
   Memory: `project_owner_answers_2026-05-05`.
 - **2026-05-05** — Bootstrap документации: `CLAUDE.md`,
   `Docs/team-structure.md` (18 ролей + R3 полиграфический консультант),
-  `Docs/onboarding/owner-questions.md` (20 Q с шаблоном ответов),
-  скелеты `03-architecture`, `05-integrations`, `09-compliance` с
-  TBD-маркерами.
+  `Docs/onboarding/owner-questions.md` (20 Q с шаблоном ответов).
 - **2026-05-04** — `git init`, remote `github.com/SigmeD/uniprint.git`,
-  `Docs/tz-*.md` сконвертированы из исходных .docx и закоммичены
+  `Docs/tz-*.md` сконвертированы из исходных .docx
   (`9d0aae2 docs: convert ТЗ to markdown`).
 
-**Полная история — `Docs/log.md`** (создаётся в первом sprint-0 шаге).
+**Полная история — `Docs/log.md`**.
 
-### Не сделано / следующее (текущая итерация)
+### Не сделано / следующее (после ответов 🔴 Q1-Q5)
 
-- [ ] **Спека** (в работе фоновыми агентами): `Docs/00-summary.md`,
-      `01-vision.md`, `02-user-journeys.md`, `04-modules.md`,
-      `08-risks.md`, `10-bpmn.md`, `BUSINESS_RULES.md`
-- [ ] Обновить скелеты 03/05/09 под закреплённые ответы
-      (Mobile=PWA, Telegram out, Yandex stack, B2C+B2B)
-- [ ] **Прототип** на моках (Turborepo, 6 кабинетов, deploy → Vercel preview)
+- [ ] Manual Vercel deploy 6 кабинетов владельцем (см. `prototype/README.md`)
 - [ ] ADR-0001 (Mobile=PWA — закрыт ответом Q6, оформить документ)
 - [ ] ADR-0002 Face Control vendor, ADR-0003 хостинг,
       ADR-0004 миграция, ADR-0005 эквайринг — **после ответов 🔴 Q1-Q5**
 - [ ] `Docs/06-estimate.md`, `07-roadmap.md`, `kp/kp-with-cost.md` —
       **после ответов 🔴 Q1-Q5**
-- [ ] `.env.example` (с placeholder ENV-vars)
+- [ ] Merge `feature/prototype` → `main` после ревью владельца
 
 ### Открытые блокеры
 
