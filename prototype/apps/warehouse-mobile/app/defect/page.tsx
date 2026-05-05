@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '@uniprint/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Select, PageHeader } from '@uniprint/ui';
+import type { SelectOption } from '@uniprint/ui';
+import { AlertTriangle } from 'lucide-react';
 import type { Order, DefectStage } from '@uniprint/types';
 
 export default function DefectPage() {
@@ -24,34 +26,38 @@ export default function DefectPage() {
     }, 800);
   };
 
+  const orderOptions: SelectOption[] = [
+    { value: '', label: '— заказ на проверке —', disabled: true },
+    ...orders.map((o) => ({ value: o.id, label: o.number })),
+  ];
+  const stageOptions: SelectOption[] = [
+    { value: 'design', label: 'Дизайн' },
+    { value: 'production', label: 'Производство' },
+    { value: 'material', label: 'Материал' },
+    { value: 'unknown', label: 'Неизвестно' },
+  ];
+
   return (
-    <main className="mx-auto max-w-md px-4 py-6">
-      <h1 className="text-2xl font-bold">Фиксация брака</h1>
-      <p className="mt-1 text-xs text-[var(--color-fg-muted)]">
-        BR-03: фиксирует только складщик. BR-17: брак → автоматическая переделка.
-      </p>
+    <div className="mx-auto max-w-md py-6">
+      <PageHeader title="Фиксация брака" description="BR-03: фиксирует только складщик. BR-17: брак → автоматическая переделка." />
       <Card className="mt-4">
         <CardHeader><CardTitle>Заполните данные</CardTitle></CardHeader>
         <CardContent className="grid gap-3">
-          <select
-            className="h-12 rounded-md border border-[var(--color-border)] px-3"
+          <Select
+            placeholder="— заказ на проверке —"
+            options={orderOptions}
+            size="touch"
             value={orderId}
             onChange={(e) => setOrderId(e.target.value)}
-          >
-            <option value="">— заказ на проверке —</option>
-            {orders.map((o) => <option key={o.id} value={o.id}>{o.number}</option>)}
-          </select>
+          />
 
-          <select
-            className="h-12 rounded-md border border-[var(--color-border)] px-3"
+          <Select
+            label="Этап"
+            options={stageOptions}
+            size="touch"
             value={stage}
             onChange={(e) => setStage(e.target.value as DefectStage)}
-          >
-            <option value="design">Дизайн</option>
-            <option value="production">Производство</option>
-            <option value="material">Материал</option>
-            <option value="unknown">Неизвестно</option>
-          </select>
+          />
 
           <Input type="number" min={1} value={qty} onChange={(e) => setQty(Number(e.target.value))} placeholder="Количество брака" />
           <Input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Причина" />
@@ -67,10 +73,11 @@ export default function DefectPage() {
             disabled={!orderId || !reason || !photo || submitted}
             onClick={submit}
           >
-            {submitted ? 'Отправка…' : '⚠ Зафиксировать брак'}
+            <AlertTriangle className="mr-2 h-5 w-5" />
+            {submitted ? 'Отправка…' : 'Зафиксировать брак'}
           </Button>
         </CardContent>
       </Card>
-    </main>
+    </div>
   );
 }

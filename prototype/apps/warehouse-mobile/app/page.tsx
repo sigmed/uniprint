@@ -1,13 +1,24 @@
 import Link from 'next/link';
-import { Button, Card, CardContent } from '@uniprint/ui';
+import { Button, Card, CardContent, PageHeader } from '@uniprint/ui';
+import { PackageMinus, AlertTriangle } from 'lucide-react';
 
 export default function HomePage() {
   return (
-    <main className="mx-auto max-w-md px-4 py-6">
-      <h1 className="text-2xl font-bold">Склад</h1>
+    <div className="mx-auto max-w-md py-6">
+      <PageHeader title="Склад" description="Управление материалами и фиксация брака" />
       <div className="mt-4 grid gap-3">
-        <Link href="/writeoff"><Button size="touch" className="w-full">📤 Списать материал на заказ</Button></Link>
-        <Link href="/defect"><Button size="touch" variant="danger" className="w-full">⚠ Зафиксировать брак</Button></Link>
+        <Link href="/writeoff">
+          <Button size="touch" className="w-full">
+            <PackageMinus className="mr-2 h-5 w-5" />
+            Списать материал на заказ
+          </Button>
+        </Link>
+        <Link href="/defect">
+          <Button size="touch" variant="danger" className="w-full">
+            <AlertTriangle className="mr-2 h-5 w-5" />
+            Зафиксировать брак
+          </Button>
+        </Link>
         <Card>
           <CardContent className="p-4 text-sm">
             <p className="font-semibold">Ключевые правила:</p>
@@ -19,6 +30,6 @@ export default function HomePage() {
           </CardContent>
         </Card>
       </div>
-    </main>
+    </div>
   );
 }
