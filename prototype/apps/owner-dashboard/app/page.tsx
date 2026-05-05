@@ -1,11 +1,16 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@uniprint/ui';
+import { KpiCard, PageHeader, Skeleton } from '@uniprint/ui';
+import { Package, Factory, CheckCircle2, AlertTriangle, Banknote, TrendingDown, TrendingUp } from 'lucide-react';
 import type { Order } from '@uniprint/types';
 
 export default function OwnerDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
-  useEffect(() => { fetch('/api/orders').then((r) => r.json()).then((d) => setOrders(d.items)); }, []);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/orders').then((r) => r.json()).then((d) => { setOrders(d.items); setLoading(false); });
+  }, []);
 
   const total = orders.length;
   const inProduction = orders.filter((o) => o.status === 'in_production').length;
@@ -15,42 +20,92 @@ export default function OwnerDashboard() {
     .reduce((s, o) => s + o.priceTotal, 0);
   const costActual = orders.filter((o) => o.costActual).reduce((s, o) => s + (o.costActual ?? 0), 0);
   const profit = revenue - costActual;
+  const margin = revenue > 0 ? Math.round((profit / revenue) * 100) : 0;
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-8">
-      <h1 className="text-3xl font-bold">Дашборд учредителя</h1>
-      <p className="mt-1 text-sm text-[var(--color-fg-muted)]">Данные за период (mock).</p>
+    <div className="mx-auto max-w-6xl py-8">
+      <PageHeader title="Дашборд учредителя" description="Данные за период (mock)" />
 
-      <div className="mt-6 grid grid-cols-4 gap-4">
-        <Card><CardHeader><CardTitle>Заказов</CardTitle></CardHeader><CardContent className="text-3xl font-bold">{total}</CardContent></Card>
-        <Card><CardHeader><CardTitle>В производстве</CardTitle></CardHeader><CardContent className="text-3xl font-bold">{inProduction}</CardContent></Card>
-        <Card><CardHeader><CardTitle>Выдано</CardTitle></CardHeader><CardContent className="text-3xl font-bold text-[var(--color-success)]">{delivered}</CardContent></Card>
-        <Card><CardHeader><CardTitle>Брак</CardTitle></CardHeader><CardContent className="text-3xl font-bold text-[var(--color-danger)]">{defects}</CardContent></Card>
-      </div>
+      {loading ? (
+        <div className="mt-6">
+          <Skeleton variant="rect" className="h-32" />
+        </div>
+      ) : (
+        <>
+          {/* Operations KPIs */}
+          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <KpiCard
+              label="Заказов"
+              value={total}
+              icon={<Package className="h-4 w-4" />}
+            />
+            <KpiCard
+              label="В производстве"
+              value={inProduction}
+              icon={<Factory className="h-4 w-4" />}
+            />
+            <KpiCard
+              label="Выдано"
+              value={delivered}
+              trend="up"
+              trendIsGood={true}
+              icon={<CheckCircle2 className="h-4 w-4" />}
+            />
+            <KpiCard
+              label="Брак"
+              value={defects}
+              trend={defects > 0 ? 'up' : 'flat'}
+              trendIsGood={false}
+              icon={<AlertTriangle className="h-4 w-4" />}
+            />
+          </div>
 
-      <h2 className="mt-12 text-2xl font-semibold">P&L</h2>
-      <div className="mt-4 grid grid-cols-3 gap-4">
-        <Card><CardHeader><CardTitle>Выручка</CardTitle></CardHeader><CardContent className="text-2xl font-bold">{revenue.toLocaleString('ru-RU')} ₽</CardContent></Card>
-        <Card><CardHeader><CardTitle>Себестоимость</CardTitle></CardHeader><CardContent className="text-2xl font-bold">{costActual.toLocaleString('ru-RU')} ₽</CardContent></Card>
-        <Card><CardHeader><CardTitle>Прибыль</CardTitle></CardHeader><CardContent className={`text-2xl font-bold ${profit >= 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>{profit.toLocaleString('ru-RU')} ₽</CardContent></Card>
-      </div>
+          {/* P&L — hero card for profit */}
+          <h2 className="mt-12 text-xl font-semibold">P&L</h2>
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <KpiCard
+              label="Прибыль"
+              value={profit.toLocaleString('ru-RU')}
+              unit="₽"
+              delta={`${margin}% маржа`}
+              trend={profit >= 0 ? 'up' : 'down'}
+              trendIsGood={profit >= 0}
+              icon={profit >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+              size="lg"
+            />
+            <KpiCard
+              label="Выручка"
+              value={revenue.toLocaleString('ru-RU')}
+              unit="₽"
+              icon={<Banknote className="h-4 w-4" />}
+            />
+            <KpiCard
+              label="Себестоимость"
+              value={costActual.toLocaleString('ru-RU')}
+              unit="₽"
+              trend="flat"
+              icon={<TrendingDown className="h-4 w-4" />}
+            />
+          </div>
 
-      <h2 className="mt-12 text-2xl font-semibold">Доходимость по типам</h2>
-      <div className="mt-4 grid grid-cols-3 gap-4">
-        {(['cex', 'office', 'goods'] as const).map((t) => {
-          const cnt = orders.filter((o) => o.type === t).length;
-          const sum = orders.filter((o) => o.type === t).reduce((s, o) => s + o.priceTotal, 0);
-          return (
-            <Card key={t}>
-              <CardHeader><CardTitle>{t === 'cex' ? 'Цех (наружка)' : t === 'office' ? 'Офис-полиграфия' : 'Готовый товар'}</CardTitle></CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{cnt} шт</div>
-                <div className="text-sm text-[var(--color-fg-muted)]">{sum.toLocaleString('ru-RU')} ₽</div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    </main>
+          {/* By type */}
+          <h2 className="mt-12 text-xl font-semibold">Доходимость по типам</h2>
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {(['cex', 'office', 'goods'] as const).map((t) => {
+              const cnt = orders.filter((o) => o.type === t).length;
+              const sum = orders.filter((o) => o.type === t).reduce((s, o) => s + o.priceTotal, 0);
+              return (
+                <KpiCard
+                  key={t}
+                  label={t === 'cex' ? 'Цех (наружка)' : t === 'office' ? 'Офис-полиграфия' : 'Готовый товар'}
+                  value={`${cnt} шт`}
+                  hint={`${sum.toLocaleString('ru-RU')} ₽`}
+                />
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
