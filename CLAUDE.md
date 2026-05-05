@@ -78,6 +78,29 @@ Django/DRF, Telegram Bot API, YooKassa SDK и т.д.):
 завершена только после обновления **всех** релевантных документов.
 Это часть Definition of Done.
 
+**C. Полный тест-пайплайн после каждого спринта.** Спринт не считается
+закрытым, пока не пройден **полный** test pass на актуальном HEAD ветки:
+
+```bash
+# В корне prototype/ (или другого workspace):
+pnpm typecheck      # все packages + apps — должно быть PASS
+pnpm lint           # biome — без errors
+pnpm build          # все apps собираются — PASS
+pnpm test           # unit-тесты, если есть — PASS
+pnpm test:e2e       # Playwright golden-path + extended smoke — PASS
+```
+
+Результаты (числа passed/total + время) фиксируются в
+`Docs/sprints/<NN>/retro.md` § «Test results» **и** в
+`Docs/log.md` записью по дате. Если хоть один шаг ❌ — спринт не
+закрывается, баги фиксируются в первый день следующего спринта или
+эскалируются в hotfix-ветку.
+
+> Это правило заложено по фидбеку владельца от 2026-05-05.
+> Применяется ко всем будущим спринтам начиная с sprint-1. Для уже
+> закрытого Phase-0 (прототип на моках) — pass зафиксирован в
+> `Docs/log.md` 2026-05-05.
+
 | Триггер | Что обновить |
 | --- | --- |
 | **Любой коммит / фича** | **`Docs/log.md`** — запись по дате (короткая, 1–3 строки + хеш) |
@@ -252,7 +275,10 @@ Auto-memory в `~/.claude/projects/D--Projects-Uniprint/memory/`. Сохраня
                               релизный, релевантные Docs/01-…10-…)
 13. Commit docs            → commit-commands:commit с префиксом `docs:`
 14. Close                  → закрытие issue / задачи
-15. ⚠️ Конец спринта/Phase → Docs/sprints/<NN>/retro.md,
+15. ⚠️ Конец спринта/Phase → правило C — полный тест-пайплайн
+                              (typecheck/lint/build/test/test:e2e),
+                              результаты в Docs/sprints/<NN>/retro.md
+                              «Test results» + Docs/log.md,
                               Docs/07-roadmap.md → Phase closed,
                               CLAUDE.md «Текущий статус» суммирует
 ```
@@ -277,8 +303,16 @@ Auto-memory в `~/.claude/projects/D--Projects-Uniprint/memory/`. Сохраня
       - [ ] ADR `Docs/adr/NNNN-…` (если архитектурное решение)
       - [ ] `CHANGELOG.md` (если релизный фрагмент)
       - [ ] Затронутые файлы из `Docs/01-…10-…` (если изменилась спека)
-- [ ] **Конец спринта**: `Docs/sprints/<NN>/retro.md` написан, Phase
-      в `Docs/07-roadmap.md` помечена как closed (если применимо).
+- [ ] **Конец спринта** (правило **C** — полный тест-пайплайн):
+      - [ ] `pnpm typecheck` — PASS на всех packages + apps
+      - [ ] `pnpm lint` — без errors (Biome)
+      - [ ] `pnpm build` — все apps собираются
+      - [ ] `pnpm test` — unit, если есть
+      - [ ] `pnpm test:e2e` — Playwright golden-path + extended smoke (16+ tests)
+      - [ ] Числа passed/total + время вписаны в `Docs/sprints/<NN>/retro.md`
+            и в `Docs/log.md`
+      - [ ] `Docs/sprints/<NN>/retro.md` написан, Phase в
+            `Docs/07-roadmap.md` помечена как closed (если применимо)
 - [ ] Коммит документации сделан отдельно с префиксом `docs:`.
 
 ## Команды
