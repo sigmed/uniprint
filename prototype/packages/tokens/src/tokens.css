@@ -1,66 +1,375 @@
-/* UniPrint design tokens. Импортируется в каждом app через `@import "@uniprint/tokens/tokens.css"`. */
+/* UniPrint design tokens — Claude-inspired aesthetic + Press industrial accents.
+   Import in each app: @import "@uniprint/tokens/tokens.css" */
 
 @theme {
-  /* Цвета — нейтральная B2B-палитра, акцент серый-индиго */
-  --color-bg: #fafafa;
-  --color-surface: #ffffff;
-  --color-fg: #18181b;
-  --color-fg-muted: #71717a;
-  --color-border: #e4e4e7;
-  --color-primary: #4f46e5;
-  --color-primary-fg: #ffffff;
-  --color-success: #16a34a;
-  --color-warning: #d97706;
-  --color-danger: #dc2626;
-  --color-info: #2563eb;
+  /* ─── Brand (Coral) scale — 500 = #C75A3D ─── */
+  --color-brand-50:  #fdf3ef;
+  --color-brand-100: #fae4da;
+  --color-brand-200: #f5c6b3;
+  --color-brand-300: #ed9f82;
+  --color-brand-400: #e0724e;
+  --color-brand-500: #C75A3D;
+  --color-brand-600: #a8472e;
+  --color-brand-700: #8a3722;
+  --color-brand-800: #6d2c1c;
+  --color-brand-900: #4f2015;
 
-  /* Семантика по статусам заказа */
-  --color-status-draft: #71717a;
-  --color-status-in-production: #2563eb;
-  --color-status-defect: #dc2626;
-  --color-status-ready: #16a34a;
-  --color-status-closed: #18181b;
+  /* ─── Accent (Teal-Slate) scale — 500 = #5A6B7A ─── */
+  --color-accent-50:  #eef2f5;
+  --color-accent-100: #d5e0e8;
+  --color-accent-200: #adc0ce;
+  --color-accent-300: #82a0b3;
+  --color-accent-400: #6d8da1;
+  --color-accent-500: #5A6B7A;
+  --color-accent-600: #495866;
+  --color-accent-700: #394652;
+  --color-accent-800: #2c3640;
+  --color-accent-900: #1e252d;
 
-  /* Spacing — кратно 4 */
-  --spacing-1: 0.25rem;
-  --spacing-2: 0.5rem;
-  --spacing-3: 0.75rem;
-  --spacing-4: 1rem;
-  --spacing-6: 1.5rem;
-  --spacing-8: 2rem;
-  --spacing-12: 3rem;
-  --spacing-16: 4rem;
+  /* ─── Gray (Warm) scale — 50 = #FAF7F2, 800 = #1C1916 ─── */
+  --color-gray-0:   #ffffff;
+  --color-gray-50:  #FAF7F2;
+  --color-gray-100: #F2EDE5;
+  --color-gray-200: #E5DDD1;
+  --color-gray-300: #D0C5B6;
+  --color-gray-400: #B5A899;
+  --color-gray-500: #8F8276;
+  --color-gray-600: #6E6358;
+  --color-gray-700: #4D4540;
+  --color-gray-800: #1C1916;
+  --color-gray-900: #120F0D;
+  --color-gray-950: #080605;
 
-  /* Typography */
-  --font-sans: "Inter", -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", "Cascadia Code", monospace;
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
+  /* ─── Semantic scales ─── */
+  /* Success (green, warm) */
+  --color-success-50:  #edf7ee;
+  --color-success-100: #d1edcd;
+  --color-success-500: #2d8a3e;
+  --color-success-600: #237131;
+  --color-success-700: #1a5825;
 
-  /* Mobile — touch target ≥ 44pt = 44px */
+  /* Warning (amber, warm) */
+  --color-warning-50:  #fef8ec;
+  --color-warning-100: #fdecc8;
+  --color-warning-500: #c07d14;
+  --color-warning-600: #9a6410;
+  --color-warning-700: #744b0c;
+
+  /* Danger (red, vivid) */
+  --color-danger-50:  #fdf0f0;
+  --color-danger-100: #fadddd;
+  --color-danger-500: #c83232;
+  --color-danger-600: #a32828;
+  --color-danger-700: #7d1e1e;
+
+  /* Info (teal-slate, matches accent) */
+  --color-info-50:  #eef2f5;
+  --color-info-100: #d5e0e8;
+  --color-info-500: #5A6B7A;
+  --color-info-600: #495866;
+  --color-info-700: #394652;
+
+  /* ─── Role tokens ─── */
+  --color-bg:              var(--color-gray-50);      /* warm cream */
+  --color-bg-subtle:       var(--color-gray-100);
+  --color-surface:         var(--color-gray-0);
+  --color-surface-raised:  var(--color-gray-0);
+
+  --color-fg:              var(--color-gray-800);     /* #1C1916 deep warm slate */
+  --color-fg-subtle:       var(--color-gray-700);
+  --color-fg-muted:        var(--color-gray-500);
+  --color-fg-disabled:     var(--color-gray-400);
+  --color-fg-on-brand:     var(--color-gray-0);
+
+  --color-border:          var(--color-gray-200);
+  --color-border-subtle:   var(--color-gray-100);
+  --color-border-strong:   var(--color-gray-300);
+  --color-border-focus:    var(--color-brand-500);
+
+  --color-primary:         var(--color-brand-500);
+  --color-primary-hover:   var(--color-brand-600);
+  --color-primary-active:  var(--color-brand-700);
+  --color-primary-fg:      var(--color-gray-0);
+
+  /* ─── Status tokens (14 unique pairs, NO 3 on one warning hue) ─── */
+  /* draft — neutral warm gray */
+  --status-draft-bg:             #F2EDE5;
+  --status-draft-fg:             #4D4540;
+  --status-draft-border:         #D0C5B6;
+
+  /* lead — muted violet/mauve */
+  --status-lead-bg:              #f0edf7;
+  --status-lead-fg:              #4a3a72;
+  --status-lead-border:          #c9bfed;
+
+  /* measured — indigo-blue */
+  --status-measured-bg:          #eef0fb;
+  --status-measured-fg:          #3346a8;
+  --status-measured-border:      #becaf5;
+
+  /* designing — sky teal */
+  --status-designing-bg:         #e8f4f8;
+  --status-designing-fg:         #1a5f78;
+  --status-designing-border:     #9dd0e4;
+
+  /* design-review — cyan-slate */
+  --status-design-review-bg:     #e6f5f4;
+  --status-design-review-fg:     #1b6660;
+  --status-design-review-border: #96d5d1;
+
+  /* client-approval — teal-slate accent */
+  --status-client-approval-bg:   #eef2f5;
+  --status-client-approval-fg:   #2e4d5f;
+  --status-client-approval-border: #adc0ce;
+
+  /* queued — amber/honey (distinct from warning-50) */
+  --status-queued-bg:            #fef6e4;
+  --status-queued-fg:            #7a5a10;
+  --status-queued-border:        #f5d97a;
+
+  /* in-production — brand coral (press red = production) */
+  --status-in-production-bg:     #fdf3ef;
+  --status-in-production-fg:     #8a3722;
+  --status-in-production-border: #f5c6b3;
+
+  /* in-qc — orange-amber (distinct from warning & queued) */
+  --status-in-qc-bg:             #fef1e6;
+  --status-in-qc-fg:             #9a4e10;
+  --status-in-qc-border:         #f8ceaa;
+
+  /* defect — red danger */
+  --status-defect-bg:            #fdf0f0;
+  --status-defect-fg:            #a32828;
+  --status-defect-border:        #fadddd;
+
+  /* ready — green success */
+  --status-ready-bg:             #edf7ee;
+  --status-ready-fg:             #1a5825;
+  --status-ready-border:         #b8e6bc;
+
+  /* delivered — deeper green */
+  --status-delivered-bg:         #e3f5e5;
+  --status-delivered-fg:         #145020;
+  --status-delivered-border:     #9fd8a4;
+
+  /* closed — dark warm slate */
+  --status-closed-bg:            #e8e3dc;
+  --status-closed-fg:            #2c261f;
+  --status-closed-border:        #c4bbaf;
+
+  /* cancelled — muted slate-gray */
+  --status-cancelled-bg:         #f0ecea;
+  --status-cancelled-fg:         #5c4f48;
+  --status-cancelled-border:     #c8bfba;
+
+  /* ─── Type tokens ─── */
+  --type-cex-bg:      #fdf3ef;
+  --type-cex-fg:      #8a3722;
+  --type-office-bg:   #eef2f5;
+  --type-office-fg:   #2e4d5f;
+  --type-goods-bg:    #edf7ee;
+  --type-goods-fg:    #1a5825;
+
+  /* ─── Typography ─── */
+  --font-display: 'Manrope', -apple-system, 'Segoe UI', sans-serif;
+  --font-sans:    'Inter Tight', -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:    'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+
+  /* Size scale */
+  --text-2xs:      0.6875rem;  /* 11px */
+  --text-xs:       0.75rem;    /* 12px */
+  --text-sm:       0.875rem;   /* 14px */
+  --text-base:     1rem;       /* 16px */
+  --text-lg:       1.125rem;   /* 18px */
+  --text-xl:       1.25rem;    /* 20px */
+  --text-2xl:      1.5rem;     /* 24px */
+  --text-3xl:      1.875rem;   /* 30px */
+  --text-display:  3rem;       /* 48px */
+
+  /* Leading */
+  --leading-tight:   1.25;
+  --leading-snug:    1.375;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.625;
+
+  /* Tracking */
+  --tracking-tight:  -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide:   0.025em;
+  --tracking-caps:   0.08em;
+
+  /* Weight */
+  --font-weight-regular:  400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+  --font-weight-display:  800;
+
+  /* ─── Spacing (base-4, with half-steps) ─── */
+  --spacing-0-5: 0.125rem;  /* 2px */
+  --spacing-1:   0.25rem;   /* 4px */
+  --spacing-1-5: 0.375rem;  /* 6px */
+  --spacing-2:   0.5rem;    /* 8px */
+  --spacing-2-5: 0.625rem;  /* 10px */
+  --spacing-3:   0.75rem;   /* 12px */
+  --spacing-4:   1rem;      /* 16px */
+  --spacing-5:   1.25rem;   /* 20px */
+  --spacing-6:   1.5rem;    /* 24px */
+  --spacing-7:   1.75rem;   /* 28px */
+  --spacing-8:   2rem;      /* 32px */
+  --spacing-10:  2.5rem;    /* 40px */
+  --spacing-12:  3rem;      /* 48px */
+  --spacing-16:  4rem;      /* 64px */
+  --spacing-20:  5rem;      /* 80px */
+  --spacing-24:  6rem;      /* 96px */
+
+  /* ─── Radii ─── */
+  --radius-xs:   0.125rem;   /* 2px */
+  --radius-sm:   0.25rem;    /* 4px */
+  --radius-md:   0.5rem;     /* 8px */
+  --radius-lg:   0.75rem;    /* 12px */
+  --radius-xl:   1rem;       /* 16px */
+  --radius-full: 9999px;
+
+  /* ─── Shadows (warm rgba, NOT cold blue) ─── */
+  --shadow-xs: 0 1px 2px rgba(28, 25, 22, 0.06);
+  --shadow-sm: 0 1px 3px rgba(28, 25, 22, 0.10), 0 1px 2px rgba(28, 25, 22, 0.06);
+  --shadow-md: 0 4px 6px rgba(28, 25, 22, 0.09), 0 2px 4px rgba(28, 25, 22, 0.06);
+  --shadow-lg: 0 10px 15px rgba(28, 25, 22, 0.10), 0 4px 6px rgba(28, 25, 22, 0.05);
+  --shadow-xl: 0 20px 25px rgba(28, 25, 22, 0.12), 0 8px 10px rgba(28, 25, 22, 0.06);
+
+  /* ─── Z-index scale ─── */
+  --z-base:     0;
+  --z-raised:   10;
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-banner:   300;
+  --z-overlay:  400;
+  --z-modal:    500;
+  --z-popover:  600;
+  --z-toast:    700;
+  --z-tooltip:  800;
+
+  /* ─── Motion ─── */
+  --duration-instant: 0ms;
+  --duration-fast:    120ms;
+  --duration-base:    200ms;
+  --duration-slow:    320ms;
+  --duration-slower:  500ms;
+
+  --ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized:  cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ease-spring:      cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ─── Focus ring ─── */
+  --focus-ring-width:  2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color:  var(--color-brand-500);
+
+  /* ─── Touch target ─── */
   --size-touch-min: 44px;
 
-  /* Radius */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-full: 9999px;
+  /* ─── Container max-widths ─── */
+  --container-sm:  640px;
+  --container-md:  768px;
+  --container-lg:  1024px;
+  --container-xl:  1280px;
+  --container-2xl: 1536px;
 }
 
-/* Mock-watermark — обязателен на каждом кабинете прототипа */
-.mock-banner {
-  background: repeating-linear-gradient(
-    -45deg, #fef3c7, #fef3c7 10px, #fde68a 10px, #fde68a 20px
-  );
-  color: #92400e;
+/* ─── Global focus ring ─── */
+:where(button, a, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Shimmer keyframes (for Skeleton component) ─── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+/* ─── Density modes ─── */
+[data-density="comfortable"] {
+  --density-padding-y:  var(--spacing-2-5);
+  --density-padding-x:  var(--spacing-4);
+  --density-gap:        var(--spacing-3);
+  --density-text:       var(--text-base);
+}
+
+[data-density="compact"] {
+  --density-padding-y:  var(--spacing-1-5);
+  --density-padding-x:  var(--spacing-3);
+  --density-gap:        var(--spacing-2);
+  --density-text:       var(--text-sm);
+}
+
+/* ─── Utility classes ─── */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+.numeric {
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  padding: var(--spacing-1) var(--spacing-3);
-  text-align: center;
-  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+}
+
+.overline {
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+
+/* Numbers in body text */
+body {
+  font-feature-settings: 'tnum' 0;
+}
+
+/* ─── Mock banner — subtle toner warning, NOT aggressive zebra ─── */
+.mock-banner {
+  background-color: var(--color-warning-50);
+  border-left: 3px solid var(--color-brand-500);
+  color: var(--color-warning-700);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  padding: var(--spacing-1-5) var(--spacing-4);
+}
+
+.mock-banner--striped {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-warning-50),
+    var(--color-warning-50) 10px,
+    var(--color-warning-100) 10px,
+    var(--color-warning-100) 20px
+  );
+  border-left: 3px solid var(--color-brand-500);
+  color: var(--color-warning-700);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  padding: var(--spacing-1-5) var(--spacing-4);
 }
