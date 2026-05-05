@@ -30,24 +30,30 @@ Face Control), клиентский кабинет.
 
 ## Стек
 
-> **Phase-0:** ответы клиента 🔴 1–7 (mobile-стек, vendor'ы, хостинг)
-> **отложены до конца прототипа**. Прототип строится на моках с
-> допущениями ниже; финальный prod-стек закрепляется ADR'ами после ответов.
+> **Phase-0:** ответы клиента закрыты на 14/20 (см. memory
+> `project_owner_answers_2026-05-05`). Открыто 5 🔴 (Q1 юрисдикция,
+> Q2 Face Control vendor, Q3 хостинг, Q4 миграция, Q5 эквайринг) +
+> 1 отложено (Q19 Sentry). Прототип строится на закреплённых
+> допущениях; prod-ADR закрываются ответами Q1-Q5.
 
-| Слой | Phase-0 (прототип на моках) | Prod (TBD после 🔴) |
+| Слой | Phase-0 (прототип на моках) | Prod |
 | --- | --- | --- |
 | Frontend (web) | Next.js 16 App Router + React 19 + TS + Tailwind + shadcn/ui | то же |
-| Mobile (сотрудники) | **PWA mobile-first** (имитация в прототипе) | Native (Kotlin / Swift) или React Native / Flutter — ADR-0001 |
-| Backend | mock через **MSW** в прототипе | Django + DRF или Node (NestJS/Express) — ADR после стека-ответа |
+| Mobile (сотрудники) | **PWA mobile-first** (Next.js + Service Worker + manifest) | **PWA** (Q6 закрыт). Native — фаза 3+ при появлении нужды. |
+| Backend | mock через **MSW** в прототипе | Django + DRF или Node (NestJS/Express) — ADR-0004 (выбор по команде/нагрузке) |
 | БД | — (моки) | PostgreSQL 15+ |
 | Кеш / WS | — | Redis 7 |
-| Telegram-бот | мок-нотификации в UI | один из каналов (не единственный), резерв SMS/Email/WebPush |
-| Face Control | мок-адаптер (фейковые события) | vendor TBD — Hikvision / Suprema / NtechLab / самописный CV — ADR-0002 |
-| Эквайринг | мок UI | YooKassa / Тинькофф / Сбер / СБП — ADR после ответа |
-| Карты (логистика) | моки маршрутов | Yandex Maps / 2GIS — ADR |
-| S3 для макетов | моки | Yandex Object Storage / Selectel — ADR |
-| Хостинг прототипа | **Vercel** (preview) | TBD — ADR-0003 (если РФ — Yandex.Cloud / Selectel / VK Cloud / on-prem по 152-ФЗ ст. 18 ч. 5) |
-| Мониторинг | — | Sentry + Grafana (фаза 1.5+) |
+| Каналы нотификаций | мок UI | **SMS + Email + WebPush** через `apps/notifications` с провайдер-абстракцией. **Telegram НЕ используется в продукте** (Q7 закрыт). |
+| Telegram (PM) | — | **Только** для PM-канала команда↔владелец (Q20: Telegram быстрые + Email формальные). НЕ для продукта. |
+| Face Control | мок-адаптер (фейковые события) | vendor TBD — Hikvision / Suprema / NtechLab / самописный CV — **ADR-0002 (🔴 Q2 OPEN)** |
+| Эквайринг | мок UI | YooKassa / Тинькофф / Сбер / СБП + ОФД (микс B2B+B2C, Q14) — **ADR-0005 (🔴 Q5 OPEN)** |
+| Карты (логистика) | моки | **Yandex Maps** (Q10 закрыт) |
+| S3 для макетов | моки | **Yandex Object Storage** (Q11 закрыт; регион зависит от Q3 хостинг) |
+| Хостинг прототипа | **Vercel preview** (Q18 закрыт) | TBD — **ADR-0003 (🔴 Q3 OPEN)** (если РФ — Yandex.Cloud / Selectel / VK Cloud / on-prem по 152-ФЗ ст. 18 ч. 5) |
+| Документооборот | мок PDF | **Простая генерация PDF** (счёт/договор/акт/ТТН) + S3 + audit-log (Q13 закрыт). ЭДО — фаза 2+ |
+| Мониторинг | — | Sentry + Grafana (Q19 отложено, по умолчанию фаза 1.5+) |
+| Tracker задач | — | **GitHub Issues** + `gh` CLI (Q16 закрыт) |
+| Спринт-каденция | — | **2 недели** (Q17 закрыт) |
 
 ## Жёсткие правила
 
@@ -194,13 +200,15 @@ Django/DRF, Telegram Bot API, YooKassa SDK и т.д.):
   сотрудника (BR-05) — фиксируется как займ от компании, не уход в
   минус по ст. 137. См. `Docs/04-modules.md` § 6.22 и `Docs/09-compliance.md`.
 - **402-ФЗ.** Хранение первичных документов (счета / акты / ТТН) — 5 лет.
-- **54-ФЗ.** Если приём оплат от B2C клиентов — онлайн-чеки через ОФД
-  (TBD-провайдер, ответ 🔴 #5).
-- **Telegram — один из каналов, не единственный.** Все нотификации
-  через `apps/notifications` (или его эквивалент в выбранном backend-стеке)
-  с провайдер-абстракцией: WebPush → Telegram → SMS → Email.
-  Авторизация клиента — Telegram Login + SMS-код + email magic-link
-  параллельно. Feature-flag `TELEGRAM_ENABLED`.
+- **54-ФЗ применим** (Q14 закрыт — микс B2B + B2C). Для B2C-оплат —
+  онлайн-чеки через ОФД (провайдер TBD, под-блокер 🔴 Q5 эквайринг).
+  Email/phone клиента в платеже обязательны для отправки чека.
+- **Каналы нотификаций — БЕЗ Telegram** (Q7 закрыт). Все нотификации
+  через `apps/notifications` (или эквивалент в выбранном backend-стеке)
+  с провайдер-абстракцией: **WebPush → SMS → Email**. Авторизация клиента —
+  SMS-код + email magic-link параллельно. Telegram-канал в продукте
+  не реализуется. Telegram остаётся **только** для PM-канала команда↔
+  владелец (внутреннее, не часть продукта).
 
 ### 8. Доменные скиллы (обязательны при триггере)
 
@@ -353,21 +361,24 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 ## Внешние сервисы / секреты
 
 > **Phase-0:** реальные интеграции отсутствуют, всё мокается. Таблица —
-> placeholder для prod-фазы. Финальный список зависит от ответов
-> 🔴 1–7.
+> placeholder для prod-фазы. Открытые блокеры — 🔴 Q1-Q5.
 
 | Сервис | ENV-vars (планируемые) | Где брать |
 | --- | --- | --- |
-| Face Control SDK | `FACECTRL_VENDOR`, `FACECTRL_API_KEY`, `FACECTRL_ENDPOINT` | TBD после ADR-0002 |
-| Эквайринг | `PAYMENTS_PROVIDER`, `PAYMENTS_API_KEY`, `PAYMENTS_SHOP_ID` | YooKassa / Тинькофф / Сбер — TBD |
-| СБП | `SBP_MERCHANT_ID` | при подключении B2C-оплат |
-| Карты (логистика) | `MAPS_PROVIDER`, `MAPS_API_KEY` | Yandex Maps / 2GIS — TBD |
-| S3 (макеты) | `S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET`, `S3_BUCKET` | Yandex Object Storage / Selectel — TBD |
-| Telegram Bot | `TELEGRAM_BOT_TOKEN` | @BotFather (после 🔴 #7) |
+| Face Control SDK | `FACECTRL_VENDOR`, `FACECTRL_API_KEY`, `FACECTRL_ENDPOINT` | TBD после ADR-0002 (🔴 Q2) |
+| Эквайринг | `PAYMENTS_PROVIDER`, `PAYMENTS_API_KEY`, `PAYMENTS_SHOP_ID` | YooKassa / Тинькофф / Сбер — TBD после ADR-0005 (🔴 Q5) |
+| СБП | `SBP_MERCHANT_ID` | при подключении B2C-оплат (Q14 ✅ — микс B2B+B2C) |
+| ОФД (54-ФЗ) | `OFD_PROVIDER`, `OFD_API_KEY` | **обязателен** (Q14 ✅ — B2C есть). Платформа ОФД / Такском — TBD под-блокер Q5 |
+| Карты (логистика) | `YANDEX_MAPS_API_KEY` | console.cloud.yandex.ru (Q10 ✅ Yandex Maps) |
+| S3 (макеты) | `S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET`, `S3_BUCKET` | **Yandex Object Storage** (Q11 ✅; регион зависит от Q3 хостинг) |
 | SMS | `SMS_PROVIDER`, `SMS_API_KEY` | SMSAero / MTS Exolve — TBD |
 | Email | `EMAIL_PROVIDER`, `EMAIL_API_KEY` | Unisender Go / SendGrid — TBD |
-| ОФД (54-ФЗ) | `OFD_PROVIDER`, `OFD_API_KEY` | при B2C-оплатах |
-| Sentry | `SENTRY_DSN` | sentry.io / yandex.cloud (фаза 1.5+) |
+| WebPush (VAPID) | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | сгенерируется в `apps/notifications` |
+| Sentry | `SENTRY_DSN` | sentry.io / yandex.cloud (Q19 отложено, ориентир — фаза 1.5+) |
+
+> **Telegram Bot НЕ используется в продукте** (Q7 ✅). PM-канал
+> (Telegram быстрые + Email формальные, Q20 ✅) — для команда↔
+> владелец, не требует токенов в `apps/`.
 
 ## Бизнес-правила (BR-XXX)
 
@@ -433,41 +444,47 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 
 ### Последние вехи
 
-- **2026-05-05** — Старт документации проекта: `CLAUDE.md`,
-  `Docs/team-structure.md`, `Docs/onboarding/owner-questions.md`.
-  Решение клиента: 🔴 1–7 ответы отложены до конца прототипа,
-  прототип строим на моках (memory: `project_prototype_assumptions`).
+- **2026-05-05** — Owner answers (14/20 закрыто): Mobile=PWA,
+  Telegram out of product, Yandex Maps + Yandex Object Storage,
+  GitHub Issues, 2-нед спринты, Vercel preview, документооборот = PDF,
+  один цех/склад MVP, справочник с нуля + R3, чеки B2B+B2C → ОФД.
+  Memory: `project_owner_answers_2026-05-05`.
+- **2026-05-05** — Bootstrap документации: `CLAUDE.md`,
+  `Docs/team-structure.md` (18 ролей + R3 полиграфический консультант),
+  `Docs/onboarding/owner-questions.md` (20 Q с шаблоном ответов),
+  скелеты `03-architecture`, `05-integrations`, `09-compliance` с
+  TBD-маркерами.
 - **2026-05-04** — `git init`, remote `github.com/SigmeD/uniprint.git`,
   `Docs/tz-*.md` сконвертированы из исходных .docx и закоммичены
   (`9d0aae2 docs: convert ТЗ to markdown`).
 
-**Полная история — `Docs/log.md`** (создаётся в шаге онбординга).
+**Полная история — `Docs/log.md`** (создаётся в первом sprint-0 шаге).
 
 ### Не сделано / следующее (текущая итерация)
 
-- [ ] `Docs/team-structure.md` — маппинг 18 ролей → агенты + model-routing
-- [ ] `Docs/onboarding/owner-questions.md` — 20 вопросов 🔴 / 🟡 / 🟢
-- [ ] `Docs/00-summary.md` (executive summary, 1 стр.)
-- [ ] `Docs/01-vision.md` (vision + KPI продукта)
-- [ ] `Docs/02-user-journeys.md` (CJM по 7 ролям + 3 типам заказа)
-- [ ] `Docs/04-modules.md` (детализация 25 модулей ТЗ)
-- [ ] `Docs/08-risks.md` (риск-карта)
-- [ ] `Docs/10-bpmn.md` (адаптация Miro в Mermaid)
-- [ ] Скелеты `03-architecture.md`, `05-integrations.md`,
-      `09-compliance.md` с TBD-маркерами
-- [ ] `BUSINESS_RULES.md` (BR-01…07)
-- [ ] **Прототип** на моках (Turborepo, 6 кабинетов, deploy → Vercel
-      preview) — параллельно со спекой
-- [ ] ADR-0001 mobile-стек, ADR-0002 Face Control vendor,
-      ADR-0003 хостинг — после ответов 🔴 1–7
+- [ ] **Спека** (в работе фоновыми агентами): `Docs/00-summary.md`,
+      `01-vision.md`, `02-user-journeys.md`, `04-modules.md`,
+      `08-risks.md`, `10-bpmn.md`, `BUSINESS_RULES.md`
+- [ ] Обновить скелеты 03/05/09 под закреплённые ответы
+      (Mobile=PWA, Telegram out, Yandex stack, B2C+B2B)
+- [ ] **Прототип** на моках (Turborepo, 6 кабинетов, deploy → Vercel preview)
+- [ ] ADR-0001 (Mobile=PWA — закрыт ответом Q6, оформить документ)
+- [ ] ADR-0002 Face Control vendor, ADR-0003 хостинг,
+      ADR-0004 миграция, ADR-0005 эквайринг — **после ответов 🔴 Q1-Q5**
 - [ ] `Docs/06-estimate.md`, `07-roadmap.md`, `kp/kp-with-cost.md` —
-      после ответов 🔴 1–7
+      **после ответов 🔴 Q1-Q5**
+- [ ] `.env.example` (с placeholder ENV-vars)
 
 ### Открытые блокеры
 
-🔴 **1–7 ответов клиента** (юрисдикция / Face Control vendor /
-хостинг / миграция legacy / эквайринг / mobile-стек / Telegram) —
-**отложены до конца прототипа** по решению владельца от 2026-05-05.
+🔴 **5 из 7 ответов** ещё открыты:
+- **Q1** Юрисдикция / юр-лицо (ИП/ООО, СНО, НДС)
+- **Q2** Face Control vendor (Hikvision / Suprema / NtechLab / самописный)
+- **Q3** Хостинг (Yandex.Cloud / Selectel / VK Cloud / on-prem)
+- **Q4** Миграция legacy (1С / Excel / нет)
+- **Q5** Эквайринг + ОФД-провайдер (под-блокер от Q14)
+
+⏸ **Отложено:** Q19 Sentry (по умолчанию фаза 1.5+).
 Артефакты-блокеры (КП, smeта, prod-ADR) ждут.
 
 ## Контакты
