@@ -1,0 +1,19 @@
+{
+  "name": "@uniprint/mocks",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./handlers": "./src/handlers/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "biome lint src"
+  },
+  "dependencies": {
+    "@uniprint/types": "workspace:*",
+    "msw": "^2.14.3"
+  }
+}
