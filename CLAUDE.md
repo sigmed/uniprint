@@ -1,0 +1,491 @@
+# CLAUDE.md — UniPrint · ERP & Client System (типография + наружная реклама)
+
+> **Living-doc.** Бриф проекта UniPrint для Claude Code. Правим сразу при
+> изменении стека / структуры / процесса / scope. История изменений —
+> в **`Docs/log.md`** (devlog). Stale-CLAUDE.md хуже его отсутствия.
+
+## Проект
+
+**UniPrint** — единая цифровая платформа управления типографией и
+производством наружной рекламы. Объединяет **6 контуров**: продажи (CRM),
+производство (цех + офис-полиграфия + продажа товара), склад с
+антидублированием материалов, финансы (себестоимость / ЗП / баланс /
+амортизация / налоги / логистика), HR (KPI / сдельная оплата /
+Face Control), клиентский кабинет.
+
+**Тип:** greenfield (без legacy-кодовой базы).
+**Контекст (допущение):** РФ-юрисдикция (по терминологии ТЗ — рубли,
+ИП/ООО, СНО). Финал — после ответа клиента 🔴 #1.
+**Каналы:** Mobile App (для сотрудников), Web Panel (вкл. клиентский
+кабинет), Telegram-бот (вспомогательный — нотификации и быстрые действия).
+
+**Источник правды по требованиям:**
+- `Docs/tz-po-uniprint.md` — основной ТЗ (10 разделов, 25 модулей)
+- `Docs/tz-dop-modules.md` — дополнение (модули 6.23–6.25, расчёты 7.16–7.18)
+
+**Спецификация продукта:** `Docs/00-summary.md` → детально в `Docs/01-…10-…`.
+**Журнал работы:** `Docs/log.md`.
+
+> **Соглашение по папке:** в репозитории одна папка `Docs/` (с заглавной — Windows case-insensitive, в git зафиксировано так). Внутри: исходные ТЗ заказчика (`tz-*.md` + оригинальные .docx) **и** наша спека / онбординг / ADR / PRD / sprints / runbook / kp.
+
+## Стек
+
+> **Phase-0:** ответы клиента 🔴 1–7 (mobile-стек, vendor'ы, хостинг)
+> **отложены до конца прототипа**. Прототип строится на моках с
+> допущениями ниже; финальный prod-стек закрепляется ADR'ами после ответов.
+
+| Слой | Phase-0 (прототип на моках) | Prod (TBD после 🔴) |
+| --- | --- | --- |
+| Frontend (web) | Next.js 16 App Router + React 19 + TS + Tailwind + shadcn/ui | то же |
+| Mobile (сотрудники) | **PWA mobile-first** (имитация в прототипе) | Native (Kotlin / Swift) или React Native / Flutter — ADR-0001 |
+| Backend | mock через **MSW** в прототипе | Django + DRF или Node (NestJS/Express) — ADR после стека-ответа |
+| БД | — (моки) | PostgreSQL 15+ |
+| Кеш / WS | — | Redis 7 |
+| Telegram-бот | мок-нотификации в UI | один из каналов (не единственный), резерв SMS/Email/WebPush |
+| Face Control | мок-адаптер (фейковые события) | vendor TBD — Hikvision / Suprema / NtechLab / самописный CV — ADR-0002 |
+| Эквайринг | мок UI | YooKassa / Тинькофф / Сбер / СБП — ADR после ответа |
+| Карты (логистика) | моки маршрутов | Yandex Maps / 2GIS — ADR |
+| S3 для макетов | моки | Yandex Object Storage / Selectel — ADR |
+| Хостинг прототипа | **Vercel** (preview) | TBD — ADR-0003 (если РФ — Yandex.Cloud / Selectel / VK Cloud / on-prem по 152-ФЗ ст. 18 ч. 5) |
+| Мониторинг | — | Sentry + Grafana (фаза 1.5+) |
+
+## Жёсткие правила
+
+### ⚠️ Always-on (никогда не пропускаем)
+
+**A. Context7 перед любой работой с библиотекой / фреймворком / CLI.**
+Прежде чем писать код, читать чужой код или объяснять API сторонней
+технологии (Next.js, React, Tailwind, shadcn/ui, MSW, Anthropic SDK,
+Django/DRF, Telegram Bot API, YooKassa SDK и т.д.):
+
+```
+1. mcp__plugin_context7_context7__resolve-library-id  → получить ID
+2. mcp__plugin_context7_context7__query-docs          → получить актуальные доки
+3. только после этого — писать / отвечать
+```
+
+Действует, **даже если кажется, что знаешь ответ** (training data
+отстаёт). Исключения — рефакторинг внутреннего кода, бизнес-логика,
+общие концепции (DI, паттерны, SOLID).
+
+**B. Обновление документации после фичи / спринта.** Любая фича
+завершена только после обновления **всех** релевантных документов.
+Это часть Definition of Done.
+
+| Триггер | Что обновить |
+| --- | --- |
+| **Любой коммит / фича** | **`Docs/log.md`** — запись по дате (короткая, 1–3 строки + хеш) |
+| Сменился спринт / Phase / появилась веха | `CLAUDE.md` § «Текущий статус» (3–5 последних вех + спринт-цель) |
+| Архитектурное решение | новый ADR `Docs/adr/NNNN-<slug>.md` |
+| Релизный фрагмент | `CHANGELOG.md` (Keep a Changelog) |
+| PRD-фича Done | `Docs/prd/<feature>.md` статус → Done |
+| Сменился стек / структура / scope | `CLAUDE.md` § «Стек» / «Структура репо», `Docs/06-estimate.md`, `Docs/07-roadmap.md`, README |
+| Compliance-картина | `Docs/09-compliance.md` |
+| Новый ENV-vars / секрет | `CLAUDE.md` § «Внешние сервисы», `.env.example` |
+| Новое бизнес-правило (BR-XXX) | `BUSINESS_RULES.md`, релевантные `Docs/04-modules.md` |
+| Новый user-level скилл / агент / MCP | `CLAUDE.md` § «Реестр инструментов», `Docs/team-structure.md` |
+| Конец спринта / Phase | `Docs/sprints/<NN>/retro.md`, `Docs/07-roadmap.md` (Phase → closed), `CLAUDE.md` § «Текущий статус» |
+
+Скилл-помощник — `claude-md-management:claude-md-improver` (раз в спринт).
+Коммит документации — `commit-commands:commit` с префиксом `docs:`.
+
+### 1. Doc-first
+
+Изменение скоупа / архитектуры / compliance — сначала в `Docs/`, потом
+в коде. Спека — источник правды. Бизнес-правила — `BUSINESS_RULES.md`,
+ссылка из `Docs/04-modules.md`.
+
+### 2. Superpowers — рабочий стандарт
+
+Не «помнить» правило — вызывать скилл.
+
+| Этап | Скилл |
+| --- | --- |
+| Сценарий / дизайн (creative) | `superpowers:brainstorming` |
+| План multi-step (3+ шага) | `superpowers:writing-plans` |
+| Исполнение плана | `superpowers:executing-plans` |
+| Делегирование в текущей сессии | `superpowers:subagent-driven-development` |
+| TDD (production-код) | `superpowers:test-driven-development` |
+| Баги / unexpected behavior | `superpowers:systematic-debugging` |
+| Параллельные треки | `superpowers:dispatching-parallel-agents` |
+| Длинная фича — изоляция | `superpowers:using-git-worktrees` |
+| Self-review перед PR | `superpowers:requesting-code-review` |
+| Принять чужой review | `superpowers:receiving-code-review` |
+| Эвиденс перед claim | `superpowers:verification-before-completion` |
+| Завершение ветки | `superpowers:finishing-a-development-branch` |
+| Создание скилла (3+ повтор) | `superpowers:writing-skills` / `skill-creator:skill-creator` |
+
+### 3. Делегирование (агенты + model-routing)
+
+Маппинг ролей → агентов в **`Docs/team-structure.md`**. Не делай всё в
+основной сессии: делегируй профильному `cs-*` агенту.
+
+**Model-routing — обязательно при каждом `Agent` tool call:**
+
+| Тип задачи | Модель | `model:` |
+| --- | --- | --- |
+| Планирование, архитектура, управление, дизайн, research, brainstorming, ADR, спеки, UX, маркетинг-стратегия, compliance, DevOps, BPMN | **Opus 4.7** | `"opus"` |
+| Написание кода (компоненты, страницы, hooks, тесты, миграции, mock-handlers, рефакторинг) | **Sonnet 4.6** | `"sonnet"` |
+
+Правило большого пальца: **«думает → Opus, печатает по принятому
+решению → Sonnet»**. В `Agent` tool параметр `model:` указывается
+явно — иначе агент унаследует модель родителя.
+
+Граничные кейсы: code review → `sonnet`, спека / PRD → `opus`,
+скаффолдинг прототипа → `sonnet`, бизнес-проблема → спека → `opus`.
+
+**Топ-15 агентов** (полный список — `Docs/team-structure.md`):
+`cs-product-strategist|manager|project-manager` (opus),
+`cs-senior-engineer|engineering-lead` (opus),
+`cs-ux-researcher|content-creator|quality-regulatory|financial-analyst` (opus),
+`feature-dev:code-architect|code-explorer` (opus), `Plan` (opus),
+`feature-dev:code-reviewer|cs-karpathy-reviewer|code-simplifier|Explore` (sonnet),
+`general-purpose` — opus для research, sonnet для имплементации.
+
+### 4. Внешние системы (MCP)
+
+| MCP | Использование |
+| --- | --- |
+| `mcp__plugin_context7_context7__*` | Документация (правило A) |
+| `mcp__plugin_playwright_playwright__*` | Browser smoke / golden-path / screenshots |
+| `mcp__ide__getDiagnostics` / `executeCode` | TS / Python diagnostics |
+| `mcp__plugin_vercel_vercel__*` | Прототип-деплой на Vercel preview |
+
+### 5. SDLC и качество
+
+- **Conventional Commits**: `feat: / fix: / docs: / chore: / refactor:
+  / test: / perf: / build: / ci:`. Ветка `feature/<slug>` + PR. Squash-merge.
+  Скиллы — `commit-commands:commit` / `commit-push-pr` / `clean_gone`.
+- **Agile-итерации.** Phase'ы (`Docs/07-roadmap.md`) с явной целью и
+  DoD. Расширение скоупа — обновить `Docs/06-estimate.md` и согласовать
+  с владельцем.
+- **TDD для production-кода.** Failing → green → refactor
+  (`superpowers:test-driven-development`). Прототипный UI на моках —
+  минимум smoke (`mcp__plugin_playwright_playwright__*`) + manual walkthrough.
+- **Verification before completion.** Не говорим «готово / тесты
+  проходят / деплой ОК» без запуска команды и проверки вывода
+  (`superpowers:verification-before-completion`).
+
+### 6. Безопасность и контроль
+
+- **Никаких реальных секретов в репо.** Только `.env.example`.
+  Изменения в `.env*` — с явного разрешения владельца.
+- **Production deploy — только по явной команде владельца.** Dev / stage
+  / Vercel preview — автоматом. Force-push в main, drop таблиц,
+  rollback prod, deletion бэкапов — confirm before action.
+- **Risky actions — спрашиваем.** Уничтожимые / необратимые / shared-state
+  изменения. Никогда не пропускать git-хуки (`--no-verify`,
+  `--no-gpg-sign`) без явного разрешения.
+
+### 7. Compliance (допущение РФ — финал после 🔴 #1)
+
+- **Хостинг для prod — РФ-юрисдикция** (Yandex.Cloud / Selectel /
+  VK Cloud / on-prem) по 152-ФЗ ст. 18 ч. 5. Запрещено для ПДн:
+  AWS, GCP, Cloudflare R2, Hetzner, OVH. **Прототип на Vercel** допустим
+  только потому, что в нём моки без реальных ПДн (отметить в
+  `prototype/MOCK_NOTICE.txt`).
+- **152-ФЗ ст. 11 — биометрия (Face Control).** Отдельное письменное
+  согласие сотрудника на обработку биометрических ПДн. См.
+  `Docs/09-compliance.md` + ADR-0002 (vendor + хранение шаблонов).
+- **152-ФЗ baseline в фазе 1**: согласия с timestamp + хеш версии
+  политики, audit-log на доступы к ПДн, endpoint удаления ПДн,
+  шифрование at-rest.
+- **ТК РФ для сдельной ЗП.** Расчётный лист (ст. 136), долговой баланс
+  сотрудника (BR-05) — фиксируется как займ от компании, не уход в
+  минус по ст. 137. См. `Docs/04-modules.md` § 6.22 и `Docs/09-compliance.md`.
+- **402-ФЗ.** Хранение первичных документов (счета / акты / ТТН) — 5 лет.
+- **54-ФЗ.** Если приём оплат от B2C клиентов — онлайн-чеки через ОФД
+  (TBD-провайдер, ответ 🔴 #5).
+- **Telegram — один из каналов, не единственный.** Все нотификации
+  через `apps/notifications` (или его эквивалент в выбранном backend-стеке)
+  с провайдер-абстракцией: WebPush → Telegram → SMS → Email.
+  Авторизация клиента — Telegram Login + SMS-код + email magic-link
+  параллельно. Feature-flag `TELEGRAM_ENABLED`.
+
+### 8. Доменные скиллы (обязательны при триггере)
+
+- `claude-api` — Anthropic SDK (обязательно prompt caching).
+- `karpathy-coder` / `cs-karpathy-reviewer` — перед коммитом серьёзного кода.
+- `gdpr-dsgvo-expert` — паттерны для 152-ФЗ-имплементации (биометрия,
+  audit-log, endpoint удаления).
+- `vercel:*` — для прототип-деплоя.
+
+### 9. Memory
+
+Auto-memory в `~/.claude/projects/D--Projects-Uniprint/memory/`. Сохранять:
+- **user** — роль / экспертиза / предпочтения владельца.
+- **feedback** — корректировки **и** подтверждения подхода.
+- **project** — кто что делает / зачем / к когда (absolute dates).
+- **reference** — указатели на внешние системы.
+
+Не сохранять то, что выводимо из git / кода / package.json / Docs/tz-*.md.
+
+## Workflow
+
+```
+1.  Эпик / Phase           → цель + DoD в Docs/superpowers/plans/ или
+                              CLAUDE.md «Текущий статус»
+2.  Brainstorm             → superpowers:brainstorming
+3.  Plan                   → superpowers:writing-plans (задачи 2-5 минут)
+4.  ⚠️ Context7 sync       → правило A для каждой библиотеки в плане
+5.  Sub-tasks (optional)   → TodoWrite / GitHub issues
+6.  Isolate (optional)     → superpowers:using-git-worktrees
+7.  Implement (TDD)        → superpowers:test-driven-development
+                              || параллельные треки →
+                              superpowers:dispatching-parallel-agents
+8.  Review                 → superpowers:requesting-code-review
+                              + feature-dev:code-reviewer
+                              + cs-karpathy-reviewer (для серьёзного кода)
+9.  Verify                 → superpowers:verification-before-completion
+10. Finish                 → superpowers:finishing-a-development-branch
+11. Commit + PR (код)      → commit-commands:commit-push-pr
+12. ⚠️ Update docs         → правило B: запись в Docs/log.md +
+                              DoD-чеклист (PRD, ADR, CHANGELOG если
+                              релизный, релевантные Docs/01-…10-…)
+13. Commit docs            → commit-commands:commit с префиксом `docs:`
+14. Close                  → закрытие issue / задачи
+15. ⚠️ Конец спринта/Phase → Docs/sprints/<NN>/retro.md,
+                              Docs/07-roadmap.md → Phase closed,
+                              CLAUDE.md «Текущий статус» суммирует
+```
+
+**Definition of Done** для любой фичи:
+- [ ] **Context7 был запрошен** для каждой использованной библиотеки /
+      SDK / CLI (правило **A**). N/A если без сторонних библиотек.
+- [ ] Tests added (failing first → green) для production-кода.
+- [ ] Lint / type-check passes.
+- [ ] PII-поля учтены в audit-log (152-ФЗ).
+- [ ] Биометрические данные (Face Control) — согласие зафиксировано,
+      template хранится в защищённом storage (152-ФЗ ст. 11).
+- [ ] Коммуникация — через `apps/notifications` (или эквивалент),
+      не Telegram-direct.
+- [ ] Бизнес-правила (BR-XXX) не нарушены — особенно BR-01 (списание
+      материалов только на заказ) и BR-03 (брак фиксирует только складщик).
+- [ ] **Документация обновлена** (правило **B**):
+      - [ ] **`Docs/log.md`** — запись по дате (обязательно для каждой фичи)
+      - [ ] `CLAUDE.md` § «Текущий статус» (только если сменился
+            спринт / Phase / появилась веха)
+      - [ ] PRD `Docs/prd/<feature>.md` помечен как Done
+      - [ ] ADR `Docs/adr/NNNN-…` (если архитектурное решение)
+      - [ ] `CHANGELOG.md` (если релизный фрагмент)
+      - [ ] Затронутые файлы из `Docs/01-…10-…` (если изменилась спека)
+- [ ] **Конец спринта**: `Docs/sprints/<NN>/retro.md` написан, Phase
+      в `Docs/07-roadmap.md` помечена как closed (если применимо).
+- [ ] Коммит документации сделан отдельно с префиксом `docs:`.
+
+## Команды
+
+> **Phase-0**: код ещё не материализован. Реальные команды появятся
+> после старта прототипа (`prototype/`) и production-stack ADR.
+
+```bash
+# Прототип (Turborepo, Phase-0) — будет
+pnpm dev build test lint
+pnpm playwright test                 # smoke на моках
+
+# Backend / Mobile — TBD после ADR на стек
+```
+
+## Среды
+
+| Окружение | URL | Trigger деплоя |
+| --- | --- | --- |
+| local | `localhost:3000…3005` (apps прототипа) | `pnpm dev` |
+| preview (прототип) | `*.vercel.app` | push в feature-ветку + `vercel:deploy` |
+| dev | TBD после prod-ADR | merge в `develop` |
+| stage | TBD | merge в `release/*` |
+| prod | TBD | **только по явной команде владельца** |
+
+## Архитектура
+
+См. `Docs/03-architecture.md` (скелет с TBD до ответов 🔴). Высокоуровнево
+для целевого решения:
+
+```
+client-portal (Web)        ─┐
+manager-web                ─┤
+production-mobile (PWA/native) ─┼→ Backend API + WS
+warehouse-mobile (PWA/native)  ─┤   ├ модули: orders, leads, catalog,
+admin-panel                ─┤   │   │ warehouse, defects, payroll,
+owner-dashboard            ─┘   │   │ finance, logistics, equipment,
+                                │   │ docflow, face-control-adapter,
+                                │   │ notifications*, audit-log*
+                                │   └ Background jobs (расчёт ЗП,
+                                │      амортизация, генерация PDF)
+                                └ NotificationProvider abstraction
+                                   (Telegram / SMS / Email / WebPush)
+
+PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
+            всё в РФ-юрисдикции (после 🔴 #3)
+```
+
+`*` — обязательные для compliance модули.
+
+## Структура репо
+
+Только не-очевидные узлы (полное дерево — `ls`):
+
+- `Docs/` — единая папка документации (Windows case-insensitive,
+  в git — `Docs/`):
+  - **Исходные ТЗ заказчика** (вход): `tz-po-uniprint.md`,
+    `tz-dop-modules.md` + оригинальные `.docx` как первоисточник.
+  - **Наша спека** (выход): `00-summary.md` … `10-bpmn.md`, `log.md`
+    (devlog), `team-structure.md`.
+  - **Подпапки**: `adr/`, `prd/`, `runbook/`, `sprints/`,
+    `superpowers/plans/`, `onboarding/`, `kp/` (коммерческие
+    предложения).
+- `prototype/` — Turborepo (Next.js 16 + React 19 + TS + Tailwind +
+  shadcn/ui + MSW): `apps/{client-portal, manager-web,
+  production-mobile, warehouse-mobile, admin-panel, owner-dashboard}`,
+  `packages/{tokens, ui, mocks, types}`, `playwright/`. Деплой на
+  Vercel preview (один проект на app или unified — решим в плане
+  прототипа).
+- `backend/` — TBD после ADR на backend-стек (фаза 1+).
+- `mobile/` — TBD после ADR-0001 на mobile-стек (фаза 2+).
+- `BUSINESS_RULES.md` — инварианты BR-XXX.
+- `.claude/{settings.json,hooks/*.sh}` — project-level правила и хуки.
+
+## State не в git
+
+`.env*` (реальные ключи), `node_modules/`, `.venv/`, `.next/`,
+`__pycache__/`, Docker volumes (когда появятся), Vercel build artifacts.
+
+## Внешние сервисы / секреты
+
+> **Phase-0:** реальные интеграции отсутствуют, всё мокается. Таблица —
+> placeholder для prod-фазы. Финальный список зависит от ответов
+> 🔴 1–7.
+
+| Сервис | ENV-vars (планируемые) | Где брать |
+| --- | --- | --- |
+| Face Control SDK | `FACECTRL_VENDOR`, `FACECTRL_API_KEY`, `FACECTRL_ENDPOINT` | TBD после ADR-0002 |
+| Эквайринг | `PAYMENTS_PROVIDER`, `PAYMENTS_API_KEY`, `PAYMENTS_SHOP_ID` | YooKassa / Тинькофф / Сбер — TBD |
+| СБП | `SBP_MERCHANT_ID` | при подключении B2C-оплат |
+| Карты (логистика) | `MAPS_PROVIDER`, `MAPS_API_KEY` | Yandex Maps / 2GIS — TBD |
+| S3 (макеты) | `S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET`, `S3_BUCKET` | Yandex Object Storage / Selectel — TBD |
+| Telegram Bot | `TELEGRAM_BOT_TOKEN` | @BotFather (после 🔴 #7) |
+| SMS | `SMS_PROVIDER`, `SMS_API_KEY` | SMSAero / MTS Exolve — TBD |
+| Email | `EMAIL_PROVIDER`, `EMAIL_API_KEY` | Unisender Go / SendGrid — TBD |
+| ОФД (54-ФЗ) | `OFD_PROVIDER`, `OFD_API_KEY` | при B2C-оплатах |
+| Sentry | `SENTRY_DSN` | sentry.io / yandex.cloud (фаза 1.5+) |
+
+## Бизнес-правила (BR-XXX)
+
+Полный список — `BUSINESS_RULES.md`. Ключевые инварианты:
+
+- **BR-01** — Материалы списываются **только на заказ** (никогда
+  «в цех» абстрактно). См. `Docs/04-modules.md` § 6.11.
+- **BR-02** — Антидублирование клиентов и контрагентов **по телефону**.
+  См. `Docs/04-modules.md` § 6.5.
+- **BR-03** — Брак фиксирует **только складщик**, не производство.
+  См. `Docs/04-modules.md` § 6.12.
+- **BR-04** — Производство **не создаёт услуги вручную**, только
+  выбирает из справочника. См. `Docs/04-modules.md` § 6.6.
+- **BR-05** — Баланс сотрудника = `выплачено − заработано`. Если
+  заработано меньше минималки — компания доплачивает в долг,
+  следующий период вычитает (без ухода в минус по ТК ст. 137).
+  См. `Docs/04-modules.md` § 6.22.
+- **BR-06** — Face Control события **не редактируются** пользователем
+  (только просмотр + ручная корректировка времени смены через отдельный
+  workflow с журналом). См. `Docs/04-modules.md` § 6.20.
+- **BR-07** — Заказ может быть одного из 3 типов (цех / офис-полиграфия /
+  продажа товара) — статус-машины разные. См. `Docs/04-modules.md` § 6.6.
+
+## Compliance — pre-pilot чеклист
+
+См. `Docs/09-compliance.md` (скелет до ответа 🔴 #1). Перед запуском
+пилота (предварительно для РФ):
+
+- [ ] Юрисдикция и хостинг подтверждены (🔴 #1, #3).
+- [ ] **Уведомление РКН** подано клиентом (Госуслуги).
+- [ ] Политика обработки ПДн опубликована.
+- [ ] Согласия фиксируются с timestamp и хешем версии.
+- [ ] **Отдельное согласие на биометрию** (Face Control) для каждого
+      сотрудника (152-ФЗ ст. 11).
+- [ ] Audit-log активен на доступы к ПДн.
+- [ ] Endpoint удаления ПДн работает.
+- [ ] Расчётный лист сотрудника генерируется (ТК ст. 136).
+- [ ] SMS буквенный sender зарегистрирован (если SMS-канал).
+- [ ] ОФД-провайдер подключён (если 54-ФЗ B2C-оплаты).
+
+## Реестр инструментов
+
+**Скиллы / агенты / MCP** — см. правила 2–4 выше + `Docs/team-structure.md`
+(полный маппинг ролей и моделей).
+
+**Hooks** (`.claude/settings.json` + `.claude/hooks/*.sh`):
+
+| Событие | Скрипт | Эффект |
+| --- | --- | --- |
+| `SessionStart` | TBD `session-start.sh` | Памятка про правила A/B в начале сессии |
+| `UserPromptSubmit` | TBD `context7-reminder.sh` | Триггер на имена библиотек / глаголы «реализуй / интегрируй» — one-line напоминание про Context7 |
+| `Stop` | TBD `docs-sync-check.sh` | Проверяет git-diff: код изменён → `Docs/` / `CLAUDE.md` / `CHANGELOG.md` тронуты? Иначе варнинг |
+
+Хуки добавляем по мере прихода к коду (фаза 1+). Глобальные хуки
+управления — через скилл `update-config`.
+
+**Memory** — `~/.claude/projects/D--Projects-Uniprint/memory/` (auto-memory).
+
+## Текущий статус (2026-05-05)
+
+**Фаза:** Phase-0 (discovery / спецификация / прототип на моках).
+**Спринт:** sprint-0 (открытый, до подписания договора).
+
+### Последние вехи
+
+- **2026-05-05** — Старт документации проекта: `CLAUDE.md`,
+  `Docs/team-structure.md`, `Docs/onboarding/owner-questions.md`.
+  Решение клиента: 🔴 1–7 ответы отложены до конца прототипа,
+  прототип строим на моках (memory: `project_prototype_assumptions`).
+- **2026-05-04** — `git init`, remote `github.com/SigmeD/uniprint.git`,
+  `Docs/tz-*.md` сконвертированы из исходных .docx и закоммичены
+  (`9d0aae2 docs: convert ТЗ to markdown`).
+
+**Полная история — `Docs/log.md`** (создаётся в шаге онбординга).
+
+### Не сделано / следующее (текущая итерация)
+
+- [ ] `Docs/team-structure.md` — маппинг 18 ролей → агенты + model-routing
+- [ ] `Docs/onboarding/owner-questions.md` — 20 вопросов 🔴 / 🟡 / 🟢
+- [ ] `Docs/00-summary.md` (executive summary, 1 стр.)
+- [ ] `Docs/01-vision.md` (vision + KPI продукта)
+- [ ] `Docs/02-user-journeys.md` (CJM по 7 ролям + 3 типам заказа)
+- [ ] `Docs/04-modules.md` (детализация 25 модулей ТЗ)
+- [ ] `Docs/08-risks.md` (риск-карта)
+- [ ] `Docs/10-bpmn.md` (адаптация Miro в Mermaid)
+- [ ] Скелеты `03-architecture.md`, `05-integrations.md`,
+      `09-compliance.md` с TBD-маркерами
+- [ ] `BUSINESS_RULES.md` (BR-01…07)
+- [ ] **Прототип** на моках (Turborepo, 6 кабинетов, deploy → Vercel
+      preview) — параллельно со спекой
+- [ ] ADR-0001 mobile-стек, ADR-0002 Face Control vendor,
+      ADR-0003 хостинг — после ответов 🔴 1–7
+- [ ] `Docs/06-estimate.md`, `07-roadmap.md`, `kp/kp-with-cost.md` —
+      после ответов 🔴 1–7
+
+### Открытые блокеры
+
+🔴 **1–7 ответов клиента** (юрисдикция / Face Control vendor /
+хостинг / миграция legacy / эквайринг / mobile-стек / Telegram) —
+**отложены до конца прототипа** по решению владельца от 2026-05-05.
+Артефакты-блокеры (КП, smeта, prod-ADR) ждут.
+
+## Контакты
+
+- **Заказчик:** владелец будущей типографии и производства наружной
+  рекламы (контакт через PM-канал — TBD).
+- **Разработка:** команда формируется (`Docs/06-estimate.md` после 🔴).
+- **PM-канал:** TBD после 🔴 #20.
+- **Demo URL прототипа:** Vercel preview (после `prototype/`).
+
+## Ссылки внутрь
+
+- [README.md](README.md) — короткая презентация (TBD)
+- [Docs/tz-po-uniprint.md](Docs/tz-po-uniprint.md) — основной ТЗ заказчика
+- [Docs/tz-dop-modules.md](Docs/tz-dop-modules.md) — дополнение ТЗ
+- [Docs/log.md](Docs/log.md) — журнал изменений (devlog)
+- [Docs/00-summary.md](Docs/00-summary.md) — executive summary
+- [Docs/01-vision.md](Docs/01-vision.md) … [10-bpmn.md](Docs/10-bpmn.md) — спецификация
+- [Docs/team-structure.md](Docs/team-structure.md) — команда → агенты + model-routing
+- [Docs/onboarding/owner-questions.md](Docs/onboarding/owner-questions.md) — вопросы заказчику
+- [BUSINESS_RULES.md](BUSINESS_RULES.md) — инварианты BR-XXX
