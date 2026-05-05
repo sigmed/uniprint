@@ -1,8 +1,15 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '@uniprint/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Select, PageHeader } from '@uniprint/ui';
+import type { SelectOption } from '@uniprint/ui';
 import type { OrderType } from '@uniprint/types';
+
+const ORDER_TYPE_OPTIONS: SelectOption[] = [
+  { value: 'cex', label: 'Услуга цех (наружная реклама)' },
+  { value: 'office', label: 'Услуга офис (оперативная полиграфия)' },
+  { value: 'goods', label: 'Готовый товар' },
+];
 
 export default function NewOrderPage() {
   const router = useRouter();
@@ -11,6 +18,8 @@ export default function NewOrderPage() {
   const [itemsCount, setItemsCount] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const computedPrice = itemsCount * (type === 'cex' ? 12000 : type === 'office' ? 1500 : 8000);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,8 +30,8 @@ export default function NewOrderPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         type, title, itemsCount,
-        clientId: 'cli_001',          // mock — в реале берётся из сессии
-        priceTotal: itemsCount * (type === 'cex' ? 12000 : type === 'office' ? 1500 : 8000),
+        clientId: 'cli_001',
+        priceTotal: computedPrice,
       }),
     });
     if (!res.ok) {
@@ -36,25 +45,18 @@ export default function NewOrderPage() {
   };
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-12">
-      <h1 className="text-2xl font-bold">Новый заказ</h1>
+    <div className="mx-auto max-w-2xl py-8">
+      <PageHeader title="Новый заказ" />
       <Card className="mt-6">
         <CardHeader><CardTitle>Параметры</CardTitle></CardHeader>
         <CardContent>
           <form className="grid gap-4" onSubmit={handleSubmit}>
-            <label htmlFor="order-type-select" className="grid gap-1.5">
-              <span className="text-sm font-medium">Тип заказа</span>
-              <select
-                id="order-type-select"
-                className="h-10 rounded-md border border-[var(--color-border)] px-3"
-                value={type}
-                onChange={(e) => setType(e.target.value as OrderType)}
-              >
-                <option value="cex">Услуга цех (наружная реклама)</option>
-                <option value="office">Услуга офис (оперативная полиграфия)</option>
-                <option value="goods">Готовый товар</option>
-              </select>
-            </label>
+            <Select
+              label="Тип заказа"
+              options={ORDER_TYPE_OPTIONS}
+              value={type}
+              onChange={(e) => setType(e.target.value as OrderType)}
+            />
             <label htmlFor="order-title-input" className="grid gap-1.5">
               <span className="text-sm font-medium">Что заказываете</span>
               <Input
@@ -76,17 +78,28 @@ export default function NewOrderPage() {
                 required
               />
             </label>
+
+            {/* Price preview (C6) */}
+            <Card variant="flat" tone="accent" className="bg-[var(--color-bg-subtle)]">
+              <CardContent className="p-4">
+                <div className="overline text-xs uppercase tracking-wide text-[var(--color-fg-muted)]">Предварительная стоимость</div>
+                <div className="mt-1 font-display text-2xl font-bold tabular-nums text-[var(--color-fg)]">
+                  {computedPrice.toLocaleString('ru-RU')}&nbsp;₽
+                </div>
+                <div className="mt-1 text-xs text-[var(--color-fg-muted)]">
+                  Итог уточнит менеджер по справочнику услуг (BR-04).
+                </div>
+              </CardContent>
+            </Card>
+
             {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
-            <p className="text-sm text-[var(--color-fg-muted)]">
-              Расчёт стоимости — автоматический по справочнику услуг (BR-04).
-              <em>Q15 ✅: справочник наполняется с нуля параллельным треком.</em>
-            </p>
+            {/* Q15 note moved to comment — serves no purpose in client-facing UI */}
             <Button type="submit" disabled={submitting} size="lg">
               {submitting ? 'Создание…' : 'Создать заказ'}
             </Button>
           </form>
         </CardContent>
       </Card>
-    </main>
+    </div>
   );
 }

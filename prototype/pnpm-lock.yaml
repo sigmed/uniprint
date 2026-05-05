@@ -38,6 +38,9 @@ importers:
       '@uniprint/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      lucide-react:
+        specifier: ^0.462.0
+        version: 0.462.0(react@19.2.5)
       msw:
         specifier: ^2.7.0
         version: 2.14.3(@types/node@22.19.17)(typescript@5.9.3)
@@ -84,6 +87,9 @@ importers:
       '@uniprint/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      lucide-react:
+        specifier: ^0.462.0
+        version: 0.462.0(react@19.2.5)
       msw:
         specifier: ^2.7.0
         version: 2.14.3(@types/node@22.19.17)(typescript@5.9.3)
@@ -130,6 +136,9 @@ importers:
       '@uniprint/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      lucide-react:
+        specifier: ^0.462.0
+        version: 0.462.0(react@19.2.5)
       msw:
         specifier: ^2.7.0
         version: 2.14.3(@types/node@22.19.17)(typescript@5.9.3)
@@ -176,6 +185,9 @@ importers:
       '@uniprint/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      lucide-react:
+        specifier: ^0.462.0
+        version: 0.462.0(react@19.2.5)
       msw:
         specifier: ^2.7.0
         version: 2.14.3(@types/node@22.19.17)(typescript@5.9.3)
@@ -222,6 +234,9 @@ importers:
       '@uniprint/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      lucide-react:
+        specifier: ^0.462.0
+        version: 0.462.0(react@19.2.5)
       msw:
         specifier: ^2.7.0
         version: 2.14.3(@types/node@22.19.17)(typescript@5.9.3)
@@ -268,6 +283,9 @@ importers:
       '@uniprint/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      lucide-react:
+        specifier: ^0.462.0
+        version: 0.462.0(react@19.2.5)
       msw:
         specifier: ^2.7.0
         version: 2.14.3(@types/node@22.19.17)(typescript@5.9.3)
