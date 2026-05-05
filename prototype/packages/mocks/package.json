@@ -10,10 +10,16 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "lint": "biome lint src"
+    "lint": "biome lint src",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@uniprint/types": "workspace:*",
     "msw": "^2.14.3"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8",
+    "@vitest/coverage-v8": "^2.1.8"
   }
 }

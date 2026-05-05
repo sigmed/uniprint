@@ -4,7 +4,7 @@ import { clientsFixture } from '../fixtures/clients';
 
 const clients: Client[] = [...clientsFixture];
 
-const normalizePhone = (raw: string): string => {
+export const normalizePhone = (raw: string): string => {
   const digits = raw.replace(/\D/g, '');
   if (digits.length === 11 && digits.startsWith('8')) return `+7${digits.slice(1)}`;
   if (digits.length === 11 && digits.startsWith('7')) return `+${digits}`;
