@@ -33,14 +33,8 @@ export default function WriteoffPage() {
     setResult(`Списано ${qty} ед. (${data.writeoffs.length} партий, FIFO)`);
   };
 
-  const orderOptions: SelectOption[] = [
-    { value: '', label: '— заказ —', disabled: true },
-    ...orders.map((o) => ({ value: o.id, label: `${o.number} · ${o.title}` })),
-  ];
-  const materialOptions: SelectOption[] = [
-    { value: '', label: '— материал —', disabled: true },
-    ...materials.map((m) => ({ value: m.id, label: `${m.sku} · ${m.name}` })),
-  ];
+  const orderOptions: SelectOption[] = orders.map((o) => ({ value: o.id, label: `${o.number} · ${o.title}` }));
+  const materialOptions: SelectOption[] = materials.map((m) => ({ value: m.id, label: `${m.sku} · ${m.name}` }));
 
   const resultIsSuccess = result != null && !result.startsWith('ERR');
 

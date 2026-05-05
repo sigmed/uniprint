@@ -26,10 +26,7 @@ export default function DefectPage() {
     }, 800);
   };
 
-  const orderOptions: SelectOption[] = [
-    { value: '', label: '— заказ на проверке —', disabled: true },
-    ...orders.map((o) => ({ value: o.id, label: o.number })),
-  ];
+  const orderOptions: SelectOption[] = orders.map((o) => ({ value: o.id, label: o.number }));
   const stageOptions: SelectOption[] = [
     { value: 'design', label: 'Дизайн' },
     { value: 'production', label: 'Производство' },

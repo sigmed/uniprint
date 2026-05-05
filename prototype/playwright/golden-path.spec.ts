@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const APPS = [
-  { name: 'client-portal',     port: 3001, headerText: 'Здравствуйте' },
+  { name: 'client-portal',     port: 3001, headerText: 'Кабинет клиента' },
   { name: 'manager-web',       port: 3002, headerText: 'Менеджер · UniPrint' },
   { name: 'production-mobile', port: 3003, headerText: 'Начало смены' },
   { name: 'warehouse-mobile',  port: 3004, headerText: 'Склад' },
