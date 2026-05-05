@@ -1,0 +1,9 @@
+{
+  "name": "UniPrint Manager",
+  "short_name": "Manager",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#4f46e5",
+  "icons": []
+}
