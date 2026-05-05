@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@import "@uniprint/tokens/tokens.css";
+
+@layer base {
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+  }
+}
