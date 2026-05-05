@@ -12,7 +12,7 @@
     "test": "turbo run test",
     "test:e2e": "playwright test",
     "format": "biome format --write .",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

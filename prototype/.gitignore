@@ -3,8 +3,11 @@ node_modules/
 .turbo/
 dist/
 .vercel/
+.env
 .env*.local
 *.tsbuildinfo
 .DS_Store
+.idea/
+.vscode/
 playwright-report/
 test-results/
