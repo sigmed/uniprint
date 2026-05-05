@@ -138,3 +138,9 @@ test('warehouse-mobile: форма брака — кнопка заблокир�
   const submitBtn = page.getByRole('button', { name: /Зафиксировать брак/ });
   await expect(submitBtn).toBeDisabled();
 });
+
+test('client-portal: 404 на несуществующий заказ показывает not-found UI', async ({ page }) => {
+  await page.goto('http://localhost:3001/orders/ord_does_not_exist');
+  await expect(page.locator('h1')).toContainText('Заказ не найден');
+  await expect(page.getByRole('button', { name: /К списку заказов/ })).toBeVisible();
+});
