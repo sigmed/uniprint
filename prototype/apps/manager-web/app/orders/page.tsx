@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Card, CardContent, Button, OrderStatusBadge } from '@uniprint/ui';
+import { Card, CardContent, Button, OrderStatusBadge, PageHeader } from '@uniprint/ui';
 import type { Order, OrderType } from '@uniprint/types';
 
 export default function OrdersListPage() {
@@ -11,11 +11,11 @@ export default function OrdersListPage() {
     fetch(url).then((r) => r.json()).then((d) => setOrders(d.items));
   }, [filter]);
   return (
-    <main className="mx-auto max-w-5xl px-6 py-8">
-      <h1 className="text-2xl font-bold">Заказы</h1>
+    <div className="mx-auto max-w-5xl py-8">
+      <PageHeader title="Заказы" />
       <div className="mt-4 flex gap-2">
         {(['all', 'cex', 'office', 'goods'] as const).map((f) => (
-          <Button key={f} size="sm" variant={filter === f ? 'default' : 'outline'} onClick={() => setFilter(f)}>
+          <Button key={f} size="sm" variant={filter === f ? 'brand' : 'outline'} onClick={() => setFilter(f)}>
             {f === 'all' ? 'Все' : f === 'cex' ? 'Цех' : f === 'office' ? 'Офис' : 'Товар'}
           </Button>
         ))}
@@ -31,6 +31,6 @@ export default function OrdersListPage() {
           </CardContent></Card>
         ))}
       </div>
-    </main>
+    </div>
   );
 }

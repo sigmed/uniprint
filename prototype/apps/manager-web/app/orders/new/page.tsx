@@ -1,8 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '@uniprint/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Select, PageHeader } from '@uniprint/ui';
+import type { SelectOption } from '@uniprint/ui';
 import type { Client, OrderType } from '@uniprint/types';
+
+const ORDER_TYPE_OPTIONS: SelectOption[] = [
+  { value: 'cex', label: 'Цех (наружная реклама)' },
+  { value: 'office', label: 'Офис (оперативная полиграфия)' },
+  { value: 'goods', label: 'Готовый товар' },
+];
 
 export default function NewOrderPage() {
   const router = useRouter();
@@ -26,13 +33,15 @@ export default function NewOrderPage() {
       body: JSON.stringify({ type, title, itemsCount, clientId: selectedClient.id, priceTotal: itemsCount * 5000 }),
     });
     const created = await res.json();
+    // I11: /orders/[id] page not yet in manager-web — redirect to list
+    // TODO: create /orders/[id] and redirect to created.id when available
+    void created;
     router.push('/orders');
-    void created; // в реальном коде — переход на /orders/[created.id]
   };
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-8">
-      <h1 className="text-2xl font-bold">Новый заказ</h1>
+    <div className="mx-auto max-w-2xl py-8">
+      <PageHeader title="Новый заказ" />
       <Card className="mt-6">
         <CardHeader><CardTitle>Шаг 1: клиент (BR-02 — антидубль по телефону)</CardTitle></CardHeader>
         <CardContent>
@@ -63,11 +72,12 @@ export default function NewOrderPage() {
         <CardHeader><CardTitle>Шаг 2: параметры</CardTitle></CardHeader>
         <CardContent>
           <div className="grid gap-3">
-            <select className="h-10 rounded-md border border-[var(--color-border)] px-3" value={type} onChange={(e) => setType(e.target.value as OrderType)}>
-              <option value="cex">Цех</option>
-              <option value="office">Офис</option>
-              <option value="goods">Товар</option>
-            </select>
+            <Select
+              label="Тип заказа"
+              options={ORDER_TYPE_OPTIONS}
+              value={type}
+              onChange={(e) => setType(e.target.value as OrderType)}
+            />
             <Input placeholder="Что заказываем" value={title} onChange={(e) => setTitle(e.target.value)} />
             <Input type="number" min={1} value={itemsCount} onChange={(e) => setItemsCount(Number(e.target.value))} />
           </div>
@@ -77,6 +87,6 @@ export default function NewOrderPage() {
       <Button className="mt-6" disabled={!selectedClient || !title} onClick={submit} size="lg">
         Создать заказ
       </Button>
-    </main>
+    </div>
   );
 }

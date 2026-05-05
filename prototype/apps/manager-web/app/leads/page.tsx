@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Card, CardContent, Badge } from '@uniprint/ui';
+import { Card, CardContent, Badge, PageHeader, EmptyState, Skeleton } from '@uniprint/ui';
+import { Inbox } from 'lucide-react';
 import type { Lead } from '@uniprint/types';
 
 const STATUS_LABELS: Record<Lead['status'], string> = {
@@ -9,25 +10,42 @@ const STATUS_LABELS: Record<Lead['status'], string> = {
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
-  useEffect(() => { fetch('/api/leads').then((r) => r.json()).then((d) => setLeads(d.items)); }, []);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/leads').then((r) => r.json()).then((d) => { setLeads(d.items); setLoading(false); });
+  }, []);
+
   return (
-    <main className="mx-auto max-w-5xl px-6 py-8">
-      <h1 className="text-2xl font-bold">Лиды</h1>
+    <div className="mx-auto max-w-5xl py-8">
+      <PageHeader title="Лиды" description="Входящие обращения от клиентов и выездных менеджеров" />
       <div className="mt-6 grid gap-2">
-        {leads.map((l) => (
-          <Card key={l.id}><CardContent className="flex justify-between p-4">
-            <div>
-              <div className="font-semibold">Лид #{l.id}</div>
-              <div className="text-sm text-[var(--color-fg-muted)]">
-                Источник: {l.source} · {l.measurements ? `${l.measurements.width}×${l.measurements.height} м` : 'без замера'}
-              </div>
-            </div>
-            <Badge variant={l.status === 'converted' ? 'success' : l.status === 'lost' ? 'danger' : 'outline'}>
-              {STATUS_LABELS[l.status]}
-            </Badge>
-          </CardContent></Card>
-        ))}
+        {loading ? (
+          <Skeleton variant="text" lines={5} />
+        ) : leads.length === 0 ? (
+          <EmptyState
+            icon={<Inbox className="h-6 w-6" />}
+            title="Лидов пока нет"
+            description="Создайте лида от выездной команды или ручным вводом."
+          />
+        ) : (
+          leads.map((l) => (
+            <Card key={l.id}>
+              <CardContent className="flex justify-between p-4">
+                <div>
+                  <div className="font-semibold">Лид #{l.id}</div>
+                  <div className="text-sm text-[var(--color-fg-muted)]">
+                    Источник: {l.source} · {l.measurements ? `${l.measurements.width}×${l.measurements.height} м` : 'без замера'}
+                  </div>
+                </div>
+                <Badge variant={l.status === 'converted' ? 'success' : l.status === 'lost' ? 'danger' : 'outline'}>
+                  {STATUS_LABELS[l.status]}
+                </Badge>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
-    </main>
+    </div>
   );
 }
