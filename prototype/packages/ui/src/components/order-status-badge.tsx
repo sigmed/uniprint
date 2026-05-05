@@ -36,5 +36,6 @@ const STATUS_VARIANTS: Record<OrderStatus, 'default' | 'secondary' | 'success' |
 };
 
 export const OrderStatusBadge = ({ status }: { status: OrderStatus }) => (
+  // biome-ignore lint/style/noNonNullAssertion: Records are exhaustive over OrderStatus union
   <Badge variant={STATUS_VARIANTS[status]!}>{STATUS_LABELS[status]!}</Badge>
 );

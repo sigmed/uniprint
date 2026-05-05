@@ -40,13 +40,15 @@ export default function NewOrderPage() {
           {clients.length > 0 && (
             <ul className="mt-3 max-h-64 overflow-auto rounded-md border border-[var(--color-border)]">
               {clients.map((c) => (
-                <li
-                  key={c.id}
-                  className="cursor-pointer border-b border-[var(--color-border)] p-2 hover:bg-[var(--color-bg)]"
-                  onClick={() => setSelectedClient(c)}
-                >
-                  <div className="font-medium">{c.name}</div>
-                  <div className="text-xs text-[var(--color-fg-muted)]">{c.phone} · {c.type}</div>
+                <li key={c.id}>
+                  <button
+                    type="button"
+                    className="w-full cursor-pointer border-b border-[var(--color-border)] p-2 text-left hover:bg-[var(--color-bg)]"
+                    onClick={() => setSelectedClient(c)}
+                  >
+                    <div className="font-medium">{c.name}</div>
+                    <div className="text-xs text-[var(--color-fg-muted)]">{c.phone} · {c.type}</div>
+                  </button>
                 </li>
               ))}
             </ul>

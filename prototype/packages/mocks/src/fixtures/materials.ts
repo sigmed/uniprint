@@ -4,6 +4,7 @@ const CATEGORIES = ['banner', 'oracal', 'paper', 'ink', 'fastener', 'other'] as 
 
 export const materialsFixture: MaterialCatalog[] = Array.from({ length: 200 }, (_, i) => ({
   id: `mat_${String(i + 1).padStart(3, '0')}`,
+  // biome-ignore lint/style/noNonNullAssertion: CATEGORIES.length === 6, index never out of bounds
   sku: `${CATEGORIES[i % 6]!.toUpperCase().slice(0, 3)}-${String(i + 1).padStart(3, '0')}`,
   name: i % 6 === 0 ? `Баннер ${440 + i} г/м²` :
         i % 6 === 1 ? `Оракал ${i}-${(i + 4) % 9}` :
@@ -12,6 +13,7 @@ export const materialsFixture: MaterialCatalog[] = Array.from({ length: 200 }, (
         `Крепёж ${i}` ,
   unit: i % 6 === 0 ? 'm2' : i % 6 === 4 ? 'pcs' : 'lm',
   minStock: 10,
+  // biome-ignore lint/style/noNonNullAssertion: CATEGORIES.length === 6, index never out of bounds
   category: CATEGORIES[i % 6]!,
 }));
 

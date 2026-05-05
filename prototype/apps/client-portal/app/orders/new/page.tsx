@@ -42,9 +42,10 @@ export default function NewOrderPage() {
         <CardHeader><CardTitle>Параметры</CardTitle></CardHeader>
         <CardContent>
           <form className="grid gap-4" onSubmit={handleSubmit}>
-            <label className="grid gap-1.5">
+            <label htmlFor="order-type-select" className="grid gap-1.5">
               <span className="text-sm font-medium">Тип заказа</span>
               <select
+                id="order-type-select"
                 className="h-10 rounded-md border border-[var(--color-border)] px-3"
                 value={type}
                 onChange={(e) => setType(e.target.value as OrderType)}
@@ -54,18 +55,20 @@ export default function NewOrderPage() {
                 <option value="goods">Готовый товар</option>
               </select>
             </label>
-            <label className="grid gap-1.5">
+            <label htmlFor="order-title-input" className="grid gap-1.5">
               <span className="text-sm font-medium">Что заказываете</span>
               <Input
+                id="order-title-input"
                 placeholder="Например: баннер 3×1 м"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
               />
             </label>
-            <label className="grid gap-1.5">
+            <label htmlFor="order-qty-input" className="grid gap-1.5">
               <span className="text-sm font-medium">Количество, шт</span>
               <Input
+                id="order-qty-input"
                 type="number"
                 min={1}
                 value={itemsCount}

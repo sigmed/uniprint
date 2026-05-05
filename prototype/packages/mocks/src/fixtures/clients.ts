@@ -9,7 +9,7 @@ export const clientsFixture: Client[] = Array.from({ length: 50 }, (_, i) => {
     phone: `+79${String(200000000 + i).padStart(9, '0')}`,
     ...(i % 2 === 0 ? { email: `client${i + 1}@example.ru` } : {}),
     ...(isB2b ? { inn: `77${String(10000000 + i).padStart(8, '0')}` } : {}),
-    address: 'г. Москва, ул. Пример, д. ' + (i + 1),
+    address: `г. Москва, ул. Пример, д. ${i + 1}`,
     createdAt: new Date(2025, 0, i + 1).toISOString(),
   };
 });

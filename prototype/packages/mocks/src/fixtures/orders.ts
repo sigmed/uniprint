@@ -9,10 +9,12 @@ const STATUSES: OrderStatus[] = [
 export const ordersFixture: Order[] = Array.from({ length: 30 }, (_, i) => ({
   id: `ord_${String(i + 1).padStart(4, '0')}`,
   number: `UNI-2026-${String(i + 1).padStart(5, '0')}`,
+  // biome-ignore lint/style/noNonNullAssertion: TYPES.length === 3, index never out of bounds
   type: TYPES[i % 3]!,
+  // biome-ignore lint/style/noNonNullAssertion: STATUSES is non-empty, modulo keeps index in range
   status: STATUSES[i % STATUSES.length]!,
   clientId: `cli_${String((i % 50) + 1).padStart(3, '0')}`,
-  managerId: `usr_012`,
+  managerId: 'usr_012',
   ...(i % 3 === 0 ? { designerId: 'usr_009' } : {}),
   branchId: 'main' as const,
   title: i % 3 === 0 ? `Баннер ${3 + i % 5}×${1 + i % 3} м` :
