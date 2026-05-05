@@ -18,6 +18,7 @@ export default function FaceControlLoginPage() {
   };
   return (
     <main className="mx-auto max-w-md px-4 py-12">
+      <h1 className="sr-only">Начало смены</h1>
       <Card>
         <CardHeader><CardTitle>Начало смены</CardTitle></CardHeader>
         <CardContent>
