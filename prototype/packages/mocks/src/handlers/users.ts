@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { usersFixture } from '../fixtures/users.js';
+import { usersFixture } from '../fixtures/users';
 
 export const userHandlers = [
   http.get('/api/users', ({ request }) => {

@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import type { Client } from '@uniprint/types';
-import { clientsFixture } from '../fixtures/clients.js';
+import { clientsFixture } from '../fixtures/clients';
 
 const clients: Client[] = [...clientsFixture];
 

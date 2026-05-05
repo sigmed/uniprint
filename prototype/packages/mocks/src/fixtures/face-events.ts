@@ -1,5 +1,5 @@
 import type { FaceControlEvent } from '@uniprint/types';
-import { usersFixture } from './users.js';
+import { usersFixture } from './users';
 
 const workersWithFace = usersFixture.filter((u) => u.faceTemplateId !== undefined);
 

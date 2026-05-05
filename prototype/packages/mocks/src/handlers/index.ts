@@ -1,9 +1,9 @@
-import { orderHandlers } from './orders.js';
-import { leadHandlers } from './leads.js';
-import { clientHandlers } from './clients.js';
-import { materialHandlers } from './materials.js';
-import { userHandlers } from './users.js';
-import { faceControlHandlers } from './face-control.js';
+import { orderHandlers } from './orders';
+import { leadHandlers } from './leads';
+import { clientHandlers } from './clients';
+import { materialHandlers } from './materials';
+import { userHandlers } from './users';
+import { faceControlHandlers } from './face-control';
 
 export const handlers = [
   ...orderHandlers,

@@ -1,5 +1,5 @@
 import type { OrderStatus } from '@uniprint/types';
-import { Badge } from './badge.js';
+import { Badge } from './badge';
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   draft: 'Черновик',

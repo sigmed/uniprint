@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import type { Order } from '@uniprint/types';
-import { ordersFixture } from '../fixtures/orders.js';
+import { ordersFixture } from '../fixtures/orders';
 
 const orders: Order[] = [...ordersFixture];
 

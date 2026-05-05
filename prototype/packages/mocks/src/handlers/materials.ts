@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import type { MaterialBatch, MaterialWriteoff } from '@uniprint/types';
-import { materialsFixture, batchesFixture } from '../fixtures/materials.js';
+import { materialsFixture, batchesFixture } from '../fixtures/materials';
 
 const materials = [...materialsFixture];
 const batches: MaterialBatch[] = [...batchesFixture];

@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { faceEventsFixture } from '../fixtures/face-events.js';
+import { faceEventsFixture } from '../fixtures/face-events';
 
 export const faceControlHandlers = [
   http.get('/api/face-control/events', ({ request }) => {

@@ -1,6 +1,6 @@
-export { handlers } from './handlers/index.js';
-export * from './fixtures/users.js';
-export * from './fixtures/clients.js';
-export * from './fixtures/orders.js';
-export * from './fixtures/materials.js';
-export * from './fixtures/face-events.js';
+export { handlers } from './handlers/index';
+export * from './fixtures/users';
+export * from './fixtures/clients';
+export * from './fixtures/orders';
+export * from './fixtures/materials';
+export * from './fixtures/face-events';
