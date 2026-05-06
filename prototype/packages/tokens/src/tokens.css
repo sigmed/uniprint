@@ -56,7 +56,7 @@
   --color-bg-subtle:       var(--color-surface-2);
 
   --color-border:          var(--color-line);
-  --color-border-subtle:   var(--color-line);
+  --color-border-subtle:   #EFE7D6;  /* lighter than --color-line for hairlines */
   --color-border-strong:   var(--color-line-2);
   --color-border-focus:    var(--color-brand-500);
 
@@ -64,6 +64,41 @@
   --color-primary-hover:   var(--color-brand-600);
   --color-primary-active:  var(--color-brand-700);
   --color-primary-fg:      #FFFFFF;
+
+  /* ─── BRIDGE ALIASES — temporary, removed after Tasks 3-13 update all components ─── */
+  /* These map old "Press × Calm" token names to new palette equivalents.            */
+  /* Do NOT use in new code. See Docs/superpowers/plans/2026-05-06-redesign.md.      */
+  --color-success-50:  var(--color-green-soft);
+  --color-success-100: var(--color-green-soft);
+  --color-success-500: var(--color-green);
+  --color-success-600: var(--color-green-ink);
+  --color-success-700: var(--color-green-ink);
+  --color-success:     var(--color-green);
+
+  --color-warning-50:  var(--color-amber-soft);
+  --color-warning-100: var(--color-amber-soft);
+  --color-warning-500: var(--color-amber);
+  --color-warning-600: var(--color-amber-ink);
+  --color-warning-700: var(--color-amber-ink);
+
+  --color-danger-50:  var(--color-red-soft);
+  --color-danger-100: var(--color-red-soft);
+  --color-danger-500: var(--color-red);
+  --color-danger-600: var(--color-red-ink);
+  --color-danger-700: var(--color-red-ink);
+  --color-danger:     var(--color-red);
+
+  --color-info-50:  var(--color-blue-soft);
+  --color-info-100: var(--color-blue-soft);
+  --color-info-500: var(--color-blue);
+  --color-info-600: var(--color-blue-ink);
+  --color-info-700: var(--color-blue-ink);
+
+  --color-accent-500: var(--color-blue);
+
+  --color-gray-100: var(--color-surface-2);
+  --color-gray-200: var(--color-line);
+  --color-gray-800: var(--color-ink);
 
   /* ─── Status tokens (14 unique pairs — match OrderStatus from @uniprint/types) ─── */
   /* draft — neutral warm */
@@ -274,8 +309,8 @@
 
 /* Pulse for shift bar (green) */
 @keyframes pulse-green {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(143, 190, 95, .25); }
-  50%      { box-shadow: 0 0 0 5px rgba(143, 190, 95, 0); }
+  0%, 100% { box-shadow: 0 0 0 3px rgba(92, 138, 58, .25); }
+  50%      { box-shadow: 0 0 0 5px rgba(92, 138, 58, 0); }
 }
 
 /* Pulse generic (coral - for new statuses) */
@@ -300,6 +335,12 @@
 @keyframes barFill {
   from { width: 0; }
   to   { width: var(--bar-target, 100%); }
+}
+
+/* Card hover lift */
+@keyframes lift {
+  from { transform: translateY(0);    box-shadow: var(--shadow-sm); }
+  to   { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 }
 
 /* ─── Density modes ─── */
