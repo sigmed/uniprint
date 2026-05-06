@@ -44,6 +44,8 @@
   --color-blue-soft:    #DCE8EE;
   --color-blue-ink:     #2E5470;
   --color-gold:         #C8923A;
+  --color-gold-soft:    #F5E6C8;
+  --color-gold-ink:     #7A5A18;
 
   /* ─── Role tokens (semantic aliases) ─── */
   --color-fg:              var(--color-ink);
