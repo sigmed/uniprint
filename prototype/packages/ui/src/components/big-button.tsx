@@ -54,9 +54,11 @@ const VARIANT_HOVER_BG: Record<BigButtonVariant, string> = {
 /* ─── Component ─── */
 
 export const BigButton = forwardRef<HTMLButtonElement, BigButtonProps>(
-  ({ variant = 'default', icon, children, className, style, onMouseEnter, onMouseLeave, ...props }, ref) => (
+  ({ variant = 'default', icon, type = 'button', disabled, children, className, style, onMouseEnter, onMouseLeave, ...props }, ref) => (
     <button
       ref={ref}
+      type={type}
+      disabled={disabled}
       className={cn(className)}
       style={{
         width:          '100%',
@@ -71,16 +73,19 @@ export const BigButton = forwardRef<HTMLButtonElement, BigButtonProps>(
         justifyContent: 'center',
         gap:            '10px',
         transition:     'all 150ms',
-        cursor:         'pointer',
+        cursor:         disabled ? 'not-allowed' : 'pointer',
+        opacity:        disabled ? 0.5 : 1,
         fontFamily:     'inherit',
         ...VARIANT_STYLE[variant],
         ...style,
       }}
       onMouseEnter={e => {
+        if (disabled) return;
         e.currentTarget.style.background = VARIANT_HOVER_BG[variant];
         onMouseEnter?.(e);
       }}
       onMouseLeave={e => {
+        if (disabled) return;
         e.currentTarget.style.background = VARIANT_STYLE[variant].background as string;
         onMouseLeave?.(e);
       }}

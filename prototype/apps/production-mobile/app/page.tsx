@@ -52,7 +52,7 @@ function MiniStat({
         </div>
         <div
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-display)',
             fontWeight: 500,
             fontSize: 22,
             letterSpacing: '-0.02em',
@@ -149,7 +149,7 @@ export default function ProductionHomePage() {
                 fontSize: 11,
                 fontWeight: 700,
                 color: '#fff',
-                fontFamily: 'var(--font-serif)',
+                fontFamily: 'var(--font-display)',
                 letterSpacing: '-0.04em',
               }}
             >
@@ -157,7 +157,7 @@ export default function ProductionHomePage() {
             </div>
             <div
               style={{
-                fontFamily: 'var(--font-serif)',
+                fontFamily: 'var(--font-display)',
                 fontWeight: 600,
                 fontSize: 16,
                 lineHeight: 1.1,
@@ -188,7 +188,7 @@ export default function ProductionHomePage() {
           <div>
             <div
               style={{
-                fontFamily: 'var(--font-serif)',
+                fontFamily: 'var(--font-display)',
                 fontWeight: 500,
                 fontSize: 20,
                 letterSpacing: '-0.01em',

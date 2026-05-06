@@ -93,7 +93,7 @@ export const AdminTile = ({
     {/* Title */}
     <div
       style={{
-        fontFamily:    'var(--font-serif)',
+        fontFamily:    'var(--font-display)',
         fontWeight:    500,
         fontSize:      '17px',
         letterSpacing: '-0.01em',

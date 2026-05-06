@@ -105,7 +105,7 @@ export default function TaskDetailPage() {
               </div>
               <div
                 style={{
-                  fontFamily: 'var(--font-serif)',
+                  fontFamily: 'var(--font-display)',
                   fontWeight: 500,
                   fontSize: 18,
                   letterSpacing: '-0.01em',

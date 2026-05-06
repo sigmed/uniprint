@@ -99,7 +99,7 @@ export default function WriteoffPage() {
 
         <div
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-display)',
             fontWeight: 500,
             fontSize: 20,
             letterSpacing: '-0.01em',

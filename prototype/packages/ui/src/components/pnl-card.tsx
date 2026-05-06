@@ -65,7 +65,7 @@ export const PnlCard = ({
     {/* Value */}
     <div
       style={{
-        fontFamily:    'var(--font-serif)',
+        fontFamily:    'var(--font-display)',
         fontWeight:    500,
         fontSize:      '34px',
         letterSpacing: '-0.02em',
