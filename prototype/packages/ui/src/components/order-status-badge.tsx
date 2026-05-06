@@ -74,7 +74,7 @@ export const OrderStatusBadge = ({
           className={cn(
             'inline-block rounded-full shrink-0 bg-current',
             dotSizeClasses[size],
-            config.pulse && 'animate-pulse',
+            config.pulse && '[animation:pulse-amber_1.8s_infinite]',
           )}
           aria-hidden="true"
         />

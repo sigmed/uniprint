@@ -22,5 +22,7 @@ export { AppShell, type AppShellProps, type NavItem } from './components/app-she
 export { PhoneFrame, type PhoneFrameProps } from './components/phone-frame';
 export { RoleSwitcher, type RoleSwitcherProps, type RoleOption } from './components/role-switcher';
 export { BRCallout, type BRCalloutProps, type BRRule } from './components/br-callout';
+export { StatPill, type StatPillProps, type StatPillTone } from './components/stat-pill';
+export { AnimatedCounter, type AnimatedCounterProps } from './components/animated-counter';
 export { cn } from './lib/utils';
 export { fraunces, manrope, jetbrainsMono, fontVariables } from './lib/fonts';

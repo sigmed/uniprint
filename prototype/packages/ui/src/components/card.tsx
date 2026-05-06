@@ -125,36 +125,37 @@ export interface KpiCardProps {
   className?: string;
 }
 
-const trendColors: Record<TrendDirection, (isGood: boolean) => string> = {
-  up:   (good) => good ? 'text-[var(--color-success-600)]' : 'text-[var(--color-danger-600)]',
-  down: (good) => good ? 'text-[var(--color-danger-600)]' : 'text-[var(--color-success-600)]',
-  flat: (_)    => 'text-[var(--color-fg-muted)]',
-};
-
 const trendArrows: Record<TrendDirection, string> = {
   up:   '↑',
   down: '↓',
   flat: '→',
 };
 
+/** Returns inline color string (not a Tailwind class) for trend indicator */
+function trendColor(direction: TrendDirection, isGood: boolean): string {
+  if (direction === 'flat') return 'var(--color-ink-3)';
+  if (direction === 'up')   return isGood  ? 'var(--color-green)'       : 'var(--color-brand-600)';
+  /* down */                return isGood  ? 'var(--color-brand-600)'   : 'var(--color-green)';
+}
+
 const kpiSizeMap = {
   sm: {
-    wrapper: 'p-4',
-    label:   'text-[var(--text-2xs)]',
-    value:   'text-[var(--text-xl)] font-[var(--font-weight-bold)]',
-    delta:   'text-[var(--text-xs)]',
+    padding:     '12px 14px',
+    labelSize:   '10px',
+    valueSize:   '22px',
+    deltaSize:   '10.5px',
   },
   md: {
-    wrapper: 'p-5',
-    label:   'text-[var(--text-xs)]',
-    value:   'text-[var(--text-2xl)] font-[var(--font-weight-bold)]',
-    delta:   'text-[var(--text-sm)]',
+    padding:     '16px 18px',
+    labelSize:   '10.5px',
+    valueSize:   '28px',
+    deltaSize:   '11.5px',
   },
   lg: {
-    wrapper: 'p-6',
-    label:   'text-[var(--text-sm)]',
-    value:   'text-[var(--text-3xl)] font-[var(--font-weight-display)]',
-    delta:   'text-[var(--text-base)]',
+    padding:     '20px 22px',
+    labelSize:   '11px',
+    valueSize:   '36px',
+    deltaSize:   '12px',
   },
 } as const;
 
@@ -171,42 +172,119 @@ export const KpiCard = ({
   className,
 }: KpiCardProps) => {
   const sz = kpiSizeMap[size];
-  // biome-ignore lint/style/noNonNullAssertion: kpiSizeMap is exhaustive over size keys
-  const trendColor = trendColors[trend]!(trendIsGood);
+  const color = trendColor(trend, trendIsGood);
 
   return (
     <div
-      className={cn(
-        'rounded-[var(--radius-lg)] border border-[var(--color-border)]',
-        'bg-[var(--color-surface)] shadow-[var(--shadow-xs)]',
-        sz.wrapper,
-        className,
-      )}
+      className={cn('relative overflow-hidden', className)}
+      style={{
+        background:   'var(--color-surface)',
+        border:       '1px solid var(--color-line)',
+        borderRadius: '14px',
+        padding:      sz.padding,
+      }}
     >
-      <div className="flex items-start justify-between gap-2">
-        <span className={cn('overline', sz.label)}>{label}</span>
+      {/* Decorative radial glow — mockup .stat::after */}
+      <span
+        aria-hidden="true"
+        style={{
+          position:     'absolute',
+          right:        '-20px',
+          top:          '-20px',
+          width:        '80px',
+          height:       '80px',
+          borderRadius: '50%',
+          background:   'radial-gradient(circle, var(--color-surface-2), transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Label row */}
+      <div
+        style={{
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'space-between',
+          fontSize:       sz.labelSize,
+          color:          'var(--color-ink-3)',
+          fontWeight:     600,
+          letterSpacing:  '0.08em',
+          textTransform:  'uppercase',
+        }}
+      >
+        <span>{label}</span>
         {icon != null && (
-          <span className="text-[var(--color-fg-muted)] shrink-0" aria-hidden="true">
+          <span style={{ opacity: 0.5 }} aria-hidden="true">
             {icon}
           </span>
         )}
       </div>
-      <div className="mt-2 flex items-baseline gap-1.5">
-        <span className={cn('tabular font-[var(--font-display)] text-[var(--color-fg)]', sz.value)}>
+
+      {/* Value row */}
+      <div
+        className="tabular"
+        style={{
+          marginTop:    '4px',
+          lineHeight:   1.1,
+          display:      'flex',
+          alignItems:   'baseline',
+          gap:          '2px',
+        }}
+      >
+        <span
+          style={{
+            fontFamily:    'var(--font-display)',
+            fontWeight:    500,
+            fontSize:      sz.valueSize,
+            letterSpacing: '-0.02em',
+            color:         'var(--color-ink)',
+          }}
+        >
           {value}
         </span>
         {unit != null && (
-          <span className="text-[var(--text-sm)] text-[var(--color-fg-muted)]">{unit}</span>
+          <sup
+            style={{
+              fontSize:   '13px',
+              color:      'var(--color-ink-3)',
+              fontWeight: 400,
+              marginLeft: '3px',
+            }}
+          >
+            {unit}
+          </sup>
         )}
       </div>
+
+      {/* Trend / delta */}
       {delta != null && (
-        <div className={cn('mt-1.5 flex items-center gap-1', sz.delta, trendColor)}>
+        <div
+          style={{
+            display:    'inline-flex',
+            alignItems: 'center',
+            gap:        '4px',
+            marginTop:  '6px',
+            fontSize:   sz.deltaSize,
+            fontWeight: 600,
+            color,
+          }}
+        >
           <span aria-hidden="true">{trendArrows[trend]}</span>
           <span>{delta}</span>
         </div>
       )}
+
+      {/* Hint */}
       {hint != null && (
-        <p className="mt-2 text-[var(--text-2xs)] text-[var(--color-fg-muted)]">{hint}</p>
+        <p
+          style={{
+            marginTop: '6px',
+            fontSize:  '11px',
+            color:     'var(--color-ink-3)',
+          }}
+        >
+          {hint}
+        </p>
       )}
     </div>
   );
