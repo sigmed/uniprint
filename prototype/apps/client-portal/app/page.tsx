@@ -22,6 +22,7 @@ import {
 } from '@uniprint/ui';
 import type { SelectOption } from '@uniprint/ui';
 import { Package, FileText, ChevronRight, Upload } from 'lucide-react';
+import { AnimatedCounter } from '@uniprint/ui';
 import type { Order, OrderType } from '@uniprint/types';
 
 const ORDER_TYPE_OPTIONS: SelectOption[] = [
@@ -105,26 +106,26 @@ export default function HomePage() {
           <>
             <KpiCard
               label="Активные заказы"
-              value={activeOrders.length}
+              value={<AnimatedCounter value={activeOrders.length} />}
               icon={<Package className="h-4 w-4" />}
               trend="flat"
             />
             <KpiCard
               label="В производстве"
-              value={inProduction.length}
+              value={<AnimatedCounter value={inProduction.length} />}
               icon={<FileText className="h-4 w-4" />}
               trend={inProduction.length > 0 ? 'up' : 'flat'}
               trendIsGood
             />
             <KpiCard
               label="Расходы за месяц"
-              value={monthlySpend.toLocaleString('ru-RU')}
+              value={<AnimatedCounter value={monthlySpend} format={(n) => n.toLocaleString('ru-RU')} />}
               unit="₽"
               trend="flat"
             />
             <KpiCard
               label="Бонусный баланс"
-              value="0"
+              value={<AnimatedCounter value={0} />}
               unit="₽"
               trend="flat"
               hint="Программа лояльности — скоро"

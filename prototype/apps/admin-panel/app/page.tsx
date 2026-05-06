@@ -10,6 +10,7 @@ import {
   AdminTile,
   StatPill,
   Skeleton,
+  AnimatedCounter,
 } from '@uniprint/ui';
 import {
   Users,
@@ -85,23 +86,23 @@ export default function AdminHome() {
       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3.5">
         <KpiCard
           label="Пользователей"
-          value="28"
+          value={<AnimatedCounter value={28} />}
           icon={<Users className="h-4 w-4" />}
         />
         <KpiCard
           label="Активных ролей"
-          value="9"
+          value={<AnimatedCounter value={9} />}
           hint="RBAC"
           icon={<Shield className="h-4 w-4" />}
         />
         <KpiCard
           label="SKU материалов"
-          value="200"
+          value={<AnimatedCounter value={200} />}
           icon={<Package className="h-4 w-4" />}
         />
         <KpiCard
           label="Услуг в каталоге"
-          value="47"
+          value={<AnimatedCounter value={47} />}
           icon={<Briefcase className="h-4 w-4" />}
         />
       </div>

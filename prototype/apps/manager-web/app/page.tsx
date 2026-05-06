@@ -17,6 +17,7 @@ import {
   Skeleton,
 } from '@uniprint/ui';
 import { Sparkles, Package, CircleDollarSign, Clock, CheckSquare, Inbox } from 'lucide-react';
+import { AnimatedCounter } from '@uniprint/ui';
 import type { Order, Lead, OrderType } from '@uniprint/types';
 
 const ORDER_TYPE_LABELS: Record<OrderType, string> = {
@@ -93,33 +94,33 @@ export default function ManagerDashboard() {
           <>
             <KpiCard
               label="Новых лидов"
-              value={newLeads.length}
+              value={<AnimatedCounter value={newLeads.length} />}
               icon={<Sparkles className="h-4 w-4" />}
               trend={newLeads.length > 0 ? 'up' : 'flat'}
               trendIsGood
             />
             <KpiCard
               label="В производстве"
-              value={inProduction.length}
+              value={<AnimatedCounter value={inProduction.length} />}
               icon={<Package className="h-4 w-4" />}
               trend={inProduction.length > 0 ? 'up' : 'flat'}
               trendIsGood
             />
             <KpiCard
               label="Всего заказов"
-              value={orders.length}
+              value={<AnimatedCounter value={orders.length} />}
               icon={<CheckSquare className="h-4 w-4" />}
             />
             <KpiCard
               label="Согласование"
-              value={pendingApproval.length}
+              value={<AnimatedCounter value={pendingApproval.length} />}
               icon={<Clock className="h-4 w-4" />}
               trend={pendingApproval.length > 0 ? 'up' : 'flat'}
               trendIsGood={false}
             />
             <KpiCard
               label="Выручка дня"
-              value={dayRevenue.toLocaleString('ru-RU')}
+              value={<AnimatedCounter value={dayRevenue} format={(n) => n.toLocaleString('ru-RU')} />}
               unit="₽"
               icon={<CircleDollarSign className="h-4 w-4" />}
               trend="up"

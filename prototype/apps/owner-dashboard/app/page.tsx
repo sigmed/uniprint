@@ -12,6 +12,7 @@ import {
   StatPill,
   Button,
   Skeleton,
+  AnimatedCounter,
 } from '@uniprint/ui';
 import {
   Package,
@@ -90,17 +91,17 @@ export default function OwnerDashboard() {
           <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3.5">
             <KpiCard
               label="Заказов"
-              value={total}
+              value={<AnimatedCounter value={total} />}
               icon={<Package className="h-4 w-4" />}
             />
             <KpiCard
               label="В производстве"
-              value={inProduction}
+              value={<AnimatedCounter value={inProduction} />}
               icon={<Factory className="h-4 w-4" />}
             />
             <KpiCard
               label="Выдано"
-              value={delivered}
+              value={<AnimatedCounter value={delivered} />}
               trend="up"
               trendIsGood
               delta="за неделю"
@@ -108,7 +109,7 @@ export default function OwnerDashboard() {
             />
             <KpiCard
               label="Брак"
-              value={defects}
+              value={<AnimatedCounter value={defects} />}
               trend={defects > 0 ? 'up' : 'flat'}
               trendIsGood={false}
               icon={<AlertTriangle className="h-4 w-4" />}
