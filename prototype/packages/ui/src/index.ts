@@ -20,3 +20,4 @@ export { PageHeader, type PageHeaderProps, type BreadcrumbItem } from './compone
 export { Select, type SelectProps, type SelectOption } from './components/select';
 export { AppShell, type AppShellProps, type NavItem } from './components/app-shell';
 export { cn } from './lib/utils';
+export { fraunces, manrope, jetbrainsMono, fontVariables } from './lib/fonts';
