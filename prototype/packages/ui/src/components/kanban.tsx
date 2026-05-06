@@ -10,12 +10,11 @@ export interface KanbanBoardProps {
 
 export const KanbanBoard = ({ children, className }: KanbanBoardProps) => (
   <div
-    className={cn(className)}
-    style={{
-      display:             'grid',
-      gridTemplateColumns: 'repeat(4, 1fr)',
-      gap:                 '14px',
-    }}
+    className={cn(
+      'grid gap-3.5',
+      'grid-cols-1 min-[600px]:grid-cols-2 min-[1100px]:grid-cols-4',
+      className,
+    )}
   >
     {children}
   </div>

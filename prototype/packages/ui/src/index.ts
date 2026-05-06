@@ -35,5 +35,10 @@ export {
   type KanbanCardAssignee,
 } from './components/kanban';
 export { BarRow, type BarRowProps } from './components/bar-row';
+export { AdminTile, type AdminTileProps, type AdminTileTone } from './components/admin-tile';
+export { PnlCard, type PnlCardProps, type PnlCardTone } from './components/pnl-card';
+export { BigButton, type BigButtonProps, type BigButtonVariant } from './components/big-button';
+export { PwaTaskCard, type PwaTaskCardProps, type PwaTaskCardTone } from './components/pwa-task-card';
+export { ShiftBar, type ShiftBarProps } from './components/shift-bar';
 export { cn } from './lib/utils';
 export { fraunces, manrope, jetbrainsMono, fontVariables } from './lib/fonts';
