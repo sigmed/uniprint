@@ -62,9 +62,9 @@ function groupNavItems(nav: NavItem[]): Array<{ section: string | null; items: N
     const key = item.section ?? null;
     if (!seen.has(key)) {
       seen.set(key, []);
-      groups.push({ section: key, items: seen.get(key)! });
+      groups.push({ section: key, items: seen.get(key) ?? [] });
     }
-    seen.get(key)!.push(item);
+    seen.get(key)?.push(item);
   }
   return groups;
 }
