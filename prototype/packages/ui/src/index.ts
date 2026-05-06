@@ -24,5 +24,16 @@ export { RoleSwitcher, type RoleSwitcherProps, type RoleOption } from './compone
 export { BRCallout, type BRCalloutProps, type BRRule } from './components/br-callout';
 export { StatPill, type StatPillProps, type StatPillTone } from './components/stat-pill';
 export { AnimatedCounter, type AnimatedCounterProps } from './components/animated-counter';
+export {
+  KanbanBoard,
+  KanbanColumn,
+  KanbanCard,
+  type KanbanBoardProps,
+  type KanbanColumnProps,
+  type KanbanColumnTone,
+  type KanbanCardProps,
+  type KanbanCardAssignee,
+} from './components/kanban';
+export { BarRow, type BarRowProps } from './components/bar-row';
 export { cn } from './lib/utils';
 export { fraunces, manrope, jetbrainsMono, fontVariables } from './lib/fonts';
