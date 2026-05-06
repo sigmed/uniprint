@@ -40,5 +40,11 @@ export { PnlCard, type PnlCardProps, type PnlCardTone } from './components/pnl-c
 export { BigButton, type BigButtonProps, type BigButtonVariant } from './components/big-button';
 export { PwaTaskCard, type PwaTaskCardProps, type PwaTaskCardTone } from './components/pwa-task-card';
 export { ShiftBar, type ShiftBarProps } from './components/shift-bar';
+export { RoleTag, type RoleTagProps, type RoleTagTone } from './components/role-tag';
+export { Crumbs, type CrumbsProps, type CrumbItem } from './components/crumbs';
+export { SearchInput, type SearchInputProps } from './components/search-input';
+export { IconButton, type IconButtonProps } from './components/icon-button';
+export { Tabs, type TabsProps, type TabItem } from './components/tabs';
+export { ROLES, type RoleKey } from './lib/roles';
 export { cn } from './lib/utils';
 export { fraunces, manrope, jetbrainsMono, fontVariables } from './lib/fonts';

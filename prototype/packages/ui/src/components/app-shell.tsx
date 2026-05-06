@@ -18,6 +18,11 @@ export interface AppShellProps {
   appAccent?: string;
   user?: { name: string; role: string };
   nav: NavItem[];
+  /** TopBar slot — left side (e.g. <Crumbs>). */
+  topbarLeft?: ReactNode;
+  /** TopBar slot — center (e.g. <Tabs>). Optional. */
+  topbarCenter?: ReactNode;
+  /** TopBar slot — right side (search, actions, bell). */
   topbarRight?: ReactNode;
   banner?: ReactNode;
   density?: 'comfortable' | 'compact';
@@ -25,6 +30,8 @@ export interface AppShellProps {
   children: ReactNode;
   /** Optional: current pathname for active nav highlight */
   currentPath?: string;
+  /** Top offset для sticky sidebar+topbar. Default 0; pass 49 если есть RoleSwitcher выше. */
+  stickyTopOffset?: number;
 }
 
 /* ─── Internal prop shapes ─── */
@@ -35,6 +42,7 @@ interface SidebarInternalProps {
   nav: NavItem[];
   currentPath?: string;
   density?: 'comfortable' | 'compact';
+  stickyTopOffset?: number;
 }
 
 /* ─── Helpers ─── */
@@ -417,26 +425,29 @@ const NavContent = ({
 };
 
 /* ─── Sidebar (desktop) ─── */
-const Sidebar = (props: SidebarInternalProps) => (
-  <aside
-    style={{
-      background: 'var(--color-ink)',
-      color: '#EFE6D6',
-      padding: '22px 18px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 24,
-      borderRight: '1px solid var(--color-line)',
-      position: 'sticky',
-      top: 0,
-      height: '100vh',
-      overflowY: 'auto',
-    }}
-    className={cn('hidden md:flex w-60 shrink-0', 'z-[var(--z-sticky)]')}
-  >
-    <NavContent {...props} />
-  </aside>
-);
+const Sidebar = (props: SidebarInternalProps) => {
+  const offset = props.stickyTopOffset ?? 0;
+  return (
+    <aside
+      style={{
+        background: 'var(--color-ink)',
+        color: 'var(--color-on-dark-1)',
+        padding: '22px 18px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 24,
+        borderRight: '1px solid var(--color-line)',
+        position: 'sticky',
+        top: offset,
+        height: `calc(100vh - ${offset}px)`,
+        overflowY: 'auto',
+      }}
+      className={cn('hidden md:flex w-60 shrink-0', 'z-[var(--z-sticky)]')}
+    >
+      <NavContent {...props} />
+    </aside>
+  );
+};
 
 /* ─── Mobile Drawer ─── */
 const MobileDrawer = ({
@@ -543,12 +554,15 @@ export const AppShell = ({
   appAccent,
   user,
   nav,
+  topbarLeft,
+  topbarCenter,
   topbarRight,
   banner,
   density = 'comfortable',
   mobileBottomNav = false,
   children,
   currentPath,
+  stickyTopOffset = 0,
 }: AppShellProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -559,6 +573,7 @@ export const AppShell = ({
     ...(appAccent != null ? { appAccent } : {}),
     ...(user != null ? { user } : {}),
     ...(currentPath != null ? { currentPath } : {}),
+    stickyTopOffset,
   };
 
   return (
@@ -584,11 +599,12 @@ export const AppShell = ({
         {/* Topbar */}
         <header
           className={cn(
-            'sticky top-0 flex items-center gap-3 px-4 md:px-[30px]',
+            'sticky flex items-center gap-3 px-4 md:px-[30px]',
             'border-b border-[var(--color-border)]',
             'z-[var(--z-sticky)]',
           )}
           style={{
+            top: stickyTopOffset,
             height: 62,
             background: 'rgba(250,246,239,.85)',
             backdropFilter: 'blur(12px)',
@@ -613,7 +629,14 @@ export const AppShell = ({
             </button>
           )}
 
-          {/* App name — mobile only (desktop shows sidebar logo) */}
+          {/* topbarLeft slot — desktop (e.g. Crumbs). Mobile fallback = appName. */}
+          {topbarLeft != null ? (
+            <div className="hidden md:flex items-center shrink-0">{topbarLeft}</div>
+          ) : (
+            <span className="hidden md:flex" aria-hidden="true" />
+          )}
+
+          {/* App name — mobile only (desktop shows topbarLeft) */}
           <span
             className="md:hidden flex-1 truncate"
             style={{
@@ -627,9 +650,15 @@ export const AppShell = ({
             {appName}
           </span>
 
-          {/* Spacer for desktop */}
+          {/* Spacer */}
           <span className="hidden md:flex flex-1" aria-hidden="true" />
 
+          {/* topbarCenter slot (optional) — e.g. period Tabs */}
+          {topbarCenter != null && (
+            <div className="hidden md:flex items-center shrink-0">{topbarCenter}</div>
+          )}
+
+          {/* topbarRight slot — actions, search, bell */}
           {topbarRight != null && (
             <div className="flex items-center gap-2 shrink-0">{topbarRight}</div>
           )}

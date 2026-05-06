@@ -30,6 +30,14 @@
   --color-line:         #E8DECC;
   --color-line-2:       #DCCFB6;
 
+  /* ─── On-dark text tokens (для светлого текста на dark sidebar/header) ─── */
+  --color-on-dark-1:    #F4EBD9;  /* highest contrast — name, active link */
+  --color-on-dark-2:    #C9BDA6;  /* medium contrast — nav links, body */
+  --color-on-dark-3:    #9C8E78;  /* subdued — small captions, app subtitle */
+  --color-on-dark-4:    #7A6E58;  /* sections — uppercase nav-label, dim */
+  --color-on-dark-5:    #8B7E68;  /* muted — user-card role, logout icon */
+  --color-on-dark-active: #FFE8D9;  /* coral-tint — active nav link text */
+
   /* ─── Semantic accents ─── */
   --color-green:        #5C8A3A;
   --color-green-soft:   #E5EDD9;
