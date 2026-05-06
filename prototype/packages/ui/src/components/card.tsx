@@ -5,24 +5,26 @@ import { cn } from '../lib/utils';
 /* ─── Card ─── */
 
 const cardVariants = cva(
-  'rounded-[var(--radius-lg)] bg-[var(--color-surface)] overflow-hidden',
+  /* base: mockup .card — white surface, warm border, 16px radius */
+  'bg-[var(--color-surface)] border border-[var(--color-line)] rounded-[var(--radius-xl)] overflow-hidden',
   {
     variants: {
       variant: {
-        flat:        'border border-[var(--color-border)]',
-        raised:      'border border-[var(--color-border)] shadow-[var(--shadow-md)]',
+        flat:        '',
+        raised:      'shadow-[var(--shadow-sm)]',
         interactive: [
-          'border border-[var(--color-border)] shadow-[var(--shadow-sm)]',
-          'transition-shadow hover:shadow-[var(--shadow-md)] cursor-pointer',
+          'shadow-[var(--shadow-xs)]',
+          'transition-[box-shadow,transform] duration-150',
+          'hover:shadow-[var(--shadow-sm)] hover:-translate-y-px cursor-pointer',
         ].join(' '),
-        outlined:    'border-2 border-[var(--color-border-strong)]',
+        outlined:    'border-2 border-[var(--color-line-2)]',
       },
       tone: {
         default: '',
-        success: 'border-l-4 border-l-[var(--color-success-500)]',
-        warning: 'border-l-4 border-l-[var(--color-warning-500)]',
-        danger:  'border-l-4 border-l-[var(--color-danger-500)]',
-        accent:  'border-l-4 border-l-[var(--color-accent-500)]',
+        success: 'border-l-4 border-l-[var(--color-green)]',
+        warning: 'border-l-4 border-l-[var(--color-amber)]',
+        danger:  'border-l-4 border-l-[var(--color-red)]',
+        accent:  'border-l-4 border-l-[var(--color-blue)]',
       },
     },
     defaultVariants: { variant: 'flat', tone: 'default' },
@@ -48,7 +50,15 @@ Card.displayName = 'Card';
 
 export const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex flex-col gap-1.5 px-6 pt-6 pb-0', className)} {...props} />
+    <div
+      ref={ref}
+      className={cn(
+        'flex items-center justify-between gap-3 flex-wrap',
+        'px-[22px] py-4 border-b border-[var(--color-line)]',
+        className,
+      )}
+      {...props}
+    />
   ),
 );
 CardHeader.displayName = 'CardHeader';
@@ -56,14 +66,19 @@ CardHeader.displayName = 'CardHeader';
 /* ─── CardTitle ─── */
 
 export const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => (
+  ({ className, style, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn(
-        'font-[var(--font-display)] text-[var(--text-lg)] font-[var(--font-weight-semibold)]',
-        'leading-[var(--leading-tight)] tracking-[var(--tracking-tight)] text-[var(--color-fg)]',
-        className,
-      )}
+      className={cn('flex items-center gap-2', className)}
+      style={{
+        fontFamily:    'var(--font-display)',
+        fontWeight:    500,
+        fontSize:      '18px',
+        letterSpacing: '-0.01em',
+        color:         'var(--color-ink)',
+        lineHeight:    1.25,
+        ...style,
+      }}
       {...props}
     />
   ),
@@ -76,7 +91,7 @@ export const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<H
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn('text-[var(--text-sm)] text-[var(--color-fg-muted)] leading-[var(--leading-normal)]', className)}
+      className={cn('text-[13px] text-[var(--color-ink-3)] leading-[var(--leading-normal)]', className)}
       {...props}
     />
   ),
@@ -87,7 +102,7 @@ CardDescription.displayName = 'CardDescription';
 
 export const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('p-6', className)} {...props} />
+    <div ref={ref} className={cn('p-[22px]', className)} {...props} />
   ),
 );
 CardContent.displayName = 'CardContent';
@@ -99,7 +114,8 @@ export const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivEleme
     <div
       ref={ref}
       className={cn(
-        'flex items-center px-6 py-4 border-t border-[var(--color-border)] bg-[var(--color-bg-subtle)]',
+        'flex items-center px-[22px] py-4',
+        'border-t border-[var(--color-line)] bg-[var(--color-surface-3)]',
         className,
       )}
       {...props}

@@ -23,8 +23,8 @@ export const EmptyState = ({
   <div
     className={cn(
       'flex flex-col items-center justify-center text-center',
-      'rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border)]',
-      'bg-[var(--color-bg-subtle)]',
+      'rounded-[var(--radius-lg)] border border-dashed border-[var(--color-line-2)]',
+      'bg-[var(--color-surface-3)]',
       variant === 'default' ? 'px-8 py-16 gap-4' : 'px-6 py-10 gap-3',
       className,
     )}
@@ -33,9 +33,9 @@ export const EmptyState = ({
       <div
         className={cn(
           'flex items-center justify-center rounded-full',
-          'bg-[var(--color-bg)] border border-[var(--color-border)]',
-          'text-[var(--color-fg-muted)]',
-          variant === 'default' ? 'w-14 h-14' : 'w-10 h-10',
+          'bg-[var(--color-surface)] border border-[var(--color-line)]',
+          'text-[var(--color-ink-3)]',
+          variant === 'default' ? 'w-16 h-16' : 'w-12 h-12',
         )}
         aria-hidden="true"
       >
@@ -44,17 +44,20 @@ export const EmptyState = ({
     )}
     <div className={cn('flex flex-col gap-1', variant === 'compact' && 'gap-0.5')}>
       <p
-        className={cn(
-          'font-[var(--font-display)] font-[var(--font-weight-semibold)] text-[var(--color-fg)]',
-          variant === 'default' ? 'text-[var(--text-base)]' : 'text-[var(--text-sm)]',
-        )}
+        style={{
+          fontFamily: 'var(--font-display)',
+          fontWeight: variant === 'default' ? 500 : 400,
+          fontSize:   variant === 'default' ? '20px' : '16px',
+          color:      'var(--color-ink)',
+          letterSpacing: '-0.01em',
+        }}
       >
         {title}
       </p>
       {description != null && (
         <p
           className={cn(
-            'text-[var(--color-fg-muted)] max-w-xs',
+            'text-[var(--color-ink-3)] max-w-xs',
             variant === 'default' ? 'text-[var(--text-sm)]' : 'text-[var(--text-xs)]',
           )}
         >

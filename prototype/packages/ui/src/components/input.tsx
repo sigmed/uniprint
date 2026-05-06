@@ -5,7 +5,7 @@ type InputSize = 'sm' | 'md' | 'lg' | 'touch';
 
 const heightMap: Record<InputSize, string> = {
   sm:    'h-8  text-[var(--text-sm)]  px-2.5',
-  md:    'h-9  text-[var(--text-sm)]  px-3',
+  md:    'h-9  text-[13.5px]          px-3',
   lg:    'h-11 text-[var(--text-base)] px-4',
   touch: 'min-h-[var(--size-touch-min)] text-[var(--text-base)] px-4',
 };
@@ -59,11 +59,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label != null && (
           <label
             htmlFor={inputId}
-            className="text-[var(--text-sm)] font-[var(--font-weight-medium)] text-[var(--color-fg-subtle)]"
+            className="text-[11.5px] font-[var(--font-weight-semibold)] text-[var(--color-ink-2)] tracking-[0.01em]"
           >
             {label}
             {required && (
-              <span className="ml-0.5 text-[var(--color-danger-500)]" aria-hidden="true">
+              <span className="ml-0.5 text-[var(--color-brand-500)]" aria-hidden="true">
                 *
               </span>
             )}
@@ -71,12 +71,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <div className="relative flex items-center">
           {leftIcon != null && (
-            <span className="absolute left-3 flex items-center text-[var(--color-fg-muted)] pointer-events-none" aria-hidden="true">
+            <span className="absolute left-3 flex items-center text-[var(--color-ink-3)] pointer-events-none" aria-hidden="true">
               {leftIcon}
             </span>
           )}
           {prefix != null && (
-            <span className="flex items-center rounded-l-[var(--radius-md)] border border-r-0 border-[var(--color-border)] bg-[var(--color-bg-subtle)] px-3 text-[var(--text-sm)] text-[var(--color-fg-muted)] self-stretch">
+            <span className="flex items-center rounded-l-[var(--radius-md)] border border-r-0 border-[var(--color-line)] bg-[var(--color-surface-2)] px-3 text-[var(--text-sm)] text-[var(--color-ink-3)] self-stretch">
               {prefix}
             </span>
           )}
@@ -87,14 +87,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-invalid={hasError}
             {...(describedBy != null ? { 'aria-describedby': describedBy } : {})}
             className={cn(
-              'flex w-full rounded-[var(--radius-md)] border bg-[var(--color-surface)]',
-              'placeholder:text-[var(--color-fg-disabled)]',
-              'transition-colors',
-              'focus-visible:outline-none focus-visible:ring-[var(--focus-ring-width)] focus-visible:ring-[var(--focus-ring-color)]',
-              'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-bg-subtle)]',
+              /* base */
+              'flex w-full rounded-[9px] border',
+              'bg-[var(--color-bg)] text-[var(--color-ink)]',
+              'placeholder:text-[var(--color-ink-4)]',
+              'transition-[border-color,box-shadow,background] duration-150',
+              /* hover */
+              'hover:border-[var(--color-line-2)]',
+              /* focus */
+              'focus-visible:outline-none',
+              'focus-visible:border-[var(--color-brand-500)]',
+              'focus-visible:bg-[var(--color-surface)]',
+              'focus-visible:shadow-[0_0_0_3px_rgba(217,83,30,0.12)]',
+              /* disabled */
+              'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-surface-2)]',
+              /* error vs normal border */
               hasError
-                ? 'border-[var(--color-danger-500)] focus-visible:ring-[var(--color-danger-500)]'
-                : 'border-[var(--color-border)] focus-visible:ring-[var(--color-primary)]',
+                ? 'border-[var(--color-red)] focus-visible:shadow-[0_0_0_3px_rgba(184,64,26,0.12)]'
+                : 'border-[var(--color-line)]',
               prefix != null ? 'rounded-l-none' : '',
               suffix != null ? 'rounded-r-none' : '',
               leftIcon != null ? 'pl-9' : '',
@@ -105,23 +115,23 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {suffix != null && (
-            <span className="flex items-center rounded-r-[var(--radius-md)] border border-l-0 border-[var(--color-border)] bg-[var(--color-bg-subtle)] px-3 text-[var(--text-sm)] text-[var(--color-fg-muted)] self-stretch">
+            <span className="flex items-center rounded-r-[var(--radius-md)] border border-l-0 border-[var(--color-line)] bg-[var(--color-surface-2)] px-3 text-[var(--text-sm)] text-[var(--color-ink-3)] self-stretch">
               {suffix}
             </span>
           )}
           {rightIcon != null && (
-            <span className="absolute right-3 flex items-center text-[var(--color-fg-muted)] pointer-events-none" aria-hidden="true">
+            <span className="absolute right-3 flex items-center text-[var(--color-ink-3)] pointer-events-none" aria-hidden="true">
               {rightIcon}
             </span>
           )}
         </div>
         {hasHint && !hasError && (
-          <p id={hintId} className="text-[var(--text-xs)] text-[var(--color-fg-muted)]">
+          <p id={hintId} className="text-[var(--text-xs)] text-[var(--color-ink-3)]">
             {hint}
           </p>
         )}
         {hasError && (
-          <p id={errorId} role="alert" className="text-[var(--text-xs)] text-[var(--color-danger-600)]">
+          <p id={errorId} role="alert" className="text-[var(--text-xs)] text-[var(--color-red-ink)]">
             {error}
           </p>
         )}

@@ -11,9 +11,13 @@ export interface SkeletonProps {
   className?: string;
 }
 
+/**
+ * Shimmer uses surface-2 → surface-3 → surface-2 gradient sweep.
+ * @keyframes shimmer is declared in tokens.css (200% width sweep).
+ */
 const shimmerClass = [
   'bg-gradient-to-r',
-  'from-[var(--color-gray-100)] via-[var(--color-gray-200)] to-[var(--color-gray-100)]',
+  'from-[var(--color-surface-2)] via-[var(--color-surface-3)] to-[var(--color-surface-2)]',
   'bg-[length:200%_100%]',
   '[animation:shimmer_1.6s_ease-in-out_infinite]',
   'rounded-[var(--radius-sm)]',

@@ -5,7 +5,7 @@ type SelectSize = 'sm' | 'md' | 'lg' | 'touch';
 
 const heightMap: Record<SelectSize, string> = {
   sm:    'h-8  text-[var(--text-sm)]   px-2.5',
-  md:    'h-9  text-[var(--text-sm)]   px-3',
+  md:    'h-9  text-[13.5px]           px-3',
   lg:    'h-11 text-[var(--text-base)] px-4',
   touch: 'min-h-[var(--size-touch-min)] text-[var(--text-base)] px-4',
 };
@@ -66,11 +66,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {label != null && (
           <label
             htmlFor={selectId}
-            className="text-[var(--text-sm)] font-[var(--font-weight-medium)] text-[var(--color-fg-subtle)]"
+            className="text-[11.5px] font-[var(--font-weight-semibold)] text-[var(--color-ink-2)] tracking-[0.01em]"
           >
             {label}
             {required === true && (
-              <span className="ml-0.5 text-[var(--color-danger-500)]" aria-hidden="true">
+              <span className="ml-0.5 text-[var(--color-brand-500)]" aria-hidden="true">
                 *
               </span>
             )}
@@ -84,14 +84,23 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             aria-invalid={hasError}
             {...(describedBy != null ? { 'aria-describedby': describedBy } : {})}
             className={cn(
-              'flex w-full appearance-none rounded-[var(--radius-md)] border bg-[var(--color-surface)]',
-              'pr-8 transition-colors cursor-pointer',
-              'focus-visible:outline-none focus-visible:ring-[var(--focus-ring-width)] focus-visible:ring-[var(--focus-ring-color)]',
-              'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-bg-subtle)]',
+              /* base */
+              'flex w-full appearance-none rounded-[9px] border',
+              'bg-[var(--color-bg)] text-[var(--color-ink)]',
+              'pr-9 transition-[border-color,box-shadow,background] duration-150 cursor-pointer',
+              /* hover */
+              'hover:border-[var(--color-line-2)]',
+              /* focus */
+              'focus-visible:outline-none',
+              'focus-visible:border-[var(--color-brand-500)]',
+              'focus-visible:bg-[var(--color-surface)]',
+              'focus-visible:shadow-[0_0_0_3px_rgba(217,83,30,0.12)]',
+              /* disabled */
+              'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-surface-2)]',
+              /* error vs normal border */
               hasError
-                ? 'border-[var(--color-danger-500)] focus-visible:ring-[var(--color-danger-500)]'
-                : 'border-[var(--color-border)] hover:border-[var(--color-border-strong)]',
-              'text-[var(--color-fg)]',
+                ? 'border-[var(--color-red)] focus-visible:shadow-[0_0_0_3px_rgba(184,64,26,0.12)]'
+                : 'border-[var(--color-line)]',
               sizeClasses,
               className,
             )}
@@ -112,34 +121,34 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               </option>
             ))}
           </select>
-          {/* ChevronDown arrow via inline SVG — no extra import, no bg-image URL tricks */}
+          {/* ChevronDown arrow — inline SVG, matches mockup chevron color var(--color-ink-3) */}
           <span
-            className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-fg-muted)]"
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-ink-3)]"
             aria-hidden="true"
           >
             <svg
-              width="16"
-              height="16"
+              width="12"
+              height="12"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
               aria-hidden="true"
               focusable="false"
             >
-              <path d="m6 9 6 6 6-6" />
+              <polyline points="6 9 12 15 18 9" />
             </svg>
           </span>
         </div>
         {hasHint && !hasError && (
-          <p id={hintId} className="text-[var(--text-xs)] text-[var(--color-fg-muted)]">
+          <p id={hintId} className="text-[var(--text-xs)] text-[var(--color-ink-3)]">
             {hint}
           </p>
         )}
         {hasError && (
-          <p id={errorId} role="alert" className="text-[var(--text-xs)] text-[var(--color-danger-600)]">
+          <p id={errorId} role="alert" className="text-[var(--text-xs)] text-[var(--color-red-ink)]">
             {error}
           </p>
         )}

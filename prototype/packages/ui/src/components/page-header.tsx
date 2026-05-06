@@ -9,6 +9,8 @@ export interface BreadcrumbItem {
 
 export interface PageHeaderProps {
   title: string;
+  /** Optional substring of title to italicize in coral (Fraunces <em> accent) */
+  accentText?: string;
   description?: string;
   breadcrumbs?: BreadcrumbItem[];
   actions?: ReactNode;
@@ -17,8 +19,33 @@ export interface PageHeaderProps {
   className?: string;
 }
 
+/** Wraps accentText portion in <em> with coral color if found in title */
+function renderTitle(title: string, accentText?: string): ReactNode {
+  if (accentText == null || accentText.length === 0) return title;
+  const idx = title.indexOf(accentText);
+  if (idx === -1) return title;
+  const before = title.slice(0, idx);
+  const after = title.slice(idx + accentText.length);
+  return (
+    <>
+      {before}
+      <em
+        style={{
+          fontStyle:  'italic',
+          fontWeight: 400,
+          color:      'var(--color-brand-500)',
+        }}
+      >
+        {accentText}
+      </em>
+      {after}
+    </>
+  );
+}
+
 export const PageHeader = ({
   title,
+  accentText,
   description,
   breadcrumbs,
   actions,
@@ -29,7 +56,7 @@ export const PageHeader = ({
   <header
     className={cn(
       'py-6 md:py-8',
-      border && 'border-b border-[var(--color-border)]',
+      border && 'border-b border-[var(--color-line)]',
       className,
     )}
   >
@@ -42,7 +69,7 @@ export const PageHeader = ({
               {idx > 0 && (
                 <ChevronRight
                   size={14}
-                  className="text-[var(--color-fg-muted)] shrink-0"
+                  className="text-[var(--color-ink-4)] shrink-0"
                   aria-hidden="true"
                 />
               )}
@@ -50,8 +77,8 @@ export const PageHeader = ({
                 <a
                   href={crumb.href}
                   className={cn(
-                    'text-[var(--text-sm)] text-[var(--color-fg-muted)]',
-                    'hover:text-[var(--color-fg)] transition-colors',
+                    'text-[var(--text-sm)] text-[var(--color-ink-3)]',
+                    'hover:text-[var(--color-ink)] transition-colors',
                     'focus-visible:outline-none focus-visible:ring-[var(--focus-ring-width)] focus-visible:ring-[var(--focus-ring-color)]',
                   )}
                 >
@@ -59,7 +86,7 @@ export const PageHeader = ({
                 </a>
               ) : (
                 <span
-                  className="text-[var(--text-sm)] text-[var(--color-fg-muted)]"
+                  className="text-[var(--text-sm)] text-[var(--color-ink-3)]"
                   aria-current={idx === breadcrumbs.length - 1 ? 'page' : undefined}
                 >
                   {crumb.label}
@@ -74,16 +101,27 @@ export const PageHeader = ({
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="flex flex-col gap-1">
         <h1
-          className={cn(
-            'font-[var(--font-display)] text-[var(--text-2xl)]',
-            'font-[var(--font-weight-bold)] tracking-[var(--tracking-tight)]',
-            'text-[var(--color-fg)] leading-[var(--leading-tight)]',
-          )}
+          style={{
+            fontFamily:    'var(--font-display)',
+            fontWeight:    500,
+            fontSize:      '32px',
+            letterSpacing: '-0.02em',
+            lineHeight:    1.05,
+            color:         'var(--color-ink)',
+          }}
         >
-          {title}
+          {renderTitle(title, accentText)}
         </h1>
         {description != null && (
-          <p className="text-[var(--text-sm)] text-[var(--color-fg-muted)] leading-[var(--leading-normal)]">
+          <p
+            style={{
+              fontSize:  '13.5px',
+              color:     'var(--color-ink-3)',
+              marginTop: '8px',
+              maxWidth:  '560px',
+              lineHeight: 1.5,
+            }}
+          >
             {description}
           </p>
         )}

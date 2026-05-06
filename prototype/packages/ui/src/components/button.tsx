@@ -5,7 +5,7 @@ import { cn } from '../lib/utils';
 
 const buttonVariants = cva(
   [
-    'inline-flex items-center justify-center gap-2 font-medium transition-colors',
+    'inline-flex items-center justify-center gap-2 font-medium transition-all',
     'rounded-[var(--radius-md)] select-none whitespace-nowrap',
     'disabled:pointer-events-none disabled:opacity-40',
     'active:scale-[0.98]',
@@ -15,31 +15,36 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        /** primary: ink bg, cream text; hover → coral + glow + lift */
         brand: [
-          'bg-[var(--color-primary)] text-[var(--color-primary-fg)]',
-          'hover:bg-[var(--color-primary-hover)] active:bg-[var(--color-primary-active)]',
+          'bg-[var(--color-ink)] text-[var(--color-bg)]',
+          'hover:bg-[var(--color-brand-500)] hover:-translate-y-px hover:shadow-[var(--shadow-coral-glow)]',
+          'active:bg-[var(--color-brand-600)] active:translate-y-0',
         ].join(' '),
+        /** secondary / ghost: bordered, muted */
         secondary: [
-          'bg-[var(--color-bg-subtle)] text-[var(--color-fg)]',
-          'border border-[var(--color-border)]',
-          'hover:bg-[var(--color-gray-200)] hover:border-[var(--color-border-strong)]',
+          'bg-transparent text-[var(--color-ink-2)]',
+          'border border-[var(--color-line)]',
+          'hover:bg-[var(--color-surface-2)] hover:border-[var(--color-line-2)]',
         ].join(' '),
         outline: [
-          'bg-transparent text-[var(--color-primary)]',
-          'border border-[var(--color-primary)]',
+          'bg-transparent text-[var(--color-brand-500)]',
+          'border border-[var(--color-brand-500)]',
           'hover:bg-[var(--color-brand-50)]',
         ].join(' '),
         ghost: [
-          'bg-transparent text-[var(--color-fg-subtle)]',
-          'hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-fg)]',
+          'bg-transparent text-[var(--color-ink-2)]',
+          'border border-[var(--color-line)]',
+          'hover:bg-[var(--color-surface-2)]',
         ].join(' '),
         danger: [
-          'bg-[var(--color-danger-500)] text-white',
-          'hover:bg-[var(--color-danger-600)] active:bg-[var(--color-danger-700)]',
+          'bg-[var(--color-red)] text-white',
+          'hover:bg-[var(--color-red-ink)] hover:-translate-y-px',
+          'active:translate-y-0',
         ].join(' '),
         link: [
-          'bg-transparent text-[var(--color-primary)] underline-offset-4',
-          'hover:underline hover:text-[var(--color-primary-hover)]',
+          'bg-transparent text-[var(--color-brand-500)] underline-offset-4',
+          'hover:underline hover:text-[var(--color-brand-600)]',
           'p-0 h-auto font-normal',
         ].join(' '),
       },
