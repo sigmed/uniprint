@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { AppShell, MockBanner, fontVariables } from '@uniprint/ui';
-import { ClipboardList, UserCircle, History } from 'lucide-react';
+import { MockBanner, fontVariables } from '@uniprint/ui';
 import { MSWInit } from './msw-init';
 import './globals.css';
 
@@ -14,30 +13,19 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#4f46e5',
+  themeColor: '#1A1410',
 };
-
-const nav = [
-  { href: '/', label: 'Смена', icon: <UserCircle className="h-5 w-5" /> },
-  { href: '/tasks', label: 'Задачи', icon: <ClipboardList className="h-5 w-5" /> },
-  { href: '/history', label: 'История', icon: <History className="h-5 w-5" /> },
-];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru" className={fontVariables}>
-      <body>
+      <body style={{ margin: 0, padding: 0, background: 'var(--color-surface-2)' }}>
         <MSWInit>
-          <AppShell
-            appName="Производство"
-            nav={nav}
-            banner={<MockBanner variant="subtle" />}
-            density="comfortable"
-            mobileBottomNav={true}
-            user={{ name: 'Алексей Кузнецов', role: 'Печатник' }}
-          >
-            {children}
-          </AppShell>
+          {/* MockBanner floats above PhoneFrame on desktop */}
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}>
+            <MockBanner variant="subtle" />
+          </div>
+          {children}
         </MSWInit>
       </body>
     </html>
