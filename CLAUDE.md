@@ -478,6 +478,13 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 
 ### Последние вехи
 
+- **2026-05-06** — **Redesign 2026-05-06** (`feature/prototype`). Полный
+  визуальный пересмотр под новую дизайн-концепцию (warm cream + coral + Fraunces
+  + dark sidebar + PWA phone-frame). 9 новых компонентов, рефакторинг 12
+  существующих, переписаны все 6 кабинетов. Анимации: page-fade, BarRow
+  fill-on-view, card hover-lift, count-up KPI, status pulse. Pipeline (Rule C):
+  typecheck 10/10, lint 10/10, build 6/6, unit 9/9, e2e **44/44** PASS in 24.8s.
+  Дизайн утверждён владельцем. Подробнее — `Docs/log.md`.
 - **2026-05-05** — **Design system overhaul Phase 1+2+3** (`feature/prototype`).
   12 компонентов (warm cream + coral + Manrope), AppShell во всех 6 кабинетах,
   15+ эмодзи → lucide icons. Исправлены 2 бага Phase 2 (двойной disabled-placeholder

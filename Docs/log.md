@@ -3,6 +3,53 @@
 > Журнал ключевых изменений по дате. Append-only. Для каждого
 > изменения — короткая запись + commit-хеш.
 
+## 2026-05-06
+
+### Redesign 2026-05-06 — визуальный пересмотр прототипа
+
+`feature/prototype` — Полный визуальный пересмотр после отказа от «Press × Calm»
+(см. `Docs/log.md` 2026-05-05). Дизайн-концепция подтверждена владельцем
+single-file HTML mockup (`Docs/design/mockup-2026-05-06.html`).
+
+**Палитра / шрифты:** warm cream `#FAF6EF` + coral `#D9531E` + Fraunces serif
+headings + JetBrains Mono для ID/цен + Manrope body. Dark sidebar, status pills
+с pulse-анимацией, BR-callouts inline в UI, PWA phone-frame для mobile.
+
+**Component library:** 9 новых компонентов (PhoneFrame, RoleSwitcher, BRCallout,
+StatPill, KanbanBoard/Column/Card, BarRow, AdminTile, PnlCard, BigButton,
+PwaTaskCard, ShiftBar, AnimatedCounter) + рефакторинг 12 существующих
+(AppShell, KpiCard, OrderStatusBadge, Button, Input, Select, PageHeader,
+EmptyState, MockBanner, Skeleton, Badge, Card primitives).
+
+**Все 6 кабинетов** переписаны под новый DOM: client-portal (KPI + sticky
+form-card), manager-web (KPI cols-5 + Kanban 4 cols), production-mobile
+(PhoneFrame + ShiftBar + PwaTaskCard), warehouse-mobile (4 BigButton + BR-01/03/09
+callout), admin-panel (6 AdminTile grid), owner-dashboard (3 PnlCard + 3 BarRow).
+
+**Анимации:** page-fade-in (AppShell `<main>`), BarRow fill-on-view
+(IntersectionObserver), card hover-lift (interactive variant), count-up KPI
+(AnimatedCounter в 4 кабинетах), pulse-amber на «work» статусах,
+pulse-green на ShiftBar, scan на face-control камере. Уважает `prefers-reduced-motion`.
+
+**MSW handlers + types:** не тронуты — данные слой полностью сохранён.
+**API всех компонентов** сохранён (backward-compat для всех 6 apps).
+
+**Pipeline (Rule C):**
+- typecheck: 10/10 PASS (56ms cached)
+- lint:      10/10 PASS (51ms cached)
+- build:     6/6 apps PASS (5.1s cached)
+- test:      9/9 unit PASS (1.9s)
+- test:e2e:  44/44 PASS in 24.8s (адаптированы под новый DOM)
+
+Подробнее — `Docs/sprints/sprint-1/retro.md` § «Test results».
+
+Commits: `47a6baf` (tokens) → `43e597e` (gold variants) → `7726cd5` (bridge aliases)
+→ `4e22659` (next/font) → `2bf929b` (AppShell dark) → `a2cbf9c` (PhoneFrame+RoleSwitcher+BRCallout)
+→ `04f6646` (StatPill+AnimatedCounter+KpiCard+OrderStatusBadge) → `365ae76` (Kanban+BarRow)
+→ `19c105a` (5 components + Kanban responsive) → `4ee6e1c` (8 base refactors)
+→ `4eb4da7` (client-portal+manager-web pages) → `1adda31` (production+warehouse-mobile)
+→ `024af33` (admin-panel+owner-dashboard) → `e742d69` (animations polish + e2e adapt).
+
 ## 2026-05-05
 
 ### Design system overhaul — Phase 1+2+3 complete
