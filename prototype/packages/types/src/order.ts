@@ -20,6 +20,8 @@ export interface Order {
   costEstimate?: number;
   costActual?: number;
   dueDate?: string;
+  /** Optional human meta для display в orders table (например «люверсы, ПВХ 440 г/м²»). */
+  metaText?: string;
   createdAt: string;
   updatedAt: string;
 }

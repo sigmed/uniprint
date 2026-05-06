@@ -9,9 +9,11 @@ export const orderHandlers = [
     const url = new URL(request.url);
     const type = url.searchParams.get('type');
     const status = url.searchParams.get('status');
+    const clientId = url.searchParams.get('clientId');
     let filtered = orders;
     if (type) filtered = filtered.filter((o) => o.type === type);
     if (status) filtered = filtered.filter((o) => o.status === status);
+    if (clientId) filtered = filtered.filter((o) => o.clientId === clientId);
     return HttpResponse.json({ items: filtered, total: filtered.length });
   }),
 

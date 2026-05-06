@@ -433,7 +433,6 @@ const Sidebar = (props: SidebarInternalProps) => {
         background: 'var(--color-ink)',
         color: 'var(--color-on-dark-1)',
         padding: '22px 18px',
-        display: 'flex',
         flexDirection: 'column',
         gap: 24,
         borderRight: '1px solid var(--color-line)',

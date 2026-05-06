@@ -1,58 +1,80 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Route } from 'next';
 import {
+  AnimatedCounter,
   Button,
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardFooter,
+  EmptyState,
+  Input,
   KpiCard,
   OrderStatusBadge,
   PageHeader,
-  EmptyState,
-  Skeleton,
-  BRCallout,
-  Input,
+  RoleTag,
   Select,
-  MockBanner,
+  Skeleton,
+  Tabs,
 } from '@uniprint/ui';
-import type { SelectOption } from '@uniprint/ui';
-import { Package, FileText, ChevronRight, Upload } from 'lucide-react';
-import { AnimatedCounter } from '@uniprint/ui';
+import type { SelectOption, TabItem } from '@uniprint/ui';
+import { ChevronRight, FileText, Package, Upload } from 'lucide-react';
 import type { Order, OrderType } from '@uniprint/types';
 
 const ORDER_TYPE_OPTIONS: SelectOption[] = [
-  { value: 'cex', label: 'Услуга цех (наружная реклама)' },
   { value: 'office', label: 'Услуга офис (оперативная полиграфия)' },
-  { value: 'goods', label: 'Готовый товар' },
+  { value: 'cex', label: 'Услуга цех (наружная реклама)' },
+  { value: 'goods', label: 'Готовый товар со склада' },
 ];
 
-const ORDER_TYPE_LABELS: Record<OrderType, string> = {
-  cex: 'Цех',
-  office: 'Офис',
-  goods: 'Товар',
-};
+const DUE_OPTIONS: SelectOption[] = [
+  { value: 'standard', label: 'Стандарт (3–5 дн.)' },
+  { value: 'urgent', label: 'Срочно (24 ч)' },
+];
+
+const ORDER_TABS: TabItem[] = [
+  { value: 'all', label: 'Все' },
+  { value: 'work', label: 'В работе' },
+  { value: 'done', label: 'Готовы' },
+  { value: 'archive', label: 'Архив' },
+];
+
+const WORK_STATUSES = new Set([
+  'queued',
+  'in_production',
+  'in_qc',
+  'designing',
+  'design_review',
+  'client_approval',
+]);
+const DONE_STATUSES = new Set(['ready', 'delivered']);
+const ARCHIVE_STATUSES = new Set(['closed', 'cancelled']);
 
 export default function HomePage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<string>('all');
 
   // New-order form state
   const [type, setType] = useState<OrderType>('office');
   const [title, setTitle] = useState('');
   const [itemsCount, setItemsCount] = useState(1);
+  const [dueOption, setDueOption] = useState('standard');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/orders')
+    fetch('/api/orders?clientId=cli_001')
       .then((r) => r.json())
-      .then((d) => { setOrders(d.items ?? []); setLoading(false); });
+      .then((d) => {
+        setOrders(d.items ?? []);
+        setLoading(false);
+      });
   }, []);
 
   const computedPrice = itemsCount * (type === 'cex' ? 12000 : type === 'office' ? 1500 : 8000);
@@ -76,15 +98,20 @@ export default function HomePage() {
     router.push(`/orders/${created.id}` as `/orders/${string}`);
   };
 
-  // KPI aggregates
-  const activeOrders = orders.filter((o) =>
-    ['queued', 'in_production', 'in_qc', 'designing', 'design_review', 'client_approval'].includes(o.status)
-  );
-  const inProduction = orders.filter((o) => o.status === 'in_production');
-  const monthlySpend = orders.reduce((sum, o) => sum + o.priceTotal, 0);
+  // KPI baseline values (per client-portal-spec.md)
+  const filteredOrders = useMemo(() => {
+    if (activeTab === 'all') return orders;
+    if (activeTab === 'work') return orders.filter((o) => WORK_STATUSES.has(o.status));
+    if (activeTab === 'done') return orders.filter((o) => DONE_STATUSES.has(o.status));
+    if (activeTab === 'archive') return orders.filter((o) => ARCHIVE_STATUSES.has(o.status));
+    return orders;
+  }, [orders, activeTab]);
 
   return (
     <div className="py-6 md:py-8">
+      {/* Role tag — Клиент · ООО «Рассвет» */}
+      <RoleTag tone="client">Клиент · ООО «Рассвет»</RoleTag>
+
       {/* Page header */}
       <PageHeader
         title="Здравствуйте, Иван"
@@ -94,7 +121,7 @@ export default function HomePage() {
         className="px-0 pb-6"
       />
 
-      {/* KPI row — 4 cards */}
+      {/* KPI row — 4 cards (per references — hardcoded baseline для demo) */}
       <div className="mb-6 grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:grid-cols-4">
         {loading ? (
           <>
@@ -106,29 +133,34 @@ export default function HomePage() {
           <>
             <KpiCard
               label="Активные заказы"
-              value={<AnimatedCounter value={activeOrders.length} />}
+              value={<AnimatedCounter value={3} />}
               icon={<Package className="h-4 w-4" />}
-              trend="flat"
+              trend="up"
+              trendIsGood
+              delta="+1 за неделю"
             />
             <KpiCard
               label="В производстве"
-              value={<AnimatedCounter value={inProduction.length} />}
+              value={<AnimatedCounter value={2} />}
               icon={<FileText className="h-4 w-4" />}
-              trend={inProduction.length > 0 ? 'up' : 'flat'}
-              trendIsGood
+              trend="flat"
+              delta="готовность ≈ 78%"
             />
             <KpiCard
               label="Расходы за месяц"
-              value={<AnimatedCounter value={monthlySpend} format={(n) => n.toLocaleString('ru-RU')} />}
+              value={<AnimatedCounter value={42800} format={(n) => n.toLocaleString('ru-RU')} />}
               unit="₽"
-              trend="flat"
+              trend="down"
+              trendIsGood
+              delta="−12% к прошлому"
             />
             <KpiCard
               label="Бонусный баланс"
-              value={<AnimatedCounter value={0} />}
+              value={<AnimatedCounter value={1280} format={(n) => n.toLocaleString('ru-RU')} />}
               unit="₽"
-              trend="flat"
-              hint="Программа лояльности — скоро"
+              trend="up"
+              trendIsGood={false}
+              delta="истекает 01.07"
             />
           </>
         )}
@@ -138,22 +170,35 @@ export default function HomePage() {
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[1fr_380px]">
         {/* Left: last orders table */}
         <Card>
-          <CardHeader>
-            <CardTitle>Последние заказы</CardTitle>
-            <Link href={'/orders' as Route<'/orders'>}>
-              <Button variant="ghost" size="sm" className="gap-1">
-                Все заказы <ChevronRight className="h-3.5 w-3.5" />
-              </Button>
-            </Link>
+          <CardHeader className="flex-row items-center justify-between gap-3">
+            <CardTitle className="flex items-center gap-2.5">
+              Последние заказы
+              <span
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontWeight: 600,
+                  fontSize: 11,
+                  background: 'var(--color-surface-2)',
+                  color: 'var(--color-ink-3)',
+                  padding: '3px 8px',
+                  borderRadius: 99,
+                }}
+              >
+                {orders.length}
+              </span>
+            </CardTitle>
+            <Tabs items={ORDER_TABS} value={activeTab} onChange={setActiveTab} />
           </CardHeader>
 
           {loading ? (
-            <CardContent><Skeleton variant="text" lines={5} /></CardContent>
-          ) : orders.length === 0 ? (
+            <CardContent>
+              <Skeleton variant="text" lines={5} />
+            </CardContent>
+          ) : filteredOrders.length === 0 ? (
             <CardContent>
               <EmptyState
                 icon={<Package className="h-6 w-6" />}
-                title="Заказов пока нет"
+                title="Заказов в этой вкладке нет"
                 description="Создайте первый заказ с помощью формы справа."
               />
             </CardContent>
@@ -162,7 +207,7 @@ export default function HomePage() {
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr>
-                    {['№', 'Заказ', 'Статус', 'Срок', 'Сумма', ''].map((col) => (
+                    {['№', 'Заказ', 'Статус', 'Сдача', 'Сумма', ''].map((col) => (
                       <th
                         key={col}
                         className="border-b border-[var(--color-line)] bg-[var(--color-surface-3)] px-[22px] py-[11px] text-left text-[10.5px] font-semibold uppercase tracking-[.08em] text-[var(--color-ink-3)]"
@@ -173,7 +218,7 @@ export default function HomePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.slice(0, 8).map((o) => (
+                  {filteredOrders.slice(0, 8).map((o) => (
                     <tr
                       key={o.id}
                       className="group border-b border-[var(--color-line)] last:border-none hover:bg-[var(--color-surface-3)]"
@@ -193,7 +238,7 @@ export default function HomePage() {
                       <td className="px-[22px] py-[13px]">
                         <div className="font-semibold text-[var(--color-ink)]">{o.title}</div>
                         <div className="mt-0.5 text-xs text-[var(--color-ink-3)]">
-                          {ORDER_TYPE_LABELS[o.type]} · {o.itemsCount} шт
+                          {o.metaText ?? `${o.itemsCount} шт`}
                         </div>
                       </td>
                       <td className="px-[22px] py-[13px]">
@@ -234,18 +279,18 @@ export default function HomePage() {
 
           <CardFooter className="justify-end">
             <Link href={'/orders' as Route<'/orders'>}>
-              <Button variant="outline" size="sm">Смотреть все</Button>
+              <Button variant="outline" size="sm">
+                Смотреть все
+              </Button>
             </Link>
           </CardFooter>
         </Card>
 
         {/* Right: sticky new-order form card */}
-        <div className="sticky top-32">
+        <div className="sticky top-[calc(49px+62px+18px)]">
           <Card className="shadow-[var(--shadow-sm)]">
             {/* Form head */}
-            <div
-              className="flex items-center gap-2.5 border-b border-[var(--color-line)] px-[22px] py-4"
-            >
+            <div className="flex items-center gap-2.5 border-b border-[var(--color-line)] px-[22px] py-4">
               <span
                 className="grid h-9 w-9 shrink-0 place-items-center rounded-[9px]"
                 style={{
@@ -297,7 +342,7 @@ export default function HomePage() {
                   />
                   {/* Chips */}
                   <div className="mt-1 flex flex-wrap gap-1.5">
-                    {['Баннер', 'Визитки', 'Листовки', 'Наклейка'].map((chip) => (
+                    {['Визитки', 'Листовки', 'Баннер', 'Каталог'].map((chip) => (
                       <button
                         key={chip}
                         type="button"
@@ -312,12 +357,14 @@ export default function HomePage() {
 
                 {/* Срок + Количество row */}
                 <div className="grid grid-cols-[1fr_110px] gap-2.5">
-                  <label htmlFor="home-order-due" className="grid gap-1.5">
-                    <span className="text-[11.5px] font-semibold text-[var(--color-ink-2)]">Срок</span>
-                    <Input id="home-order-due" type="date" />
-                  </label>
+                  <Select
+                    label="Срок"
+                    options={DUE_OPTIONS}
+                    value={dueOption}
+                    onChange={(e) => setDueOption(e.target.value)}
+                  />
                   <label htmlFor="home-order-qty" className="grid gap-1.5">
-                    <span className="text-[11.5px] font-semibold text-[var(--color-ink-2)]">Кол-во</span>
+                    <span className="text-[11.5px] font-semibold text-[var(--color-ink-2)]">Кол-во, шт</span>
                     <Input
                       id="home-order-qty"
                       type="number"
@@ -329,12 +376,17 @@ export default function HomePage() {
                 </div>
 
                 {/* Upload zone */}
-                <div
+                <label
+                  htmlFor="home-order-file"
                   className="cursor-pointer rounded-[10px] border-[1.5px] border-dashed border-[var(--color-line-2)] bg-[var(--color-surface-3)] p-3.5 text-center text-[12.5px] text-[var(--color-ink-3)] transition-colors hover:border-[var(--color-brand-500)] hover:bg-[var(--color-brand-50)] hover:text-[var(--color-brand-500)]"
                 >
-                  <Upload className="mx-auto mb-1 h-4 w-4" />
-                  <strong className="text-[var(--color-ink-2)]">Загрузить макет</strong> или перетащите файл
-                </div>
+                  <Upload className="mx-auto mb-1 h-5 w-5" style={{ color: 'var(--color-brand-500)' }} />
+                  <div>
+                    <strong className="text-[var(--color-ink-2)]">Загрузите файл</strong> или перетащите
+                  </div>
+                  <div className="mt-0.5 text-[11px] text-[var(--color-ink-4)]">PDF, AI, PSD · до 2 ГБ · S3</div>
+                  <input id="home-order-file" type="file" className="hidden" />
+                </label>
 
                 {/* Price box */}
                 <div
@@ -375,7 +427,7 @@ export default function HomePage() {
                     </sup>
                   </div>
                   <div className="mt-2 flex items-center gap-1.5 text-[11.5px] text-[var(--color-ink-3)]">
-                    <span>Итог уточнит менеджер по справочнику (</span>
+                    <span>Уточняется по справочнику</span>
                     <code
                       className="rounded px-1 text-[10.5px]"
                       style={{
@@ -385,13 +437,10 @@ export default function HomePage() {
                     >
                       BR-04
                     </code>
-                    <span>)</span>
                   </div>
                 </div>
 
-                {formError && (
-                  <p className="text-sm text-[var(--color-red)]">{formError}</p>
-                )}
+                {formError && <p className="text-sm text-[var(--color-red)]">{formError}</p>}
 
                 <button
                   type="submit"
@@ -399,12 +448,17 @@ export default function HomePage() {
                   className="mt-1 flex w-full items-center justify-center gap-2 rounded-[10px] px-3 py-3 text-sm font-semibold tracking-[.01em] transition-all disabled:opacity-50"
                   style={{
                     background: 'var(--color-ink)',
-                    color: '#FAF6EF',
+                    color: 'var(--color-bg)',
                   }}
-                  onMouseEnter={(e) => { if (!submitting && title) (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-brand-500)'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-ink)'; }}
+                  onMouseEnter={(e) => {
+                    if (!submitting && title) (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-brand-500)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-ink)';
+                  }}
                 >
                   {submitting ? 'Создание…' : 'Создать заказ'}
+                  {!submitting && <ChevronRight className="h-4 w-4" />}
                 </button>
                 <button
                   type="button"
