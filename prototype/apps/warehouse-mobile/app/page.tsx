@@ -4,28 +4,20 @@ import {
   PhoneFrame,
   ShiftBar,
   BigButton,
+  PwaTabBar,
   PwaTaskCard,
   BRCallout,
   StatPill,
 } from '@uniprint/ui';
 import {
   Bell,
-  Home,
   PackageMinus,
   AlertTriangle,
-  BarChart2,
   Inbox,
   UserCheck,
 } from 'lucide-react';
 import Link from 'next/link';
-
-/* ── Bottom-nav tabs ── */
-const TABS: { href: string; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number }>; active: boolean }[] = [
-  { href: '/',          label: 'Главная',  icon: Home,        active: true  },
-  { href: '/writeoff',  label: 'Списать',  icon: PackageMinus, active: false },
-  { href: '/defect',    label: 'Брак',     icon: AlertTriangle, active: false },
-  { href: '/',          label: 'Остатки',  icon: BarChart2,   active: false },
-];
+import { WAREHOUSE_TABS } from './_tabs';
 
 /* ── Mini-stat card ── */
 function MiniStat({
@@ -308,46 +300,7 @@ export default function WarehouseHomePage() {
         />
       </div>
 
-      {/* ── Bottom tab-bar ── */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: 'rgba(255,255,255,0.96)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          borderTop: '1px solid var(--color-line)',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          padding: '8px 8px 12px',
-          zIndex: 5,
-        }}
-      >
-        {TABS.map(({ href, label, icon: Icon, active }) => (
-          <Link
-            key={label}
-            href={href as '/'}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 3,
-              padding: '7px 4px',
-              borderRadius: 10,
-              color: active ? 'var(--color-brand-500)' : 'var(--color-ink-3)',
-              textDecoration: 'none',
-              fontSize: '10.5px',
-              fontWeight: 600,
-              letterSpacing: '0.02em',
-            }}
-          >
-            <Icon size={20} strokeWidth={1.8} />
-            {label}
-          </Link>
-        ))}
-      </div>
+      <PwaTabBar tabs={WAREHOUSE_TABS} />
     </PhoneFrame>
   );
 }

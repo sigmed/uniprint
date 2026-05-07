@@ -6,12 +6,14 @@ import {
   BigButton,
   BRCallout,
   Input,
+  PwaTabBar,
   Select,
 } from '@uniprint/ui';
 import type { SelectOption } from '@uniprint/ui';
 import { ArrowLeft, PackageMinus, CheckCircle2, XCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { Order, MaterialCatalog } from '@uniprint/types';
+import { WAREHOUSE_TABS } from '../_tabs';
 
 export default function WriteoffPage() {
   const router = useRouter();
@@ -121,7 +123,7 @@ export default function WriteoffPage() {
       </div>
 
       {/* ── Body ── */}
-      <div style={{ padding: '16px 16px 24px', flex: 1, overflowY: 'auto' }}>
+      <div style={{ padding: '16px 16px 80px', flex: 1, overflowY: 'auto' }}>
         {/* Form card */}
         <div
           style={{
@@ -231,6 +233,8 @@ export default function WriteoffPage() {
           {submitting ? 'Списание…' : 'Списать'}
         </BigButton>
       </div>
+
+      <PwaTabBar tabs={WAREHOUSE_TABS} />
     </PhoneFrame>
   );
 }

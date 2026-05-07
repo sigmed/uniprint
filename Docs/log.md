@@ -5,6 +5,33 @@
 
 ## 2026-05-07
 
+### Fix · PwaTabBar global component (production + warehouse)
+
+Owner reported: bottom-nav tab bar пропадает на sub-страницах PWA (writeoff, defect,
+tasks/[id]). До этого фикса bottom-nav был дублирован inline в каждой странице как
+`<div style="position:absolute, bottom:0">` с TABS const — на sub-страницах его не
+было совсем (использовался back button вместо).
+
+**Fix:**
+- `packages/ui/src/components/pwa-tab-bar.tsx` (новый компонент) — переиспользуемый
+  bottom-nav с client-side `usePathname` для определения active state.
+  API: `<PwaTabBar tabs={...} />`. Каждый таб — `{href, label, icon, matches?}`.
+  Active матчится через startsWith + опциональный `matches[]` массив (для случая когда
+  таб «Задачи» отвечает за `/` AND `/tasks`).
+- `apps/production-mobile/app/_tabs.ts` (новый) — `PRODUCTION_TABS`: Задачи (`/`,
+  matches `/tasks`) / Смена / Заработок / История
+- `apps/warehouse-mobile/app/_tabs.ts` (новый) — `WAREHOUSE_TABS`: Главная (`/`) /
+  Списать (`/writeoff`) / Брак (`/defect`) / Остатки (`/stocks`)
+- Подключено в 6 страницах: production page/tasks/tasks[id], warehouse page/writeoff/defect.
+  Из тех 3 страниц где tab bar был совсем отсутствовал (`/tasks/[id]`, `/writeoff`,
+  `/defect`) добавлено + увеличен `padding-bottom` body 24→80px чтобы контент не
+  перекрывался.
+
+**Pipeline:** typecheck 10/10, lint 10/10 (2 pre-existing warnings), build 2/2 PASS.
+
+**Screenshots:** `v4-5-warehouse-writeoff-380.png` (Списать active), `v4-5-warehouse-defect-380.png`
+(Брак active), `v4-5-production-task-380.png` (Задачи active).
+
 ### Sprint 4 · Склад PWA (warehouse-mobile) per `Storage.png`
 
 `feature/prototype` — S4 из by-cabinet roadmap'а. Аналогично S3, большая часть была

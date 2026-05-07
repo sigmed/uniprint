@@ -45,6 +45,7 @@ export { Crumbs, type CrumbsProps, type CrumbItem } from './components/crumbs';
 export { SearchInput, type SearchInputProps } from './components/search-input';
 export { IconButton, type IconButtonProps } from './components/icon-button';
 export { Tabs, type TabsProps, type TabItem } from './components/tabs';
+export { PwaTabBar, type PwaTabBarProps, type PwaTabItem } from './components/pwa-tab-bar';
 export { ROLES, type RoleKey } from './lib/roles';
 export { cn } from './lib/utils';
 export { fraunces, manrope, jetbrainsMono, fontVariables } from './lib/fonts';

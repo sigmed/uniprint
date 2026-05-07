@@ -6,12 +6,14 @@ import {
   PhoneFrame,
   BigButton,
   BRCallout,
+  PwaTabBar,
   StatPill,
   Select,
 } from '@uniprint/ui';
 import type { SelectOption } from '@uniprint/ui';
 import { ArrowLeft, Play, Square } from 'lucide-react';
 import type { Order } from '@uniprint/types';
+import { PRODUCTION_TABS } from '../../_tabs';
 
 const OPERATION_OPTIONS: SelectOption[] = [
   { value: 'print', label: 'Печать' },
@@ -125,7 +127,7 @@ export default function TaskDetailPage() {
       </div>
 
       {/* ── Body ── */}
-      <div style={{ padding: '16px 16px 24px', flex: 1, overflowY: 'auto' }}>
+      <div style={{ padding: '16px 16px 80px', flex: 1, overflowY: 'auto' }}>
         {order && (
           <>
             {/* Operation selector */}
@@ -230,6 +232,8 @@ export default function TaskDetailPage() {
           </>
         )}
       </div>
+
+      <PwaTabBar tabs={PRODUCTION_TABS} />
     </PhoneFrame>
   );
 }

@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { PhoneFrame, BigButton, BRCallout, Input, Select } from '@uniprint/ui';
+import { PhoneFrame, BigButton, BRCallout, Input, PwaTabBar, Select } from '@uniprint/ui';
 import type { SelectOption } from '@uniprint/ui';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { Order, DefectStage } from '@uniprint/types';
+import { WAREHOUSE_TABS } from '../_tabs';
 
 const STAGE_OPTIONS: SelectOption[] = [
   { value: 'design',     label: 'Дизайн' },
@@ -105,7 +106,7 @@ export default function DefectPage() {
       </div>
 
       {/* ── Body ── */}
-      <div style={{ padding: '16px 16px 24px', flex: 1, overflowY: 'auto' }}>
+      <div style={{ padding: '16px 16px 80px', flex: 1, overflowY: 'auto' }}>
         {/* Form card */}
         <div
           style={{
@@ -211,6 +212,8 @@ export default function DefectPage() {
           {submitted ? 'Отправка…' : 'Зафиксировать брак'}
         </BigButton>
       </div>
+
+      <PwaTabBar tabs={WAREHOUSE_TABS} />
     </PhoneFrame>
   );
 }

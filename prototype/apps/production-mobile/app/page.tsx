@@ -1,16 +1,8 @@
 'use client';
 
-import { PhoneFrame, ShiftBar, BigButton, PwaTaskCard, BRCallout, StatPill } from '@uniprint/ui';
-import { Bell, ClipboardList, Clock, DollarSign, History, Play, UserCircle } from 'lucide-react';
-import Link from 'next/link';
-
-/* ── Bottom-nav tabs ── */
-const TABS: { href: string; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number }>; active: boolean }[] = [
-  { href: '/tasks', label: 'Задачи', icon: ClipboardList, active: true },
-  { href: '/',     label: 'Смена',   icon: UserCircle,    active: false },
-  { href: '/',     label: 'Заработок', icon: DollarSign,  active: false },
-  { href: '/',     label: 'История',  icon: History,      active: false },
-];
+import { PhoneFrame, ShiftBar, BigButton, PwaTabBar, PwaTaskCard, BRCallout, StatPill } from '@uniprint/ui';
+import { Bell, ClipboardList, DollarSign, Play } from 'lucide-react';
+import { PRODUCTION_TABS } from './_tabs';
 
 /* ── Mini-stat card ── */
 function MiniStat({
@@ -331,46 +323,7 @@ export default function ProductionHomePage() {
         />
       </div>
 
-      {/* ── Bottom tab-bar ── */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: 'rgba(255,255,255,0.96)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          borderTop: '1px solid var(--color-line)',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          padding: '8px 8px 12px',
-          zIndex: 5,
-        }}
-      >
-        {TABS.map(({ href, label, icon: Icon, active }) => (
-          <Link
-            key={label}
-            href={href as '/'}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 3,
-              padding: '7px 4px',
-              borderRadius: 10,
-              color: active ? 'var(--color-brand-500)' : 'var(--color-ink-3)',
-              textDecoration: 'none',
-              fontSize: '10.5px',
-              fontWeight: 600,
-              letterSpacing: '0.02em',
-            }}
-          >
-            <Icon size={20} strokeWidth={1.8} />
-            {label}
-          </Link>
-        ))}
-      </div>
+      <PwaTabBar tabs={PRODUCTION_TABS} />
     </PhoneFrame>
   );
 }
