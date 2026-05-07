@@ -28,6 +28,21 @@ const NAMED: Record<number, string> = {
   17: 'Сергей Петров',      // admin
 };
 
+/**
+ * Last-login timestamps для admin-table — варьированные per reference (Сейчас /
+ * 14:52 / 08:30 / Вчера 19:14 / etc.). Index → ISO string. Используется fixture date
+ * 2026-05-07 (today) и 2026-05-06 (yesterday).
+ */
+const TODAY = '2026-05-07';
+const YESTERDAY = '2026-05-06';
+const LAST_LOGINS: Record<number, string> = {
+  0: `${TODAY}T14:52:00Z`,        // Виктор (owner)
+  1: `${TODAY}T08:30:00Z`,        // Михаил (production_chief)
+  2: `${TODAY}T09:00:00Z`,        // Алексей (printer)
+  3: new Date().toISOString(),     // Илья (printer) — «Сейчас»
+  4: `${YESTERDAY}T19:14:00Z`,    // Андрей (laser)
+};
+
 export const usersFixture: User[] = ROLES.map((role, i) => {
   const hasFace = ['printer', 'laser', 'mounter', 'warehouse_keeper'].includes(role);
   return {
@@ -41,5 +56,6 @@ export const usersFixture: User[] = ROLES.map((role, i) => {
     ...(hasFace ? { faceTemplateId: `face_${i + 1}` } : {}),
     ...(hasFace ? { faceConsentAt: '2024-01-15T09:00:00Z' } : {}),
     createdAt: '2024-01-15T00:00:00Z',
+    ...(LAST_LOGINS[i] ? { lastLoginAt: LAST_LOGINS[i] } : {}),
   };
 });

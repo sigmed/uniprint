@@ -1,6 +1,6 @@
 'use client';
 
-import { type KeyboardEvent } from 'react';
+import type { KeyboardEvent } from 'react';
 import { cn } from '../lib/utils';
 
 export interface TabItem {
@@ -44,7 +44,6 @@ export const Tabs = ({
   };
 
   return (
-    // biome-ignore lint/a11y/useSemanticElements: tablist role on div is correct ARIA pattern
     <div
       role="tablist"
       aria-label={ariaLabel}

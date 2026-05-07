@@ -5,6 +5,57 @@
 
 ## 2026-05-07
 
+### Sprint 7 · Hardening — фиксы накопленных follow-ups + a11y
+
+`feature/prototype` — S7 из by-cabinet roadmap. Подобраны 6 высокоприоритетных задач
+из накопленных follow-ups + новый a11y фикс.
+
+**S7.1 — KpiCard trendIsGood semantics:**
+3 инцидента (client v3 «Расходы −12% к прошлому», admin/manager KPI, owner Брак
+«потери 4 200 ₽») решены сразу. Убрана инверсия по direction — теперь:
+`isGood=true → green`, `isGood=false → coral/red`, `flat → neutral`. Direction
+влияет только на arrow (↑↓→). Файл: `packages/ui/src/components/card.tsx`.
+
+**S7.2 — RoleTag tone унификация (coral default):**
+Все 6 ролей теперь рендерятся в одном coral-стиле (brand-50 + brand-700) per
+references — RoleTag это бренд-индикатор «вы здесь», не семантический tone.
+Tone API сохранён для будущей дифференциации. Файл: `packages/ui/src/components/role-tag.tsx`.
+
+**S7.3 — PhoneFrame status bar hide on mobile:**
+Имитация status bar (9:41 + Signal/Wifi/Battery) скрыта через `max-[480px]:hidden` —
+дублировала реальную систему на actual mobile. Desktop preview показывает её.
+Файл: `packages/ui/src/components/phone-frame.tsx`.
+
+**S7.4 — Tabs.tsx lint warnings:**
+2 предсуществующих warnings: `import type` для KeyboardEvent + удалён stale
+biome-ignore comment. Файл: `packages/ui/src/components/tabs.tsx`.
+
+**S7.5 — lastLoginAt field:**
+- `packages/types/src/user.ts` — добавлено optional `lastLoginAt`
+- `packages/mocks/src/fixtures/users.ts` — варьированные значения для первых 5 user'ов
+  (14:52 / 08:30 / 09:00 / Сейчас / Вчера 19:14)
+- `apps/admin-panel/app/page.tsx` — добавлен `formatLastLogin()` helper, выводящий
+  «Сейчас», «HH:MM сегодня», «Вчера HH:MM», или DD.MM.YYYY
+
+**S7.6 — Full pipeline (Rule C) + a11y fix:**
+- typecheck 10/10 (3.5s) · lint 10/10 0 warnings (0.5s) · unit 9/9 · build 6/6 (13.9s)
+- e2e: ~~34/44 (10 fail)~~ → ~~38/44 (6 fail)~~ → ~~41/44 (3 fail)~~ → **44/44** (15.1s)
+
+  Адаптации e2e к новой структуре:
+  - `golden-path.spec.ts`: «PROTOTYPE» → «данные синтетические» (RoleSwitcher tag
+    скрыт на mobile, был ложно-первый match)
+  - `app.visibleText` → уникальные строки (ранее «UniPrint» / «Управление»
+    цеплялись за hidden sidebar nav items)
+  - `getByText('Прибыль').first()` → exact-match (отделить от «Прибыль по заказам»)
+  - Page scrollTo(0,0) перед visibility check (PhoneFrame min-h-svh авто-скроллит
+    iPhone 14 viewport)
+
+  A11y фикс: 4 таблицы с `overflow-x-auto` теперь `<section aria-label tabIndex={0}>`
+  (manager / admin / owner / client) — позволяет keyboard-пользователям скроллить
+  горизонтально per WCAG 2.1.1. `biome.json` — отключен `noNoninteractiveTabindex`
+  (правило overly conservative для scrollable regions, стандартный pattern требует
+  tabIndex).
+
 ### Sprint 6 · Учредитель (owner-dashboard) per `owner.png`
 
 `feature/prototype` — S6 из by-cabinet roadmap. Финал cabinet sprints. До S6 owner-

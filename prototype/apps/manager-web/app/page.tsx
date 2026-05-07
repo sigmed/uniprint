@@ -276,7 +276,11 @@ export default function ManagerDashboard() {
             <EmptyState icon={<Inbox className="h-6 w-6" />} title="Заказов нет" />
           </CardContent>
         ) : (
-          <div className="overflow-x-auto">
+          <section
+            className="overflow-x-auto"
+            aria-label="Все заказы за сегодня — таблица"
+            tabIndex={0}
+          >
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr>
@@ -344,7 +348,7 @@ export default function ManagerDashboard() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </section>
         )}
       </Card>
     </div>

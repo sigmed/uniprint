@@ -52,10 +52,11 @@ export const PhoneFrame = ({
         position: 'relative',
       }}
     >
-      {/* Status bar */}
+      {/* Status bar — desktop preview only (на actual mobile дублирует системную) */}
       {showStatusBar && (
         <div
           aria-hidden="true"
+          className="max-[480px]:hidden"
           style={{
             height: 32,
             background: '#0E0A07',

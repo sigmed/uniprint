@@ -22,13 +22,23 @@ export interface RoleTagProps {
  * Match `.role-tag.{tone}` из mockup. Server component.
  */
 
+/**
+ * Все 6 ролей используют единый coral-стиль per reference (User.png, manager.png,
+ * admin.png, owner.png, production.png, Storage.png) — RoleTag это
+ * брендированный «вы здесь» индикатор, не семантический tone.
+ *
+ * Tone API сохранён для будущей дифференциации (data-tone attribute остаётся для
+ * tests / e2e), но визуально все идентичны.
+ */
+const CORAL = { bg: 'var(--color-brand-50)', fg: 'var(--color-brand-700)' };
+
 const TONE_CONFIG: Record<RoleTagTone, { bg: string; fg: string }> = {
-  client:     { bg: 'var(--color-brand-50)',  fg: 'var(--color-brand-700)' },
-  manager:    { bg: 'var(--color-blue-soft)', fg: 'var(--color-blue-ink)' },
-  production: { bg: 'var(--color-green-soft)', fg: 'var(--color-green-ink)' },
-  warehouse:  { bg: 'var(--color-amber-soft)', fg: 'var(--color-amber-ink)' },
-  admin:      { bg: '#E8E1D3',                fg: '#5D5448' },
-  owner:      { bg: '#EFE3D6',                fg: '#5A4030' },
+  client:     CORAL,
+  manager:    CORAL,
+  production: CORAL,
+  warehouse:  CORAL,
+  admin:      CORAL,
+  owner:      CORAL,
 };
 
 export const RoleTag = ({ tone, children, className }: RoleTagProps) => {

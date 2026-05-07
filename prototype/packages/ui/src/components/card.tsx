@@ -147,11 +147,22 @@ const trendArrows: Record<TrendDirection, string> = {
   flat: '→',
 };
 
-/** Returns inline color string (not a Tailwind class) for trend indicator */
+/**
+ * Returns inline color for trend indicator.
+ *
+ * Semantics: `isGood` = «is the OUTCOME good for the business», independent
+ * from direction. Direction только влияет на arrow (↑↓→), цвет — от isGood.
+ *
+ *  - flat                 → neutral (ink-3)
+ *  - any direction + good → green
+ *  - any direction + !good → coral/red (brand-600)
+ *
+ * Resolves three prior incidents where down+good was rendered coral
+ * (cost decrease) and down+!good was rendered green (loss with downward trend).
+ */
 function trendColor(direction: TrendDirection, isGood: boolean): string {
   if (direction === 'flat') return 'var(--color-ink-3)';
-  if (direction === 'up')   return isGood  ? 'var(--color-green)'       : 'var(--color-brand-600)';
-  /* down */                return isGood  ? 'var(--color-brand-600)'   : 'var(--color-green)';
+  return isGood ? 'var(--color-green)' : 'var(--color-brand-600)';
 }
 
 const kpiSizeMap = {

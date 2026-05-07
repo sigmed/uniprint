@@ -215,7 +215,11 @@ export default function OwnerDashboard() {
             </Button>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+            <section
+              className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0"
+              aria-label="Топ заказов по прибыльности — таблица"
+              tabIndex={0}
+            >
               <table className="w-full min-w-[420px] text-sm">
                 <thead>
                   <tr style={{ background: 'var(--color-surface-3)' }}>
@@ -312,7 +316,7 @@ export default function OwnerDashboard() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </section>
           </CardContent>
         </Card>
 

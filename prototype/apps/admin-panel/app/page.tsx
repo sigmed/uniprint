@@ -53,6 +53,22 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
+/** Human-friendly last-login: «Сейчас» / «HH:MM сегодня» / «Вчера HH:MM» / DD.MM.YYYY. */
+function formatLastLogin(iso?: string): string {
+  if (!iso) return '—';
+  const date = new Date(iso);
+  const now = new Date();
+  const diffMin = Math.round((now.getTime() - date.getTime()) / 60_000);
+  if (diffMin < 2) return 'Сейчас';
+  const time = date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  const isToday = date.toDateString() === now.toDateString();
+  if (isToday) return `${time} сегодня`;
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) return `Вчера ${time}`;
+  return date.toLocaleDateString('ru-RU');
+}
+
 const AVATAR_COLORS = [
   'linear-gradient(135deg,#7AAB54,#3F6E22)',
   'linear-gradient(135deg,#5A8AA8,#2E5470)',
@@ -217,7 +233,11 @@ export default function AdminHome() {
               <Skeleton variant="rect" className="h-24" />
             </div>
           ) : (
-            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+            <section
+              className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0"
+              aria-label="Пользователи системы — таблица"
+              tabIndex={0}
+            >
               <table className="w-full min-w-[700px] text-sm">
                 <thead>
                   <tr style={{ background: 'var(--color-surface-3)' }}>
@@ -282,7 +302,7 @@ export default function AdminHome() {
                       </td>
                       {/* Last login */}
                       <td className="p-3" style={{ fontSize: '12px', color: 'var(--color-ink-3)' }}>
-                        {u.createdAt ? new Date(u.createdAt).toLocaleDateString('ru-RU') : '—'}
+                        {formatLastLogin(u.lastLoginAt)}
                       </td>
                       {/* Status */}
                       <td className="p-3">
@@ -296,7 +316,7 @@ export default function AdminHome() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </section>
           )}
         </CardContent>
       </Card>

@@ -6,7 +6,10 @@
     "rules": {
       "recommended": true,
       "correctness": { "noUnusedVariables": "warn" },
-      "style": { "useImportType": "warn" }
+      "style": { "useImportType": "warn" },
+      "a11y": {
+        "noNoninteractiveTabindex": "off"
+      }
     }
   },
   "javascript": { "formatter": { "quoteStyle": "single", "semicolons": "always" } },

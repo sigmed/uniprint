@@ -14,4 +14,6 @@ export interface User {
   faceTemplateId?: string;
   faceConsentAt?: string;
   createdAt: string;
+  /** Last successful login timestamp. Optional — для legacy users. */
+  lastLoginAt?: string;
 }

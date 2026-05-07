@@ -203,7 +203,11 @@ export default function HomePage() {
               />
             </CardContent>
           ) : (
-            <div className="overflow-x-auto">
+            <section
+              className="overflow-x-auto"
+              aria-label="Последние заказы — таблица"
+              tabIndex={0}
+            >
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr>
@@ -274,7 +278,7 @@ export default function HomePage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </section>
           )}
 
           <CardFooter className="justify-end">
