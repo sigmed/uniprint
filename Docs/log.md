@@ -5,6 +5,49 @@
 
 ## 2026-05-07
 
+### Sprint 5 · Админ-панель (admin-panel) per `admin.png`
+
+`feature/prototype` — S5 из by-cabinet roadmap. До S5 admin-panel не получал
+S0-style polish (нет RoleSwitcher / topbar slots / RoleTag — только AppShell с
+sidebar). Объёмнее чем S3/S4.
+
+**Layout (`app/layout.tsx`):**
+- Импорты: добавлены RoleSwitcher, ROLES, Crumbs, SearchInput, IconButton
+- RoleSwitcher current="admin" поверх AppShell
+- AppShell stickyTopOffset={49}
+- topbarLeft = Crumbs «Админ-панель / Дашборд»
+- topbarRight = SearchInput «Пользователи, услуги, материалы…» + IconButton Bell с red dot
+- Sidebar nav уже был корректным с двумя секциями Управление / Безопасность
+
+**Page (`app/page.tsx`):**
+- RoleTag tone="admin" «Администратор» поверх PageHeader
+- PageHeader border={false} + class px-0 pb-6 (стиль остальных кабинетов)
+- KPI cols-4 — 4 deltas добавлены: «из 30 лимит» (flat) / «RBAC» (flat) / «+3 за неделю»
+  (up,good) / «R3-track» (flat)
+- Section «Разделы управления» margin корректировки
+- Card title «Пользователи» → «Пользователи системы» с count badge {users.length}
+- Card right action: link «Все пользователи →» → Button «+ Добавить» с Plus leftIcon
+- Table header «Роль» → «Роль · RBAC»
+
+**Mocks (`fixtures/users.ts`):**
+- 8 named users (вместо procedural «Сотрудник N»):
+  - usr_001 owner = Виктор Соколов
+  - usr_002 production_chief = Михаил Петров
+  - usr_003 printer = Алексей Кузнецов
+  - usr_004 printer = Илья Беляев
+  - usr_005 laser = Андрей Лысенко
+  - usr_011 warehouse_keeper = Дмитрий Сорокин (consistent with warehouse-mobile)
+  - usr_012 manager_office = Мария Иванова (consistent with manager-web)
+  - usr_018 admin = Сергей Петров (consistent with admin-panel UserCard)
+
+**Vision-first-ui Gate 2:**
+- `Docs/design/screenshots/v5-5-admin-1440.png` (full page, 23/23 регионов MATCH)
+- `Docs/design/screenshots/v5-5-admin-380.png` (RoleSwitcher wrap, 2x2 KPI grid)
+- `Docs/design/specs/admin-diff-v5.md` — verbal diff, PASS, 2 cosmetic follow-ups → S7
+  (table rows order vs reference, last-login дата вместо createdAt)
+
+**Pipeline:** typecheck 10/10, unit 9/9, build admin-panel PASS.
+
 ### Fix · ComingSoon component + global 404 + 4 PWA stubs
 
 Owner reported: тап на «Остатки» (warehouse `/stocks`) ведёт на bare 404. Same для

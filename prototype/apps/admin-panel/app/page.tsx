@@ -1,25 +1,28 @@
 'use client';
 import { useEffect, useState } from 'react';
 import {
-  PageHeader,
-  KpiCard,
+  AdminTile,
+  AnimatedCounter,
+  Button,
   Card,
+  CardContent,
   CardHeader,
   CardTitle,
-  CardContent,
-  AdminTile,
-  StatPill,
+  KpiCard,
+  PageHeader,
+  RoleTag,
   Skeleton,
-  AnimatedCounter,
+  StatPill,
 } from '@uniprint/ui';
 import {
-  Users,
   Briefcase,
-  Package,
-  List,
-  FileText,
   Camera,
+  FileText,
+  List,
+  Package,
+  Plus,
   Shield,
+  Users,
 } from 'lucide-react';
 import type { User } from '@uniprint/types';
 
@@ -75,35 +78,47 @@ export default function AdminHome() {
   const previewUsers = users.slice(0, 5);
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="py-6 md:py-8">
+      <RoleTag tone="admin">Администратор</RoleTag>
+
       <PageHeader
-        title="Управление"
+        title="Управление системой"
         accentText="системой"
         description="Пользователи, роли, справочники услуг и материалов, нормативы. Все изменения попадают в audit-log (152-ФЗ)."
+        border={false}
+        className="px-0 pb-6"
       />
 
-      {/* KPI row */}
-      <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3.5">
+      {/* KPI row — hardcoded baseline per admin.png reference */}
+      <div className="mb-6 grid grid-cols-2 gap-3.5 md:grid-cols-4">
         <KpiCard
           label="Пользователей"
           value={<AnimatedCounter value={28} />}
           icon={<Users className="h-4 w-4" />}
+          trend="flat"
+          delta="из 30 лимит"
         />
         <KpiCard
           label="Активных ролей"
           value={<AnimatedCounter value={9} />}
-          hint="RBAC"
           icon={<Shield className="h-4 w-4" />}
+          trend="flat"
+          delta="RBAC"
         />
         <KpiCard
           label="SKU материалов"
           value={<AnimatedCounter value={200} />}
           icon={<Package className="h-4 w-4" />}
+          trend="up"
+          trendIsGood
+          delta="+3 за неделю"
         />
         <KpiCard
           label="Услуг в каталоге"
           value={<AnimatedCounter value={47} />}
           icon={<Briefcase className="h-4 w-4" />}
+          trend="flat"
+          delta="R3-track"
         />
       </div>
 
@@ -114,7 +129,6 @@ export default function AdminHome() {
           fontWeight: 500,
           fontSize: '20px',
           letterSpacing: '-0.01em',
-          marginTop: '32px',
           marginBottom: '14px',
           color: 'var(--color-ink)',
         }}
@@ -123,7 +137,7 @@ export default function AdminHome() {
       </h2>
 
       {/* AdminTile grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+      <div className="mb-6 grid grid-cols-1 gap-3.5 md:grid-cols-3">
         <AdminTile
           href="/users"
           icon={<Users size={18} />}
@@ -175,20 +189,27 @@ export default function AdminHome() {
       </div>
 
       {/* Users preview table */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Пользователи</CardTitle>
-          <a
-            href="/users"
-            style={{
-              fontSize: '13px',
-              color: 'var(--color-brand-500)',
-              fontWeight: 500,
-              textDecoration: 'none',
-            }}
-          >
-            Все пользователи →
-          </a>
+      <Card>
+        <CardHeader className="flex-row items-center justify-between gap-3">
+          <CardTitle className="flex items-center gap-2.5">
+            Пользователи системы
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontWeight: 600,
+                fontSize: 11,
+                background: 'var(--color-surface-2)',
+                color: 'var(--color-ink-3)',
+                padding: '3px 8px',
+                borderRadius: 99,
+              }}
+            >
+              {loading ? '…' : users.length}
+            </span>
+          </CardTitle>
+          <Button size="sm" leftIcon={<Plus size={14} />}>
+            Добавить
+          </Button>
         </CardHeader>
         <CardContent className="p-0">
           {loading ? (
@@ -201,7 +222,7 @@ export default function AdminHome() {
                 <thead>
                   <tr style={{ background: 'var(--color-surface-3)' }}>
                     <th className="p-3 text-left font-medium" style={{ color: 'var(--color-ink-3)', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>ФИО</th>
-                    <th className="p-3 text-left font-medium" style={{ color: 'var(--color-ink-3)', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Роль</th>
+                    <th className="p-3 text-left font-medium" style={{ color: 'var(--color-ink-3)', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Роль · RBAC</th>
                     <th className="p-3 text-left font-medium" style={{ color: 'var(--color-ink-3)', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Face Control</th>
                     <th className="p-3 text-left font-medium" style={{ color: 'var(--color-ink-3)', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Последний вход</th>
                     <th className="p-3 text-left font-medium" style={{ color: 'var(--color-ink-3)', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Статус</th>
