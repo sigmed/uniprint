@@ -278,18 +278,32 @@ export default function WarehouseHomePage() {
         <SectionTitle>Последние списания</SectionTitle>
 
         <PwaTaskCard
-          id="UNI-2026-00005"
+          id="UNI-2026-00005 · 14:18"
           status={<StatPill tone="done">Списано</StatPill>}
-          title="Баннерная ткань 440 г/м²"
-          meta="200 листов · партия P-2026-039"
+          title="Бумага мелованная 300 г"
+          meta={
+            <>
+              <span>200 листов · 90×50</span>
+              <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-ink-2)' }}>
+                партия P-2026-039
+              </span>
+            </>
+          }
           showArrow={false}
         />
 
         <PwaTaskCard
-          id="UNI-2026-00003"
+          id="UNI-2026-00003 · 13:46"
           status={<StatPill tone="done">Списано</StatPill>}
-          title="Оракал 641 матовый белый"
-          meta="5 рулон · партия P-2026-031"
+          title="Баннерная ткань 440 г/м²"
+          meta={
+            <>
+              <span>3 м² · ПВХ</span>
+              <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-ink-2)' }}>
+                партия P-2026-018
+              </span>
+            </>
+          }
           showArrow={false}
         />
       </div>

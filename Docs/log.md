@@ -5,6 +5,33 @@
 
 ## 2026-05-07
 
+### Sprint 4 · Склад PWA (warehouse-mobile) per `Storage.png`
+
+`feature/prototype` — S4 из by-cabinet roadmap'а. Аналогично S3, большая часть была
+реализована в redesign 2026-05-06 (PhoneFrame, ShiftBar amber, 4 BigButton, BR-01/03/09
+callout, bottom-nav 4 tabs). Доработки в S4:
+
+**Layout (`app/layout.tsx`):**
+- RoleSwitcher current="warehouse", `<div className="hidden sm:block">` (desktop preview only)
+- MockBanner перенесён из `position: fixed` в inline-flow
+
+**Page (`app/page.tsx`):**
+- Обновлены writeoff history cards под Storage.png референс:
+  - #1: «Бумага мелованная 300 г», meta «200 листов · 90×50» + mono «партия P-2026-039»,
+    id «UNI-2026-00005 · 14:18»
+  - #2: «Баннерная ткань 440 г/м²», meta «3 м² · ПВХ» + mono «партия P-2026-018»,
+    id «UNI-2026-00003 · 13:46»
+  (раньше материалы и метаданные не совпадали с референсом)
+
+**Vision-first-ui Gate 2:**
+- `Docs/design/screenshots/v4-4-warehouse-1440.png` — desktop preview, RoleSwitcher
+  + MockBanner + PhoneFrame с полным контентом, 21/21 регион MATCH
+- `Docs/design/screenshots/v4-4-warehouse-380.png` — actual mobile, RoleSwitcher
+  скрыт, MockBanner ясно виден, PhoneFrame full-screen
+- `Docs/design/specs/warehouse-diff-v4.md` — verbal diff vs reference, PASS
+
+**Pipeline:** typecheck 10/10, build warehouse-mobile PASS.
+
 ### Sprint 3 · Производство PWA (production-mobile) per `production.png`
 
 `feature/prototype` — S3 из by-cabinet roadmap'а. Большая часть production-mobile уже
