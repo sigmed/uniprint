@@ -1,6 +1,9 @@
 # Playwright MCP runtime artifacts (snapshots, console logs)
 .playwright-mcp/
 
+# Vercel local link state (per-project, не должно коммититься)
+.vercel/
+
 # Скриншоты владельца / drag-and-drop в корне репо.
 # Полезные screenshots должны лежать в Docs/design/screenshots/.
 /Screenshot*.png
