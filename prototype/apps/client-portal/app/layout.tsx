@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import {
   AppShell,
-  Crumbs,
   IconButton,
   MockBanner,
   ROLES,
@@ -10,6 +9,7 @@ import {
   fontVariables,
 } from '@uniprint/ui';
 import { Bell, FileText, HelpCircle, Home, LayoutGrid, Package } from 'lucide-react';
+import { ClientPortalCrumbs } from './_crumbs';
 import { MSWInit } from './msw-init';
 import './globals.css';
 
@@ -37,9 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             appName="Кабинет клиента"
             nav={nav}
             stickyTopOffset={49}
-            topbarLeft={
-              <Crumbs items={[{ label: 'Кабинет клиента' }, { label: 'Главная' }]} />
-            }
+            topbarLeft={<ClientPortalCrumbs />}
             topbarRight={
               <>
                 <SearchInput placeholder="Поиск по заказам и услугам" />

@@ -29,18 +29,31 @@ const NAMED: Record<number, string> = {
 };
 
 /**
- * Last-login timestamps для admin-table — варьированные per reference (Сейчас /
- * 14:52 / 08:30 / Вчера 19:14 / etc.). Index → ISO string. Используется fixture date
- * 2026-05-07 (today) и 2026-05-06 (yesterday).
+ * Last-login timestamps — варьированные per reference (Сейчас / HH:MM сегодня /
+ * Вчера HH:MM). Index → ISO string. Top-5 по recency на admin home должны быть:
+ * Мария → Алексей → Дмитрий → Сергей → Виктор (per admin.png reference,
+ * S5 follow-up закрыт здесь).
+ *
+ * Используем относительные смещения от `NOW` (момент загрузки модуля на
+ * сервере) — так порядок recency стабилен независимо от того, в какое время
+ * стартанул dev-сервер. usr_012 (Мария) = NOW → «Сейчас» в formatLastLogin.
  */
-const TODAY = '2026-05-07';
-const YESTERDAY = '2026-05-06';
+const NOW = Date.now();
+const MIN = 60_000;
+const HOUR = 60 * MIN;
+const DAY = 24 * HOUR;
+const iso = (offsetMs: number): string => new Date(NOW - offsetMs).toISOString();
 const LAST_LOGINS: Record<number, string> = {
-  0: `${TODAY}T14:52:00Z`,        // Виктор (owner)
-  1: `${TODAY}T08:30:00Z`,        // Михаил (production_chief)
-  2: `${TODAY}T09:00:00Z`,        // Алексей (printer)
-  3: new Date().toISOString(),     // Илья (printer) — «Сейчас»
-  4: `${YESTERDAY}T19:14:00Z`,    // Андрей (laser)
+  // Top-5 по recency (порядок per admin.png reference)
+  11: iso(0),                  // Мария Иванова (manager_office) — «Сейчас»
+  2:  iso(30 * MIN),           // Алексей Кузнецов (printer) — ~30 мин назад
+  10: iso(4 * HOUR),           // Дмитрий Сорокин (warehouse_keeper) — ~4 ч назад
+  17: iso(7 * HOUR),           // Сергей Петров (admin) — ~7 ч назад
+  0:  iso(DAY - 5 * HOUR),     // Виктор Соколов (owner) — вчера вечером
+  // Прочие named users — за пределами top-5 home preview
+  1:  iso(DAY - 2 * HOUR),     // Михаил Петров (production_chief) — вчера ночью
+  3:  iso(DAY + 4 * HOUR),     // Илья Беляев (printer) — позавчера
+  4:  iso(2 * DAY),            // Андрей Лысенко (laser) — 2 дня назад
 };
 
 export const usersFixture: User[] = ROLES.map((role, i) => {

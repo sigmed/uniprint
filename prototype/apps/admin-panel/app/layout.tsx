@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import {
   AppShell,
-  Crumbs,
   IconButton,
   MockBanner,
   ROLES,
@@ -9,6 +8,7 @@ import {
   SearchInput,
   fontVariables,
 } from '@uniprint/ui';
+import { AdminCrumbs } from './_crumbs';
 import type { NavItem } from '@uniprint/ui';
 import {
   Bell,
@@ -48,9 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             appName="Админ-панель"
             nav={nav}
             stickyTopOffset={49}
-            topbarLeft={
-              <Crumbs items={[{ label: 'Админ-панель' }, { label: 'Дашборд' }]} />
-            }
+            topbarLeft={<AdminCrumbs />}
             topbarRight={
               <>
                 <SearchInput placeholder="Пользователи, услуги, материалы…" />

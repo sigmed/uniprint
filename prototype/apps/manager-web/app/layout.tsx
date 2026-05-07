@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import {
   AppShell,
   Button,
-  Crumbs,
   IconButton,
   MockBanner,
   ROLES,
@@ -21,7 +20,7 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react';
-import Link from 'next/link';
+import { ManagerCrumbs } from './_crumbs';
 import { MSWInit } from './msw-init';
 import './globals.css';
 
@@ -50,17 +49,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             appName="Менеджер офиса"
             nav={nav}
             stickyTopOffset={49}
-            topbarLeft={
-              <Crumbs items={[{ label: 'Менеджер' }, { label: 'Дашборд' }]} />
-            }
+            topbarLeft={<ManagerCrumbs />}
             topbarRight={
               <>
                 <SearchInput placeholder="Заказ, клиент, телефон…" />
-                <Link href="/orders/new">
-                  <Button variant="brand" size="md" leftIcon={<Plus size={16} />}>
-                    Новый заказ
-                  </Button>
-                </Link>
+                <Button
+                  href="/orders/new"
+                  variant="brand"
+                  size="md"
+                  leftIcon={<Plus size={16} />}
+                >
+                  Новый заказ
+                </Button>
                 <IconButton icon={<Bell size={16} />} ariaLabel="Уведомления" withDot />
               </>
             }

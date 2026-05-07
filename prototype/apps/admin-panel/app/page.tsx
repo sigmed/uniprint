@@ -90,8 +90,15 @@ export default function AdminHome() {
       });
   }, []);
 
-  // Show first 5 users in dashboard table
-  const previewUsers = users.slice(0, 5);
+  // Show top-5 users by last-login recency (per admin.png reference order:
+  // Мария / Алексей / Дмитрий / Сергей / Виктор). Users без lastLoginAt — в конец.
+  const previewUsers = [...users]
+    .sort((a, b) => {
+      const ta = a.lastLoginAt ? new Date(a.lastLoginAt).getTime() : 0;
+      const tb = b.lastLoginAt ? new Date(b.lastLoginAt).getTime() : 0;
+      return tb - ta;
+    })
+    .slice(0, 5);
 
   return (
     <div className="py-6 md:py-8">

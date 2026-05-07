@@ -42,6 +42,11 @@ export { PwaTaskCard, type PwaTaskCardProps, type PwaTaskCardTone } from './comp
 export { ShiftBar, type ShiftBarProps } from './components/shift-bar';
 export { RoleTag, type RoleTagProps, type RoleTagTone } from './components/role-tag';
 export { Crumbs, type CrumbsProps, type CrumbItem } from './components/crumbs';
+export {
+  AutoCrumbs,
+  type AutoCrumbsProps,
+  type CrumbsResolver,
+} from './components/auto-crumbs';
 export { SearchInput, type SearchInputProps } from './components/search-input';
 export { IconButton, type IconButtonProps } from './components/icon-button';
 export { Tabs, type TabsProps, type TabItem } from './components/tabs';

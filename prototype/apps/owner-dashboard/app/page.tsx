@@ -210,7 +210,12 @@ export default function OwnerDashboard() {
         <Card>
           <CardHeader className="flex-row items-center justify-between gap-3">
             <CardTitle>Топ заказов по прибыльности</CardTitle>
-            <Button variant="ghost" size="sm" rightIcon={<ChevronRight size={14} />}>
+            <Button
+              href="/profit"
+              variant="ghost"
+              size="sm"
+              rightIcon={<ChevronRight size={14} />}
+            >
               drill-down
             </Button>
           </CardHeader>
@@ -373,6 +378,7 @@ export default function OwnerDashboard() {
             ))}
 
             <Button
+              href="/defects"
               variant="ghost"
               size="md"
               block

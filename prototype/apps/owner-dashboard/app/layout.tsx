@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import {
   AppShell,
   Button,
-  Crumbs,
   IconButton,
   MockBanner,
   ROLES,
   RoleSwitcher,
   fontVariables,
 } from '@uniprint/ui';
+import { OwnerCrumbs } from './_crumbs';
 import type { NavItem } from '@uniprint/ui';
 import {
   AlertTriangle,
@@ -50,9 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             appName="Дашборд учредителя"
             nav={nav}
             stickyTopOffset={49}
-            topbarLeft={
-              <Crumbs items={[{ label: 'Учредитель' }, { label: 'Сводка' }]} />
-            }
+            topbarLeft={<OwnerCrumbs />}
             topbarCenter={<PeriodTabs />}
             topbarRight={
               <>

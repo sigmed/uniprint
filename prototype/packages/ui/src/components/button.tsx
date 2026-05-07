@@ -1,6 +1,12 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Loader2 } from 'lucide-react';
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import {
+  forwardRef,
+  type AnchorHTMLAttributes,
+  type ButtonHTMLAttributes,
+  type Ref,
+  type ReactNode,
+} from 'react';
 import { cn } from '../lib/utils';
 
 const buttonVariants = cva(
@@ -67,16 +73,24 @@ const buttonVariants = cva(
   },
 );
 
-export interface ButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+interface BaseButtonProps extends VariantProps<typeof buttonVariants> {
   loading?: boolean;
   loadingText?: string;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
+  className?: string;
+  children?: ReactNode;
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+export type ButtonProps =
+  | (BaseButtonProps &
+      Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseButtonProps> & { href?: undefined })
+  | (BaseButtonProps &
+      Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseButtonProps | 'href'> & {
+        href: string;
+      });
+
+export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
   (
     {
       className,
@@ -88,31 +102,51 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       leftIcon,
       rightIcon,
       children,
-      disabled,
       ...props
     },
     ref,
-  ) => (
-    <button
-      ref={ref}
-      disabled={disabled ?? loading}
-      aria-busy={loading}
-      className={cn(buttonVariants({ variant, size, block }), className)}
-      {...props}
-    >
-      {loading ? (
-        <>
-          <Loader2 className="animate-spin" size={14} aria-hidden="true" />
-          {loadingText ?? children}
-        </>
-      ) : (
-        <>
-          {leftIcon != null && <span aria-hidden="true">{leftIcon}</span>}
-          {children}
-          {rightIcon != null && <span aria-hidden="true">{rightIcon}</span>}
-        </>
-      )}
-    </button>
-  ),
+  ) => {
+    const content = loading ? (
+      <>
+        <Loader2 className="animate-spin" size={14} aria-hidden="true" />
+        {loadingText ?? children}
+      </>
+    ) : (
+      <>
+        {leftIcon != null && <span aria-hidden="true">{leftIcon}</span>}
+        {children}
+        {rightIcon != null && <span aria-hidden="true">{rightIcon}</span>}
+      </>
+    );
+    const sharedClass = cn(buttonVariants({ variant, size, block }), className);
+
+    if ('href' in props && typeof props.href === 'string') {
+      const { href, ...anchorRest } = props;
+      return (
+        <a
+          ref={ref as Ref<HTMLAnchorElement>}
+          href={href}
+          aria-busy={loading}
+          className={sharedClass}
+          {...anchorRest}
+        >
+          {content}
+        </a>
+      );
+    }
+
+    const { disabled, ...buttonRest } = props as ButtonHTMLAttributes<HTMLButtonElement>;
+    return (
+      <button
+        ref={ref as Ref<HTMLButtonElement>}
+        disabled={disabled ?? loading}
+        aria-busy={loading}
+        className={sharedClass}
+        {...buttonRest}
+      >
+        {content}
+      </button>
+    );
+  },
 );
 Button.displayName = 'Button';

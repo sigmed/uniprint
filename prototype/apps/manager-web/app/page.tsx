@@ -55,6 +55,20 @@ const COLUMNS: { id: ColId; tone: ColTone; title: string }[] = [
   { id: 'done', tone: 'done', title: 'Готовы / Выданы' },
 ];
 
+// Demo-only: override клиентов в таблице «Все заказы за сегодня» — fixture
+// держит UNI-00001..00006 на cli_001 (ради 6-orders demo в client-portal),
+// но manager.png reference показывает разных клиентов per строке. Override
+// применяется только на отображение в этой таблице, не меняет данные.
+const TABLE_CLIENT_OVERRIDE_BY_CLI: Record<string, Record<string, string>> = {
+  cli_001: {
+    'UNI-2026-00002': 'ИП Воронов',
+    'UNI-2026-00003': 'ООО «Маяк»',
+    'UNI-2026-00004': 'Кофейня «Бариста»',
+    'UNI-2026-00005': 'ИП Грачёв',
+    'UNI-2026-00006': 'ООО «Север»',
+  },
+};
+
 // Demo-only: per-card avatar map matching manager.png reference.
 // In prod: derive from order.designerId / managerId via /api/users.
 const ASSIGNEE_BY_NUMBER: Record<string, KanbanCardAssignee> = {
@@ -111,6 +125,9 @@ export default function ManagerDashboard() {
   }, []);
 
   const clientName = (id: string) => clients.find((c) => c.id === id)?.name ?? id;
+  // Display-only override для таблицы (не для Kanban): см. TABLE_CLIENT_OVERRIDE_BY_CLI.
+  const tableClientName = (clientId: string, orderNumber: string) =>
+    TABLE_CLIENT_OVERRIDE_BY_CLI[clientId]?.[orderNumber] ?? clientName(clientId);
 
   const columnOrders = (col: ColId) =>
     orders.filter((o) => orderToColumn(o.status) === col).slice(0, 2);
@@ -316,7 +333,7 @@ export default function ManagerDashboard() {
                       <div className="font-semibold text-[var(--color-ink)]">{o.title}</div>
                     </td>
                     <td className="px-[22px] py-[13px] text-[13px] text-[var(--color-ink-2)]">
-                      {clientName(o.clientId)}
+                      {tableClientName(o.clientId, o.number)}
                     </td>
                     <td className="px-[22px] py-[13px]">
                       <span
