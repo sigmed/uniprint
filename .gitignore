@@ -1,0 +1,16 @@
+# Playwright MCP runtime artifacts (snapshots, console logs)
+.playwright-mcp/
+
+# Скриншоты владельца / drag-and-drop в корне репо.
+# Полезные screenshots должны лежать в Docs/design/screenshots/.
+/Screenshot*.png
+/screenshot*.png
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Logs
+*.log
