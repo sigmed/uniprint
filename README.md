@@ -76,8 +76,19 @@ pnpm lint         # Biome
 ## Текущий статус
 
 **Phase-0** (discovery + спека + прототип на моках). By-cabinet roadmap
-S0-S7 закрыт 2026-05-07. Прототип готов к manual-deploy на Vercel
-preview. Pipeline: typecheck 10/10 · lint 10/10 0 warnings · build 6/6
+S0-S7 закрыт 2026-05-07. **Прототип в проде на Vercel** — 6 кабинетов:
+
+- https://uniprint-client.vercel.app (Клиент)
+- https://uniprint-manager.vercel.app (Менеджер)
+- https://uniprint-production.vercel.app (Производство · PWA)
+- https://uniprint-warehouse.vercel.app (Склад · PWA)
+- https://uniprint-admin.vercel.app (Админ)
+- https://uniprint-owner.vercel.app (Учредитель)
+
+Auto-deploy на push в `main`. Все данные синтетические, реальные ПДн
+вводить запрещено (PROTOTYPE banner на каждом экране).
+
+Pipeline: typecheck 10/10 · lint 10/10 0 warnings · build 6/6
 · **e2e 44/44 PASS** на feature-ветке.
 
 **Открытые блокеры (ответы заказчика):** Q1 юрисдикция, Q2 Face
