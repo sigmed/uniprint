@@ -52,6 +52,6 @@ export { IconButton, type IconButtonProps } from './components/icon-button';
 export { Tabs, type TabsProps, type TabItem } from './components/tabs';
 export { PwaTabBar, type PwaTabBarProps, type PwaTabItem } from './components/pwa-tab-bar';
 export { ComingSoon, type ComingSoonProps, type ComingSoonVariant } from './components/coming-soon';
-export { ROLES, type RoleKey } from './lib/roles';
+export { ROLES, getRoles, type RoleKey } from './lib/roles';
 export { cn } from './lib/utils';
 export { fraunces, manrope, jetbrainsMono, fontVariables } from './lib/fonts';

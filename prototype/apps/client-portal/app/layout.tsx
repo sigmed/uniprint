@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import {
   AppShell,
   IconButton,
   MockBanner,
-  ROLES,
   RoleSwitcher,
   SearchInput,
   fontVariables,
+  getRoles,
 } from '@uniprint/ui';
 import { Bell, FileText, HelpCircle, Home, LayoutGrid, Package } from 'lucide-react';
 import { ClientPortalCrumbs } from './_crumbs';
@@ -27,12 +28,14 @@ const nav = [
   { href: '/support', label: 'Поддержка', icon: <HelpCircle className="h-4 w-4" /> },
 ];
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const host = (await headers()).get('host');
+  const roles = getRoles(host);
   return (
     <html lang="ru" className={fontVariables}>
       <body>
         <MSWInit>
-          <RoleSwitcher current="client" roles={ROLES} />
+          <RoleSwitcher current="client" roles={roles} />
           <AppShell
             appName="Кабинет клиента"
             nav={nav}

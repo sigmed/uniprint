@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import {
   AppShell,
   Button,
   IconButton,
   MockBanner,
-  ROLES,
   RoleSwitcher,
   SearchInput,
   fontVariables,
+  getRoles,
 } from '@uniprint/ui';
 import {
   Bell,
@@ -39,12 +40,14 @@ const nav = [
   { section: 'Документы', href: '/support', label: 'Постобслуживание', icon: <LifeBuoy className="h-4 w-4" />, badge: 2 },
 ];
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const host = (await headers()).get('host');
+  const roles = getRoles(host);
   return (
     <html lang="ru" className={fontVariables}>
       <body>
         <MSWInit>
-          <RoleSwitcher current="manager" roles={ROLES} />
+          <RoleSwitcher current="manager" roles={roles} />
           <AppShell
             appName="Менеджер офиса"
             nav={nav}
