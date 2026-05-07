@@ -5,6 +5,30 @@
 
 ## 2026-05-07
 
+### Sprint 3 · Производство PWA (production-mobile) per `production.png`
+
+`feature/prototype` — S3 из by-cabinet roadmap'а. Большая часть production-mobile уже
+была реализована в redesign 2026-05-06 (PhoneFrame + ShiftBar + PwaTaskCard + BigButton
++ BR-03 callout + bottom-nav 4 tabs). В S3 — добавление RoleSwitcher для desktop preview:
+
+**Layout (`app/layout.tsx`):**
+- Импорт `RoleSwitcher`, `ROLES` из `@uniprint/ui`
+- RoleSwitcher current="production", обёрнут в `<div className="hidden sm:block">` —
+  показывается только на desktop preview (выше sm breakpoint = 640px), скрыт на
+  actual mobile где PhoneFrame занимает весь viewport
+- MockBanner перенесён из `position: fixed` в обычный inline-flow (теперь стек:
+  RoleSwitcher → MockBanner → PhoneFrame на desktop, MockBanner → PhoneFrame на mobile)
+
+**Vision-first-ui Gate 2:**
+- `Docs/design/screenshots/v3-3-production-1440.png` (desktop preview) — RoleSwitcher
+  + yellow MockBanner + PhoneFrame с полным контентом
+- `Docs/design/screenshots/v3-3-production-380.png` (actual mobile) — RoleSwitcher
+  скрыт, PhoneFrame на весь экран
+- `Docs/design/specs/production-diff-v3.md` — verbal diff vs reference, PASS, 2 cosmetic
+  follow-ups в S7 (subtle MockBanner на mobile, status bar дубль на actual mobile).
+
+**Pipeline:** typecheck 10/10, lint 10/10, build production-mobile PASS.
+
 ### S2 follow-up · Button readability + global OrderStatusBadge colors
 
 `feature/prototype` — Найдены и исправлены два визуальных бага сразу после S2 review:

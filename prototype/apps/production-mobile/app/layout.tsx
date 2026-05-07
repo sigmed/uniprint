@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { MockBanner, fontVariables } from '@uniprint/ui';
+import { MockBanner, ROLES, RoleSwitcher, fontVariables } from '@uniprint/ui';
 import { MSWInit } from './msw-init';
 import './globals.css';
 
@@ -21,10 +21,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ru" className={fontVariables}>
       <body style={{ margin: 0, padding: 0, background: 'var(--color-surface-2)' }}>
         <MSWInit>
-          {/* MockBanner floats above PhoneFrame on desktop */}
-          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}>
-            <MockBanner variant="subtle" />
+          {/* RoleSwitcher: hidden on actual mobile (no PhoneFrame frame there);
+              shown on desktop preview above the simulated phone */}
+          <div className="hidden sm:block">
+            <RoleSwitcher current="production" roles={ROLES} />
           </div>
+          <MockBanner variant="subtle" />
           {children}
         </MSWInit>
       </body>
