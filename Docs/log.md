@@ -5,6 +5,45 @@
 
 ## 2026-05-07
 
+### Sprint 6 · Учредитель (owner-dashboard) per `owner.png`
+
+`feature/prototype` — S6 из by-cabinet roadmap. Финал cabinet sprints. До S6 owner-
+dashboard имел все домен-карты (KPI / P&L / BarRow / TopOrders / Brak panel) но без
+S0-style topbar slots / RoleSwitcher / RoleTag и с рассинхроном данных vs reference.
+
+**Layout (`app/layout.tsx`):**
+- RoleSwitcher current="owner" поверх AppShell
+- stickyTopOffset={49}
+- topbarLeft = Crumbs «Учредитель / Сводка»
+- topbarCenter = `<PeriodTabs />` (новый client wrapper) — Tabs Сегодня/Неделя(active)/
+  Месяц/Год через UI-компонент Tabs (раньше был inline-стилизованный `<button>` row)
+- topbarRight = Button ghost «Экспорт» + IconButton Bell с red dot (раньше было
+  inline div + Button secondary)
+
+**`app/_period-tabs.tsx` (новый)** — client component обёртка для Tabs (нужен useState).
+
+**Page (`app/page.tsx`):**
+- Убран `useEffect` fetch — KPI hardcoded baseline per reference (30/6/6/3)
+- RoleTag tone="owner" «Учредитель»
+- PageHeader «Сводка за неделю» с border={false} + class
+- KPI cols-4 — все 4 deltas: «+18% к плану» / «загрузка ровная» / «в срок 100%» /
+  «потери 4 200 ₽»
+- TOP_ORDERS обновлены под reference (UNI-00004/00005/00003/00002 с правильными
+  титлами: «Баннер 6×1 м», «Визитки 500 шт», «Готовый стенд тип 3», «Визитки 200 шт»)
+- Card title «Топ заказов» → «Топ заказов по прибыльности» + Button «drill-down →»
+  с ChevronRight rightIcon
+- DEFECTS обновлены — добавлены `meta` с UNI-номерами + ярлык «фикс. ДС» (BR-03,
+  Дмитрий Сорокин = warehouse_keeper). 2-column layout: label+meta слева,
+  amount+«фикс. ДС» справа.
+
+**Vision-first-ui Gate 2:**
+- `Docs/design/screenshots/v6-6-owner-{1440,380}.png` (full + responsive)
+- `Docs/design/specs/owner-diff-v6.md` — verbal diff, 27/27 регионов MATCH
+  (1 cosmetic minor: trendIsGood semantics для negative-direction metrics — третий
+  инцидент после client-portal v3 и admin S5)
+
+**Pipeline:** typecheck 10/10, build owner-dashboard PASS.
+
 ### Sprint 5 · Админ-панель (admin-panel) per `admin.png`
 
 `feature/prototype` — S5 из by-cabinet roadmap. До S5 admin-panel не получал
