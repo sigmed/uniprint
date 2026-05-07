@@ -539,12 +539,35 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 
 **Memory** — `~/.claude/projects/D--Projects-Uniprint/memory/` (auto-memory).
 
-## Текущий статус (2026-05-05)
+## Текущий статус (2026-05-07)
 
 **Фаза:** Phase-0 (discovery / спецификация / прототип на моках).
-**Спринт:** sprint-0 (открытый, до подписания договора).
+**Спринт:** by-cabinet roadmap **S0-S7 закрыты** (S8 closure открыт).
 
 ### Последние вехи
+
+- **2026-05-07** — **By-cabinet roadmap S0-S7 closed** (`feature/prototype`).
+  Все 6 кабинетов прошли S0-style polish с RoleSwitcher + topbar slots
+  (Crumbs / Search / IconButton Bell) + RoleTag + reference-точное содержание
+  per `Docs/design/references/*.png`:
+  - **S0** — 5 components (RoleTag, Crumbs, SearchInput, IconButton, Tabs) +
+    ROLES config + AppShell topbar slots (`f7669a5`)
+  - **S1** client-portal `00e4de4` · **S2** manager-web `1fee0d8` ·
+    **S3** production-mobile `940be57` · **S4** warehouse-mobile `247610e` ·
+    **S5** admin-panel `56602ed` · **S6** owner-dashboard `454216c`
+  - **Bonus fixes** между спринтами: Button text readability + global
+    OrderStatusBadge color (`4413298`); PwaTabBar глобальный bottom-nav на
+    sub-страницах PWA (`b691619`); ComingSoon + 4 stubs + 6 not-found
+    pages (`a794a4b`)
+  - **S7 hardening** (`75a7b4a`): KpiCard trendIsGood semantics fix (3
+    инцидента resolved), RoleTag tone унификация (все coral), PhoneFrame
+    status bar hide on mobile, lastLoginAt field + formatLastLogin helper,
+    a11y фикс на overflow-x-auto regions per WCAG 2.1.1, e2e адаптация
+    селекторов под новую структуру.
+  - **Pipeline (Rule C, последний прогон 2026-05-07):** typecheck 10/10
+    (3.5s), lint 10/10 0 warnings (0.5s), unit 9/9, build 6/6 (13.9s),
+    **e2e 44/44 PASS** (15.1s).
+  - Подробнее — `Docs/log.md`, `Docs/design/specs/*-diff-v[2-6].md`.
 
 - **2026-05-06** — **Redesign 2026-05-06** (`feature/prototype`). Полный
   визуальный пересмотр под новую дизайн-концепцию (warm cream + coral + Fraunces
@@ -582,8 +605,25 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 
 **Полная история — `Docs/log.md`**.
 
-### Не сделано / следующее (после ответов 🔴 Q1-Q5)
+### Не сделано / следующее
 
+**Пауза взята 2026-05-07** на текущем месте — продолжить можно с любого пункта:
+
+**S8 Closure** (последний спринт by-cabinet roadmap'а, ~1-2ч):
+- [ ] Финальный summary-документ + retro
+- [ ] `Docs/07-roadmap.md` — пометить Phase 1+2 как closed
+- [ ] CHANGELOG.md обновить (если применимо)
+
+**Backlog для будущих спринтов** (накоплено за S1-S7):
+- [ ] PWA sub-screens — 4 экрана: production «Смена» / «Заработок» / «История»,
+      warehouse «Остатки». Сейчас stub'ы через `<ComingSoon>`. См. memory
+      `project_pwa_tabs_dead.md`. Связать с PRD модулей 6.20 (Face Control)
+      и 6.22 (ЗП/баланс BR-05).
+- [ ] drill-down hrefs для buttons на owner-dashboard
+- [ ] Admin table rows order vs reference (S5 cosmetic follow-up)
+- [ ] Fixture cli distribution для UNI-00002..00006 (S2 cosmetic follow-up)
+
+**Compliance / архитектура (после ответов 🔴 Q1-Q5):**
 - [ ] Manual Vercel deploy 6 кабинетов владельцем (см. `prototype/README.md`)
 - [ ] ADR-0001 (Mobile=PWA — закрыт ответом Q6, оформить документ)
 - [ ] ADR-0002 Face Control vendor, ADR-0003 хостинг,
