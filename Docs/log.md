@@ -5,6 +5,102 @@
 
 ## 2026-05-07
 
+### Crumbs upgrade — dynamic per-route + clickable + ChevronRight + Home icon
+
+`feature/prototype` — переработка хлебных крошек в TopBar для всех 4 desktop-
+кабинетов. PWA (production/warehouse) не используют Crumbs (PhoneFrame, не AppShell).
+
+**Проблема (до):** layout жёстко передавал статичный 2-сегментный crumb
+`[Кабинет, Дашборд]` для **всех** routes — `/users` показывал «Админ-панель /
+Дашборд», что некорректно. Первый сегмент не был кликабельным, separator —
+plain `/`, без overflow handling.
+
+**Изменения:**
+
+1. `packages/ui/src/components/crumbs.tsx` — апгрейд:
+   - Separator `/` → `<ChevronRight size=13>` (lucide-react)
+   - Optional `withHomeIcon` prop — Home icon в первом сегменте
+   - `itemMaxWidth` (default 180px) + `truncate` ellipsis на каждом item
+   - Hover-стейт на link-сегментах (`ink-3 → ink`)
+   - Server component (без `usePathname`)
+
+2. `packages/ui/src/components/auto-crumbs.tsx` (new) — клиентский wrapper:
+   - Использует `usePathname()` из `next/navigation`
+   - Принимает `rootLabel` + `resolve(pathname): CrumbItem[]` callback
+   - Root crumb автоматически clickable (с `href`) если есть segments —
+     иначе static (как раньше)
+
+3. Per-cabinet `app/_crumbs.tsx` (new × 4):
+   - **client-portal**: `/`, `/orders`, `/orders/new`, `/orders/[id]` →
+     `[Кабинет клиента, Заказы, Детали заказа]` etc.
+   - **manager-web**: `/`, `/leads`, `/orders`, `/orders/new` →
+     3-уровневая с clickable «Заказы» на /orders/new
+   - **admin-panel**: `/`, `/users`, `/catalog/{services|materials}`,
+     `/norms`, `/audit-log`, `/face-control` — поддержано 7 routes
+   - **owner-dashboard**: `/`, `/profit`, `/defects`
+
+4. 4 layouts перешли с `<Crumbs items=[...]>` на `<{Cabinet}Crumbs />` client
+   component. Кстати-баг: в `manager-web/layout.tsx` была вложенность
+   `<Link><Button>…</Button></Link>` (invalid HTML) — заменили на новый
+   `<Button href="/orders/new">…` (поддержка href добавлена в Cosmetic
+   follow-ups этим же днём).
+
+**Pipeline (Rule C):**
+- typecheck 10/10 (3.5s) · lint 10/10 0 warnings (0.5s) · build 6/6 (14.1s)
+  · **e2e 44/44 PASS** (16.9s)
+
+**Verified visually** (per snapshot):
+- admin `/users` → 🏠 Админ-панель › **Пользователи**
+- admin `/catalog/services` → 🏠 Админ-панель › Справочники › **Услуги**
+- owner `/profit` → 🏠 Учредитель › **Прибыль по заказам**
+- manager `/orders/new` → 🏠 Менеджер › Заказы (link `/orders`) › **Новый заказ**
+
+Screenshots: `Docs/design/screenshots/v7-crumbs-{admin-users,owner-profit}.png`.
+
+### S0-S7 cosmetic follow-ups — drill-down hrefs + admin order + manager clients
+
+`feature/prototype` — закрыты 3 косметических follow-up'а из памяти
+`project_state_2026-05-07_pause` (накопились в S2/S5/S6, не блокировали Phase-0).
+
+**1. owner-dashboard drill-down hrefs (S6 follow-up):**
+- `packages/ui/src/components/button.tsx` — Button получил optional `href` prop.
+  Когда задан, рендерится `<a>` с теми же variants — без вложенности
+  `button-в-anchor`. Соответствует паттерну AdminTile (тоже `<a>`).
+- `apps/owner-dashboard/app/page.tsx` — кнопки «drill-down →» и «Открыть
+  отчёт по браку» получили `href="/profit"` и `href="/defects"`.
+- Новые stub-страницы `app/profit/page.tsx` и `app/defects/page.tsx` через
+  `<ComingSoon variant="planned">` — с описанием будущего scope (детализация
+  маржи, журнал брака per BR-03). Build добавил оба route как pre-rendered.
+
+**2. admin-panel home table order (S5 follow-up):**
+- `packages/mocks/src/fixtures/users.ts` — `lastLoginAt` пересчитан на
+  относительные смещения от `Date.now()`: usr_012 Мария = NOW («Сейчас»),
+  Алексей = -30мин, Дмитрий = -4ч, Сергей = -7ч, Виктор = вчера ~18:14.
+  Стабильный порядок recency независимо от времени старта dev-сервера.
+- `apps/admin-panel/app/page.tsx` — top-5 на дашборде сортируются по
+  `lastLoginAt desc` перед slice. `/users` page (полная таблица 30 строк)
+  не тронут — сохраняет fixture order.
+- Verified per snapshot: Мария / Алексей / Дмитрий / Сергей / Виктор —
+  совпадает с `admin.png` reference.
+
+**3. manager-web client distribution (S2 follow-up):**
+- Fixture не трогали (`cli_001 = ООО Рассвет` остался с 6 заказами для
+  client-portal demo).
+- `apps/manager-web/app/page.tsx` — display-only override
+  `TABLE_CLIENT_OVERRIDE_BY_CLI` для UNI-00002..00006 в таблице «Все заказы
+  за сегодня». Kanban использует фактического клиента, как раньше.
+- Verified: 00001 → Рассвет / 00002 → Воронов / 00003 → Маяк / 00004 →
+  Бариста / 00005 → Грачёв / 00006 → Север / 00007 → Соколов / 00008 →
+  Маяк — совпадает с `manager.png` reference.
+- Client-portal проверен — 6 заказов под cli_001 остались (не сломали
+  baseline).
+
+**Pipeline (Rule C):**
+- typecheck 10/10 (7.4s) · lint 10/10 0 warnings (0.5s) · unit 9/9 (1.4s)
+  · build 6/6 (21.3s · +2 routes /profit, /defects) · **e2e 44/44 PASS** (20.3s)
+- Screenshots: `Docs/design/screenshots/v7-{owner,admin,manager}-1440-*.png`,
+  `v7-owner-{profit,defects}-stub.png`.
+
 ### Sprint 7 · Hardening — фиксы накопленных follow-ups + a11y
 
 `feature/prototype` — S7 из by-cabinet roadmap. Подобраны 6 высокоприоритетных задач

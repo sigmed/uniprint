@@ -619,9 +619,12 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
       warehouse «Остатки». Сейчас stub'ы через `<ComingSoon>`. См. memory
       `project_pwa_tabs_dead.md`. Связать с PRD модулей 6.20 (Face Control)
       и 6.22 (ЗП/баланс BR-05).
-- [ ] drill-down hrefs для buttons на owner-dashboard
-- [ ] Admin table rows order vs reference (S5 cosmetic follow-up)
-- [ ] Fixture cli distribution для UNI-00002..00006 (S2 cosmetic follow-up)
+- [ ] owner-dashboard /profit и /defects — сейчас `<ComingSoon>` stub'ы
+      (S0-S7 cosmetic 2026-05-07 закрыл hrefs кнопок). Полные экраны после PRD
+      модулей детализации маржи и журнала брака.
+- [x] drill-down hrefs для buttons на owner-dashboard (закрыто 2026-05-07)
+- [x] Admin table rows order vs reference (закрыто 2026-05-07: sort by lastLoginAt)
+- [x] Fixture cli distribution для UNI-00002..00006 (закрыто 2026-05-07: display override в manager-web)
 
 **Compliance / архитектура (после ответов 🔴 Q1-Q5):**
 - [ ] Manual Vercel deploy 6 кабинетов владельцем (см. `prototype/README.md`)
