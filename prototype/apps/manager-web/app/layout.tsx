@@ -57,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <>
                 <SearchInput placeholder="Заказ, клиент, телефон…" />
                 <Link href="/orders/new">
-                  <Button size="sm" leftIcon={<Plus size={14} />}>
+                  <Button variant="brand" size="md" leftIcon={<Plus size={16} />}>
                     Новый заказ
                   </Button>
                 </Link>

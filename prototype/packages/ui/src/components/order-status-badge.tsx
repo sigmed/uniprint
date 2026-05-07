@@ -1,86 +1,57 @@
 import type { OrderStatus } from '@uniprint/types';
-import { cn } from '../lib/utils';
+import { StatPill, type StatPillTone } from './stat-pill';
 
-type StatusSize = 'sm' | 'md';
+/**
+ * OrderStatusBadge — отображение статуса заказа единым визуальным языком
+ * со StatPill (Kanban). Перенаправляет в StatPill через статус-to-tone маппинг
+ * — все 6 кабинетов получают одни и те же яркие цвета без расхождений.
+ *
+ * Если нужно использовать кастомный лейбл/тон (на Kanban-карточках сокращения
+ * вроде «Печать» вместо «В производстве»), бери StatPill напрямую.
+ */
 
-interface StatusConfig {
+interface PillSpec {
+  tone: StatPillTone;
   label: string;
-  tokenKey: string;
   pulse: boolean;
 }
 
-const STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
-  draft:           { label: 'Черновик',                  tokenKey: 'draft',           pulse: false },
-  lead:            { label: 'Лид',                       tokenKey: 'lead',            pulse: false },
-  measured:        { label: 'Замер сделан',              tokenKey: 'measured',        pulse: false },
-  designing:       { label: 'На дизайне',                tokenKey: 'designing',       pulse: true  },
-  design_review:   { label: 'Проверка макета',           tokenKey: 'design-review',   pulse: false },
-  client_approval: { label: 'Согласование с клиентом',  tokenKey: 'client-approval', pulse: true  },
-  queued:          { label: 'В очереди',                 tokenKey: 'queued',          pulse: false },
-  in_production:   { label: 'В производстве',            tokenKey: 'in-production',   pulse: true  },
-  in_qc:           { label: 'На контроле',               tokenKey: 'in-qc',           pulse: false },
-  defect_rework:   { label: 'Брак / переделка',          tokenKey: 'defect',          pulse: true  },
-  ready:           { label: 'Готов',                     tokenKey: 'ready',           pulse: false },
-  delivered:       { label: 'Выдан',                     tokenKey: 'delivered',       pulse: false },
-  closed:          { label: 'Закрыт',                    tokenKey: 'closed',          pulse: false },
-  cancelled:       { label: 'Отменён',                   tokenKey: 'cancelled',       pulse: false },
+const STATUS_TO_PILL: Record<OrderStatus, PillSpec> = {
+  draft:           { tone: 'neutral', label: 'Черновик',                pulse: false },
+  lead:            { tone: 'queue',   label: 'Лид',                     pulse: false },
+  measured:        { tone: 'queue',   label: 'Замер сделан',            pulse: false },
+  designing:       { tone: 'design',  label: 'На дизайне',              pulse: true  },
+  design_review:   { tone: 'review',  label: 'Проверка макета',         pulse: false },
+  client_approval: { tone: 'design',  label: 'Согласование с клиентом', pulse: true  },
+  queued:          { tone: 'queue',   label: 'В очереди',               pulse: false },
+  in_production:   { tone: 'work',    label: 'В производстве',          pulse: true  },
+  in_qc:           { tone: 'review',  label: 'На контроле',             pulse: false },
+  defect_rework:   { tone: 'defect',  label: 'Брак / переделка',        pulse: true  },
+  ready:           { tone: 'done',    label: 'Готов',                   pulse: false },
+  delivered:       { tone: 'done',    label: 'Выдан',                   pulse: false },
+  closed:          { tone: 'neutral', label: 'Закрыт',                  pulse: false },
+  cancelled:       { tone: 'neutral', label: 'Отменён',                 pulse: false },
 };
 
 export interface OrderStatusBadgeProps {
   status: OrderStatus;
-  size?: StatusSize;
+  /** @deprecated не влияет — StatPill сам выбирает размер. */
+  size?: 'sm' | 'md';
+  /** @deprecated StatPill всегда показывает dot. */
   withDot?: boolean;
   className?: string;
 }
 
-const sizeClasses: Record<StatusSize, string> = {
-  sm: 'text-[var(--text-2xs)] px-2   py-0.5 gap-1',
-  md: 'text-[var(--text-xs)]  px-2.5 py-1   gap-1.5',
-};
-
-const dotSizeClasses: Record<StatusSize, string> = {
-  sm: 'w-1.5 h-1.5',
-  md: 'w-2   h-2',
-};
-
-export const OrderStatusBadge = ({
-  status,
-  size = 'md',
-  withDot = true,
-  className,
-}: OrderStatusBadgeProps) => {
-  // biome-ignore lint/style/noNonNullAssertion: STATUS_CONFIG is exhaustive over OrderStatus
-  const config = STATUS_CONFIG[status]!;
-  const key = config.tokenKey;
-
+export const OrderStatusBadge = ({ status, className }: OrderStatusBadgeProps) => {
+  const spec = STATUS_TO_PILL[status];
   return (
-    <span
-      data-status={status}
-      className={cn(
-        'inline-flex items-center rounded-[var(--radius-full)] font-[var(--font-weight-semibold)] leading-none select-none',
-        sizeClasses[size],
-        className,
-      )}
-      style={{
-        background: `var(--status-${key}-bg)`,
-        color: `var(--status-${key}-fg)`,
-        borderWidth: '1px',
-        borderStyle: 'solid',
-        borderColor: `var(--status-${key}-border)`,
-      }}
+    <StatPill
+      tone={spec.tone}
+      pulse={spec.pulse}
+      {...(className != null ? { className } : {})}
     >
-      {withDot && (
-        <span
-          className={cn(
-            'inline-block rounded-full shrink-0 bg-current',
-            dotSizeClasses[size],
-            config.pulse && '[animation:pulse-amber_1.8s_infinite]',
-          )}
-          aria-hidden="true"
-        />
-      )}
-      {config.label}
-    </span>
+      {spec.label}
+    </StatPill>
   );
 };
 OrderStatusBadge.displayName = 'OrderStatusBadge';

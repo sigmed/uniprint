@@ -68,7 +68,8 @@ const ASSIGNEE_BY_NUMBER: Record<string, KanbanCardAssignee> = {
   'UNI-2026-00005': { initials: 'МИ', tone: 'blue' },
 };
 
-// Short pill labels for Kanban cards (different from full OrderStatusBadge labels)
+// Short pill labels for Kanban cards (sокращения вроде «Печать» вместо «В производстве»;
+// для табличного представления статусов используется OrderStatusBadge с полными названиями).
 function cardPill(status: OrderStatus): { tone: StatPillTone; label: string } | null {
   switch (status) {
     case 'client_approval':

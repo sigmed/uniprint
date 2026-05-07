@@ -5,6 +5,38 @@
 
 ## 2026-05-07
 
+### S2 follow-up · Button readability + global OrderStatusBadge colors
+
+`feature/prototype` — Найдены и исправлены два визуальных бага сразу после S2 review:
+
+**Баг 1 (Button «+ Новый заказ» нечитаема):** Tailwind 4 без явного `length:`-hint
+интерпретирует `text-[var(--text-sm)]` ambivalently — генерирует и `font-size`,
+и `color: var(--text-sm)` (= length, невалидный color → fallback inherit → ink).
+Итог: brand variant пытался поставить cream-on-ink, но size variant сверху ставил
+color = ink. Текст стал невидим. Фикс — в `packages/ui/src/components/button.tsx`:
+- size variants: `text-[var(--text-*)]` → `text-[length:var(--text-*)]`
+- brand variant: `text-[var(--color-bg)]` → `[color:var(--color-bg)]`
+  (arbitrary-property syntax, чтобы tailwind-merge не схлопывал с size'овой).
+
+**Баг 2 (статусы в client-portal/manager-web таблицах не цветные):** OrderStatusBadge
+использовал `--status-{key}-bg` токены, для 6 из 14 статусов это был блёклый
+`#EAE2D2` или `#F0ECEA` (warm gray) — статусы выглядели одинаково. Глобальный фикс
+в `packages/ui/src/components/order-status-badge.tsx`: компонент теперь wrap'ит StatPill
+через `STATUS_TO_PILL` маппинг (queue/work/done/design/review/defect/neutral) — те же
+яркие токены, что в Kanban. Изменение глобальное — все 6 кабинетов получили цветные
+статусы автоматически без правок в apps/.
+
+**Также:**
+- `apps/manager-web/app/layout.tsx`: Button size sm→md + Plus icon 14→16 (ещё лучше readability)
+- `apps/manager-web/app/page.tsx`: убран дубль `statusToPill` helper (логика ушла в OrderStatusBadge)
+
+**Pipeline:** typecheck 10/10, lint 10/10 (2 pre-existing warnings), unit 9/9,
+build manager-web + client-portal PASS.
+
+**Screenshots:** `v2-4-manager-viewport.png` (button читаемая), `v2-4-manager-table.png`
+(таблица с цветными статусами), `v2-4-client-statuses.png` (client-portal таблица — те же
+цветные статусы автоматически).
+
 ### Sprint 2 · Менеджер (manager-web) polish per `manager.png`
 
 `feature/prototype` — Реализован Sprint 2 из by-cabinet roadmap'а

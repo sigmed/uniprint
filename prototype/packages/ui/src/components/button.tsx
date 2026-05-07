@@ -15,9 +15,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        /** primary: ink bg, cream text; hover → coral + glow + lift */
+        /** primary: ink bg, cream text; hover → coral + glow + lift. */
         brand: [
-          'bg-[var(--color-ink)] text-[var(--color-bg)]',
+          'bg-[var(--color-ink)] [color:var(--color-bg)]',
           'hover:bg-[var(--color-brand-500)] hover:-translate-y-px hover:shadow-[var(--shadow-coral-glow)]',
           'active:bg-[var(--color-brand-600)] active:translate-y-0',
         ].join(' '),
@@ -49,11 +49,13 @@ const buttonVariants = cva(
         ].join(' '),
       },
       size: {
-        xs:    'h-7 px-2.5 text-[var(--text-xs)]',
-        sm:    'h-8 px-3 text-[var(--text-sm)]',
-        md:    'h-9 px-4 text-[var(--text-sm)]',
-        lg:    'h-11 px-5 text-[var(--text-base)]',
-        touch: 'min-h-[var(--size-touch-min)] px-4 py-2 text-[var(--text-base)]',
+        // NB: `length:` hint inside arbitrary value disambiguates from color hint.
+        // Without it Tailwind 4 also generates a color rule that overrides variant fg.
+        xs:    'h-7 px-2.5 text-[length:var(--text-xs)]',
+        sm:    'h-8 px-3 text-[length:var(--text-sm)]',
+        md:    'h-9 px-4 text-[length:var(--text-sm)]',
+        lg:    'h-11 px-5 text-[length:var(--text-base)]',
+        touch: 'min-h-[var(--size-touch-min)] px-4 py-2 text-[length:var(--text-base)]',
         icon:  'h-9 w-9 p-0',
       },
       block: {
