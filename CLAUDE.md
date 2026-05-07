@@ -657,7 +657,7 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 
 ## Ссылки внутрь
 
-- [README.md](README.md) — короткая презентация (TBD)
+- [README.md](README.md) — короткая презентация проекта
 - [Docs/tz-po-uniprint.md](Docs/tz-po-uniprint.md) — основной ТЗ заказчика
 - [Docs/tz-dop-modules.md](Docs/tz-dop-modules.md) — дополнение ТЗ
 - [Docs/log.md](Docs/log.md) — журнал изменений (devlog)
