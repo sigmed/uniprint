@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import {
   AppShell,
   Button,
   IconButton,
   MockBanner,
-  ROLES,
   RoleSwitcher,
   fontVariables,
+  getRoles,
 } from '@uniprint/ui';
 import { OwnerCrumbs } from './_crumbs';
 import type { NavItem } from '@uniprint/ui';
@@ -40,12 +41,14 @@ const nav: NavItem[] = [
   { section: 'Контроль',  href: '/downtime',      label: 'Простои',             icon: <Clock className="h-4 w-4" /> },
 ];
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const host = (await headers()).get('host');
+  const roles = getRoles(host);
   return (
     <html lang="ru" className={fontVariables}>
       <body>
         <MSWInit>
-          <RoleSwitcher current="owner" roles={ROLES} />
+          <RoleSwitcher current="owner" roles={roles} />
           <AppShell
             appName="Дашборд учредителя"
             nav={nav}

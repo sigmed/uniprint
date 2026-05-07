@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import {
   AppShell,
   IconButton,
   MockBanner,
-  ROLES,
   RoleSwitcher,
   SearchInput,
   fontVariables,
+  getRoles,
 } from '@uniprint/ui';
 import { AdminCrumbs } from './_crumbs';
 import type { NavItem } from '@uniprint/ui';
@@ -38,12 +39,14 @@ const nav: NavItem[] = [
   { section: 'Безопасность', href: '/face-control',    label: 'Face Control',         icon: <Camera className="h-4 w-4" /> },
 ];
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const host = (await headers()).get('host');
+  const roles = getRoles(host);
   return (
     <html lang="ru" className={fontVariables}>
       <body>
         <MSWInit>
-          <RoleSwitcher current="admin" roles={ROLES} />
+          <RoleSwitcher current="admin" roles={roles} />
           <AppShell
             appName="Админ-панель"
             nav={nav}
