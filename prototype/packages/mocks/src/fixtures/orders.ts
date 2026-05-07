@@ -1,16 +1,14 @@
 import type { Order, OrderType, OrderStatus } from '@uniprint/types';
 
 /**
- * Demo orders fixture — 8 заказов клиента ООО «Рассвет» (cli_001) точно по
- * `Docs/design/references/User.png` + manager.png. UNI-2026-00001..00008.
+ * Demo orders fixture — 14 заказов под две демки:
+ *   - client-portal: cli_001 (ООО «Рассвет») имеет 6 заказов (UNI-00001..00006)
+ *   - manager-web: 8 заказов на Kanban (00001..00009 без 00006) распределены
+ *     по 4 колонкам по 2 карточки + клиенты варьируются per `manager.png`
+ *     (00007 → ИП Соколов cli_007, 00008 → ООО Маяк cli_003).
  *
- * Status distribution для KPI:
- *   - active (queued + in_production + designing + client_approval) = 3 orders
- *   - in_production = 2 orders
- *   - ready/delivered = 4 orders (включая «Готов» + «Выдан»)
- *
- * Plus 6 extra orders для manager-web demo (assignees различные, разные клиенты).
- * Всего 14 orders (8 client demo + 6 manager extra).
+ * UNI-2026-00001..00014. Дополнительные 00010..00014 — для manager KPI cols-5
+ * (in_production, ready, delivered, defect_rework — разные клиенты cli_002..007).
  */
 
 interface DemoOrder {
@@ -111,10 +109,11 @@ const DEMO: DemoOrder[] = [
     createdDay: 6,
   },
   {
+    // ИП Соколов per manager.png Kanban col «Лиды / Дизайн»
     number: 'UNI-2026-00007',
     type: 'cex',
     status: 'designing',
-    clientId: 'cli_001',
+    clientId: 'cli_007',
     managerId: 'usr_012',
     designerId: 'usr_009',
     title: 'Баннер 4×1 м',
@@ -125,10 +124,11 @@ const DEMO: DemoOrder[] = [
     createdDay: 7,
   },
   {
+    // ООО «Маяк» per manager.png Kanban col «Лиды / Дизайн»
     number: 'UNI-2026-00008',
     type: 'office',
     status: 'client_approval',
-    clientId: 'cli_001',
+    clientId: 'cli_003',
     managerId: 'usr_012',
     title: 'Визитки 800 шт',
     metaText: 'мел. 250 г',

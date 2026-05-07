@@ -3,6 +3,53 @@
 > Журнал ключевых изменений по дате. Append-only. Для каждого
 > изменения — короткая запись + commit-хеш.
 
+## 2026-05-07
+
+### Sprint 2 · Менеджер (manager-web) polish per `manager.png`
+
+`feature/prototype` — Реализован Sprint 2 из by-cabinet roadmap'а
+(`Docs/superpowers/plans/2026-05-06-roadmap-by-cabinet.md`).
+
+**Layout (`app/layout.tsx`):**
+- `RoleSwitcher current="manager"` поверх AppShell
+- `stickyTopOffset={49}`
+- `topbarLeft` = Crumbs «Менеджер / Дашборд»
+- `topbarRight` = SearchInput «Заказ, клиент, телефон…» + Button «+ Новый заказ»
+  (Plus leftIcon) + IconButton Bell с red dot
+- Sidebar nav 2 секции: «Продажи» (Дашборд / Лиды badge=3 / Заказы / Клиенты /
+  Каталог · BR-04) + «Документы» (Счета и акты / Постобслуживание badge=2)
+
+**Dashboard (`app/page.tsx`):**
+- RoleTag «Менеджер офиса» + PageHeader «Сегодня, HH:MM» (time italic coral)
+- KPI cols-5 (hardcoded baseline): 3 / 6 / 30 / 2 / 160 sup«к ₽» с дельтами
+  «конверсия 62%» / «из 30 заказов» / «+4 сегодня» / «просрочены 0» / «+18% к плану»
+- Card «Активные заказы» с Tabs «Канбан/Список/Календарь», count badge=8
+- Kanban 4 cols ×2 cards (col tones: design→queue/lead→work→done):
+  «Лиды/Дизайн» (00007 ИП Соколов avatar ЕС, 00008 pill «Согласование» avatar МИ),
+  «В очереди» (00001 Рассвет ИП, 00009 «50 шт · цех» АК),
+  «В производстве» (00002 pill «Печать» АК, 00003 pill «На контроле» ДС),
+  «Готовы/Выданы» (00004 pill «Готов» ДС, 00005 pill «Выдан» МИ)
+- Card «Все заказы за сегодня 8» с Button ghost «Экспорт» (Download icon)
+- Table 6 cols: № · Заказ · Клиент · Тип · BR-07 · Статус (OrderStatusBadge) · Сумма
+
+**Mocks (`fixtures/orders.ts`):**
+- 00007 reassigned cli_001 → cli_007 (ИП Соколов) per Kanban reference
+- 00008 reassigned cli_001 → cli_003 (ООО «Маяк») per Kanban reference
+- Header comment обновлён: 6 orders для cli_001 (client-portal), 14 total
+
+**Vision-first-ui Gate 2:**
+- `Docs/design/screenshots/v2-2-manager-1440.png` (full page)
+- `Docs/design/screenshots/v2-2-manager-380.png` (mobile)
+- `Docs/design/specs/manager-diff-v2.md` — verbal diff vs reference, PASS
+
+**Pipeline (S2.4):** typecheck 10/10, lint 10/10 (2 pre-existing warnings в
+tabs.tsx про type-only-import + stale biome-ignore — не из S2), build manager-web PASS.
+
+**Follow-ups → S7 (Hardening):**
+1. RoleTag tone=manager rendering — currently blue, reference appears coral
+2. Fixture client distribution для UNI-00002..00006 — все cli_001 vs reference's varied
+3. Tabs.tsx 2 lint warnings (cleanup)
+
 ## 2026-05-06
 
 ### Redesign 2026-05-06 — визуальный пересмотр прототипа
