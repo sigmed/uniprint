@@ -5,6 +5,105 @@
 
 ## 2026-05-07
 
+### Vercel deploy — все 6 кабинетов в проде
+
+`main` — впервые задеплоили 6 кабинетов прототипа на Vercel preview
+(публичные URL'ы, моки активны).
+
+**Live URL'ы:**
+
+| Кабинет | URL | Root Directory |
+| --- | --- | --- |
+| Клиент | https://uniprint-client.vercel.app | `prototype/apps/client-portal` |
+| Менеджер | https://uniprint-manager.vercel.app | `prototype/apps/manager-web` |
+| Производство (PWA) | https://uniprint-production.vercel.app | `prototype/apps/production-mobile` |
+| Склад (PWA) | https://uniprint-warehouse.vercel.app | `prototype/apps/warehouse-mobile` |
+| Админ | https://uniprint-admin.vercel.app | `prototype/apps/admin-panel` |
+| Учредитель | https://uniprint-owner.vercel.app | `prototype/apps/owner-dashboard` |
+
+Все 6 verified: 200 OK на `/`, sub-routes (admin `/users`, owner
+`/profit`, manager `/orders/new`, etc.), MSW моки рендерят данные
+client-side, RoleSwitcher навигация между кабинетами работает.
+
+**Изменения:**
+
+1. **`vercel.json` × 6 — workspace install/build pattern:**
+
+   ```json
+   {
+     "framework": "nextjs",
+     "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+     "buildCommand": "cd ../.. && pnpm --filter @uniprint/<app> build",
+     "outputDirectory": ".next"
+   }
+   ```
+
+   Vercel pipeline: install → framework detection → build. Без
+   правильного installCommand детект Next.js падает (нет
+   `node_modules/next/`). Auto-detect не работает потому что
+   pnpm-lock.yaml в `prototype/`, не в Root Directory.
+
+2. **`packages/ui/src/lib/roles.ts` — host-based URL resolver:**
+
+   Добавлена функция `getRoles(host?: string)` — резолвит ссылки
+   RoleSwitcher из текущего host:
+   - `*.vercel.app` → `https://uniprint-{role}.vercel.app`
+   - `localhost` → `http://localhost:300X`
+
+   6 layouts перешли на async + `await headers()` + `getRoles(host)`.
+   До этого фикса на проде ссылки RoleSwitcher вели на localhost (404).
+
+3. **`prototype/apps/{6}/.gitignore`** — добавлено через `vercel link`,
+   игнорит `.vercel/` (per-project link state).
+
+4. **Корневой `.gitignore`** — добавлен `.vercel/` (моя misplaced
+   попытка CLI deploy создала корневой `.vercel`, потом удалили).
+
+**Vercel project settings (одинаково для всех 6):**
+
+- Framework Preset: **Next.js**
+- Root Directory: `prototype/apps/<app>`
+- Include files outside Root Directory: **Enabled** (критично для workspace deps)
+- Production Branch: **`main`**
+- Install/Build/Output: defaults (vercel.json переопределяет)
+- Environment Variables: пусто (моки не требуют ENV)
+
+**Грабли по пути (для будущих deploys):**
+
+- ❌ Vercel default build на `main` — изначальный main был docs-only,
+  деплой клонировал commit без кода → ошибки. Фикс: merge
+  feature/prototype → main.
+- ❌ Root Directory с ведущим пробелом (` prototype/apps/...`) —
+  Vercel не нашёл папку. Фикс: руками удалить пробел.
+- ❌ Framework Preset = "Other" — Vercel не запускает next build.
+  Фикс: переключить на "Next.js".
+- ❌ `installCommand: "echo 'install handled by buildCommand'"` —
+  ломал детект Next.js. Фикс: реальный install в installCommand.
+- ❌ Удалить vercel.json и положиться на auto-detect — не работает,
+  Vercel запускает npm install (не pnpm) при отсутствии lockfile в
+  Root Directory.
+- ❌ CLI deploy из app dir с уже-выставленной Root Directory —
+  путь дублируется (`apps/owner-dashboard/prototype/apps/owner-dashboard`).
+  Фикс: GitHub-driven auto-deploy без CLI.
+
+**Pipeline (Rule C):** typecheck 10/10 (4.2s) · lint 10/10 ·
+unit 9/9 · build 6/6 (12.9s) · e2e 44/44 PASS.
+
+**Compliance reminder** (CLAUDE.md правило 7): прототип на Vercel
+допустим **только** потому что:
+1. Все данные синтетические (`prototype/MOCK_NOTICE.txt`)
+2. PROTOTYPE banner на каждом экране
+3. Реальные ПДн вводить запрещено в UI
+
+Для production (Phase-1+) хостинг — РФ-юрисдикция per 152-ФЗ ст. 18 ч. 5
+(финал после ответа владельца 🔴 Q3).
+
+Screenshots: `Docs/design/screenshots/v7-vercel-deploy-{owner,manager,production,admin-users}.png`.
+
+Commits: `eee5f75` (delete vercel.json — wrong direction), `85eea4e`
+(restore proper vercel.json), `50aab1c` (host-based getRoles + 6 async
+layouts), `3130a83`/`0fa2fc0`/`1203386` (merges feature → main).
+
 ### Crumbs upgrade — dynamic per-route + clickable + ChevronRight + Home icon
 
 `feature/prototype` — переработка хлебных крошек в TopBar для всех 4 desktop-
