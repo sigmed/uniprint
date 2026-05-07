@@ -5,6 +5,46 @@
 
 ## 2026-05-07
 
+### Fix · ComingSoon component + global 404 + 4 PWA stubs
+
+Owner reported: тап на «Остатки» (warehouse `/stocks`) ведёт на bare 404. Same для
+production placeholder routes. Запрошены дизайнерские заглушки на отсутствующие
+страницы + глобальная страница 404.
+
+**Создан компонент `<ComingSoon>` в `packages/ui/`:**
+- 2 варианта: `planned` (Hammer icon, «В РАЗРАБОТКЕ» badge) и `not-found`
+  (Construction icon, «404 · НЕТ ТАКОЙ СТРАНИЦЫ» badge)
+- Cream surface card, coral icon в circle, Fraunces title, italic coral subtitle,
+  description, dark CTA button «Вернуться»
+- Не зависит от layout — работает в PWA (PhoneFrame) и desktop (AppShell) одинаково
+
+**4 stub-страницы для PWA tab placeholders** (привязка к product-roadmap):
+- `production-mobile/app/shift/page.tsx` — «Экран смены», Face Control read-only BR-06,
+  модуль 6.20
+- `production-mobile/app/earnings/page.tsx` — «Заработок», сделка + баланс BR-05,
+  модуль 6.22, ТК ст. 136
+- `production-mobile/app/history/page.tsx` — «История», закрытые задачи + расчёт
+- `warehouse-mobile/app/stocks/page.tsx` — «Остатки», SKU + партии FIFO BR-09
+
+Каждая обёрнута в PhoneFrame + PwaTabBar (правильный active highlight на текущий таб).
+
+**6 not-found.tsx** (по одному на кабинет):
+- PWA (production, warehouse): wrap в PhoneFrame + PwaTabBar для сохранения chrome
+- Desktop (client-portal, manager-web, admin-panel, owner-dashboard): bare ComingSoon —
+  AppShell из layout сам обернёт sidebar + topbar
+- Per-cabinet subtitle и `homeLabel` (например manager → «На дашборд»)
+
+**Pipeline:** typecheck 10/10, lint 10/10, build 6/6 PASS.
+
+**Build issue resolved:** stub pages и not-found сначала падали с RSC ошибкой
+«Functions cannot be passed directly to Client Components» (PwaTabBar — `'use client'`,
+icon-функции в TABS не сериализуются через server→client boundary). Фикс: добавлен
+`'use client'` в stub pages и PWA not-found (6 файлов). Desktop not-found остаются
+server-only — у них нет PwaTabBar.
+
+**Screenshots:** `v4-6-warehouse-stocks-stub-380.png` (planned variant + active tab),
+`v4-6-manager-404-1440.png` (not-found variant inside AppShell).
+
 ### Fix · PwaTabBar global component (production + warehouse)
 
 Owner reported: bottom-nav tab bar пропадает на sub-страницах PWA (writeoff, defect,
