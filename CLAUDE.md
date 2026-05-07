@@ -16,8 +16,11 @@ Face Control), клиентский кабинет.
 **Тип:** greenfield (без legacy-кодовой базы).
 **Контекст (допущение):** РФ-юрисдикция (по терминологии ТЗ — рубли,
 ИП/ООО, СНО). Финал — после ответа клиента 🔴 #1.
-**Каналы:** Mobile App (для сотрудников), Web Panel (вкл. клиентский
-кабинет), Telegram-бот (вспомогательный — нотификации и быстрые действия).
+**Каналы:** PWA mobile-first (производство, склад) + Web Panel
+(клиентский кабинет, менеджеры, дизайнеры, админ, учредитель).
+**Нотификации:** WebPush + SMS + Email через `apps/notifications`.
+**Telegram в продукте НЕ используется** (🔴 Q7 закрыт 2026-05-05) —
+только PM-канал команда↔владелец, не часть продукта.
 
 **Источник правды по требованиям:**
 - `Docs/tz-po-uniprint.md` — основной ТЗ (10 разделов, 25 модулей)
@@ -78,6 +81,76 @@ Django/DRF, Telegram Bot API, YooKassa SDK и т.д.):
 завершена только после обновления **всех** релевантных документов.
 Это часть Definition of Done.
 
+**C. Полный тест-пайплайн после каждого спринта.** Спринт не считается
+закрытым, пока не пройден **полный** test pass на актуальном HEAD ветки:
+
+```bash
+# В корне prototype/ (или другого workspace):
+pnpm typecheck      # все packages + apps — должно быть PASS
+pnpm lint           # biome — без errors
+pnpm build          # все apps собираются — PASS
+pnpm test           # unit-тесты, если есть — PASS
+pnpm test:e2e       # Playwright golden-path + extended smoke — PASS
+```
+
+Результаты (числа passed/total + время) фиксируются в
+`Docs/sprints/<NN>/retro.md` § «Test results» **и** в
+`Docs/log.md` записью по дате. Если хоть один шаг ❌ — спринт не
+закрывается, баги фиксируются в первый день следующего спринта или
+эскалируются в hotfix-ветку.
+
+**A1. Design System — обязательный источник правды для UI.**
+
+Перед любой работой с UI (новый экран / новый компонент / редизайн / стилизация):
+
+1. Прочитай `Docs/DESIGN_SYSTEM.md` — токены, типографика, компоненты, layout-правила
+2. Прочитай `Docs/AGENT_BRIEF.md` § «Жёсткие запреты» — что нельзя никогда
+3. Используй компоненты из `packages/ui/` — **не создавай локальные** в `apps/*/`
+4. Используй токены из `packages/tokens/` — **не хардкоди** `#XXXXXX`, `rgb(...)`, `font-family: ...`
+
+**Жёсткие запреты UI** (нарушение → PR отбрасывается на ревью):
+
+- ❌ Хардкод цветов (`style={{color: '#D9531E'}}`, `bg-orange-500`) → ✅ только токены (`text-brand`, `bg-brand-soft`)
+- ❌ Хардкод шрифтов (`fontFamily: 'Roboto'`, `font-mono` со своим шрифтом) → ✅ `font-display` (Fraunces) / `font-sans` (Manrope) / `font-mono` (JetBrains Mono)
+- ❌ Локальные `<div className="rounded-full bg-green-100 px-2 py-1">` → ✅ `<StatusPill status="done">` из `@uniprint/ui`
+- ❌ Иконки из `react-icons` / `heroicons` / SVG-инлайн → ✅ только `lucide-react`
+- ❌ Удаление `<ProtoTag>` бейджа без отдельного PR с чек-листом перехода в production
+- ❌ Telegram-иконка / упоминание / канал в любом месте UI
+- ❌ Sidebar в `production-mobile` или `warehouse-mobile` (это PWA mobile-first, не desktop)
+- ❌ Touch-target < 44pt в PWA-кабинетах
+- ❌ Magic numbers в padding/margin вне Tailwind-шкалы (`p-[17px]`, `mt-[23px]`)
+- ❌ `style={{...}}` инлайн-стили в компонентах (только через `variant` / `className` с токенами)
+
+**Layout-правила по кабинетам** (детально — `Docs/DESIGN_SYSTEM.md` § 6):
+
+| Кабинет | Тип | Базовый viewport | Главные действия |
+| --- | --- | --- | --- |
+| `client-portal` | Web desktop | 1280–1440px | `<Button variant="primary">` |
+| `manager-web` | Web desktop | 1280–1440px | `<Button>` + Kanban |
+| `production-mobile` | **PWA mobile-first** | 380px | `<BigButton>` 56px высотой |
+| `warehouse-mobile` | **PWA mobile-first** | 380px | `<BigButton>` 56px высотой |
+| `admin-panel` | Web desktop | 1280–1440px | `<Button>` + tile-grid |
+| `owner-dashboard` | Web desktop | 1280–1440px | KPI + drill-down |
+
+**Бизнес-правила в UI** (BR-XX из `BUSINESS_RULES.md` обязательно
+отображаются на экране, где они enforce'атся бэком):
+
+- BR-01 → callout перед формой списания (warehouse-mobile)
+- BR-02 → антидубль баннер при вводе телефона (manager-web)
+- BR-03 → callout «брак фиксирует только складщик» (production-mobile)
+- BR-04 → услуга только select из справочника (manager-web, client-portal)
+- BR-05 → текст «минимум выплачен, долг ... ₽» (production-mobile, экран Заработок)
+- BR-06 → события Face Control read-only, корректировка через workflow с журналом
+- BR-07 → тип заказа лейблом, mono-шрифт, обязательный фасет в фильтрах
+
+Полный список Design-System правил, токенов и компонентов — `Docs/DESIGN_SYSTEM.md`.
+Алгоритм выполнения UI-задачи — `Docs/AGENT_BRIEF.md`.
+
+> Это правило заложено по фидбеку владельца от 2026-05-05.
+> Применяется ко всем будущим спринтам начиная с sprint-1. Для уже
+> закрытого Phase-0 (прототип на моках) — pass зафиксирован в
+> `Docs/log.md` 2026-05-05.
+
 | Триггер | Что обновить |
 | --- | --- |
 | **Любой коммит / фича** | **`Docs/log.md`** — запись по дате (короткая, 1–3 строки + хеш) |
@@ -89,6 +162,8 @@ Django/DRF, Telegram Bot API, YooKassa SDK и т.д.):
 | Compliance-картина | `Docs/09-compliance.md` |
 | Новый ENV-vars / секрет | `CLAUDE.md` § «Внешние сервисы», `.env.example` |
 | Новое бизнес-правило (BR-XXX) | `BUSINESS_RULES.md`, релевантные `Docs/04-modules.md` |
+| Новый компонент в `packages/ui/` | `Docs/DESIGN_SYSTEM.md` § 5 «Компоненты», Storybook-стори |
+| Новый дизайн-токен (цвет / шрифт / spacing) | `packages/tokens/`, `Docs/DESIGN_SYSTEM.md` § 2-4 |
 | Новый user-level скилл / агент / MCP | `CLAUDE.md` § «Реестр инструментов», `Docs/team-structure.md` |
 | Конец спринта / Phase | `Docs/sprints/<NN>/retro.md`, `Docs/07-roadmap.md` (Phase → closed), `CLAUDE.md` § «Текущий статус» |
 
@@ -252,7 +327,10 @@ Auto-memory в `~/.claude/projects/D--Projects-Uniprint/memory/`. Сохраня
                               релизный, релевантные Docs/01-…10-…)
 13. Commit docs            → commit-commands:commit с префиксом `docs:`
 14. Close                  → закрытие issue / задачи
-15. ⚠️ Конец спринта/Phase → Docs/sprints/<NN>/retro.md,
+15. ⚠️ Конец спринта/Phase → правило C — полный тест-пайплайн
+                              (typecheck/lint/build/test/test:e2e),
+                              результаты в Docs/sprints/<NN>/retro.md
+                              «Test results» + Docs/log.md,
                               Docs/07-roadmap.md → Phase closed,
                               CLAUDE.md «Текущий статус» суммирует
 ```
@@ -277,8 +355,27 @@ Auto-memory в `~/.claude/projects/D--Projects-Uniprint/memory/`. Сохраня
       - [ ] ADR `Docs/adr/NNNN-…` (если архитектурное решение)
       - [ ] `CHANGELOG.md` (если релизный фрагмент)
       - [ ] Затронутые файлы из `Docs/01-…10-…` (если изменилась спека)
-- [ ] **Конец спринта**: `Docs/sprints/<NN>/retro.md` написан, Phase
-      в `Docs/07-roadmap.md` помечена как closed (если применимо).
+- [ ] **Design System не нарушена** (правило **A1** — для UI-задач):
+      - [ ] Все цвета — из `packages/tokens/` (нет `#XXXXXX` в коде)
+      - [ ] Все шрифты — `font-display` / `font-sans` / `font-mono` (нет `style={{fontFamily}}`)
+      - [ ] Использованы существующие компоненты из `packages/ui/`,
+            новые добавлены в `packages/ui/` со Storybook-стори
+      - [ ] Иконки только из `lucide-react`
+      - [ ] `<ProtoTag>` на месте, синтетические данные, нет Telegram
+      - [ ] Layout соответствует кабинету: desktop / PWA mobile-first
+      - [ ] Если PWA: touch-targets ≥ 44pt, главные действия — `<BigButton>`
+      - [ ] BR-XX, связанные с экраном, отображены в UI
+      - [ ] Проверено на 1280 / 1440 / 380px (PWA — обязательно 380px)
+- [ ] **Конец спринта** (правило **C** — полный тест-пайплайн):
+      - [ ] `pnpm typecheck` — PASS на всех packages + apps
+      - [ ] `pnpm lint` — без errors (Biome)
+      - [ ] `pnpm build` — все apps собираются
+      - [ ] `pnpm test` — unit, если есть
+      - [ ] `pnpm test:e2e` — Playwright golden-path + extended smoke (16+ tests)
+      - [ ] Числа passed/total + время вписаны в `Docs/sprints/<NN>/retro.md`
+            и в `Docs/log.md`
+      - [ ] `Docs/sprints/<NN>/retro.md` написан, Phase в
+            `Docs/07-roadmap.md` помечена как closed (если применимо)
 - [ ] Коммит документации сделан отдельно с префиксом `docs:`.
 
 ## Команды
@@ -287,9 +384,14 @@ Auto-memory в `~/.claude/projects/D--Projects-Uniprint/memory/`. Сохраня
 > после старта прототипа (`prototype/`) и production-stack ADR.
 
 ```bash
-# Прототип (Turborepo, Phase-0) — будет
-pnpm dev build test lint
+# Прототип (Turborepo, Phase-0)
+pnpm dev build test lint typecheck
 pnpm playwright test                 # smoke на моках
+
+# Design-system проверки (правило A1)
+pnpm storybook                       # все компоненты с stories
+pnpm lint:design                     # stylelint: запрет хардкода #XXXXXX
+pnpm test:visual                     # Chromatic / Percy snapshots (когда настроим)
 
 # Backend / Mobile — TBD после ADR на стек
 ```
@@ -437,13 +539,58 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 
 **Memory** — `~/.claude/projects/D--Projects-Uniprint/memory/` (auto-memory).
 
-## Текущий статус (2026-05-05)
+## Текущий статус (2026-05-07)
 
 **Фаза:** Phase-0 (discovery / спецификация / прототип на моках).
-**Спринт:** sprint-0 (открытый, до подписания договора).
+**Спринт:** by-cabinet roadmap **S0-S7 закрыты** (S8 closure открыт).
 
 ### Последние вехи
 
+- **2026-05-07** — **By-cabinet roadmap S0-S7 closed** (`feature/prototype`).
+  Все 6 кабинетов прошли S0-style polish с RoleSwitcher + topbar slots
+  (Crumbs / Search / IconButton Bell) + RoleTag + reference-точное содержание
+  per `Docs/design/references/*.png`:
+  - **S0** — 5 components (RoleTag, Crumbs, SearchInput, IconButton, Tabs) +
+    ROLES config + AppShell topbar slots (`f7669a5`)
+  - **S1** client-portal `00e4de4` · **S2** manager-web `1fee0d8` ·
+    **S3** production-mobile `940be57` · **S4** warehouse-mobile `247610e` ·
+    **S5** admin-panel `56602ed` · **S6** owner-dashboard `454216c`
+  - **Bonus fixes** между спринтами: Button text readability + global
+    OrderStatusBadge color (`4413298`); PwaTabBar глобальный bottom-nav на
+    sub-страницах PWA (`b691619`); ComingSoon + 4 stubs + 6 not-found
+    pages (`a794a4b`)
+  - **S7 hardening** (`75a7b4a`): KpiCard trendIsGood semantics fix (3
+    инцидента resolved), RoleTag tone унификация (все coral), PhoneFrame
+    status bar hide on mobile, lastLoginAt field + formatLastLogin helper,
+    a11y фикс на overflow-x-auto regions per WCAG 2.1.1, e2e адаптация
+    селекторов под новую структуру.
+  - **Pipeline (Rule C, последний прогон 2026-05-07):** typecheck 10/10
+    (3.5s), lint 10/10 0 warnings (0.5s), unit 9/9, build 6/6 (13.9s),
+    **e2e 44/44 PASS** (15.1s).
+  - Подробнее — `Docs/log.md`, `Docs/design/specs/*-diff-v[2-6].md`.
+
+- **2026-05-06** — **Redesign 2026-05-06** (`feature/prototype`). Полный
+  визуальный пересмотр под новую дизайн-концепцию (warm cream + coral + Fraunces
+  + dark sidebar + PWA phone-frame). 9 новых компонентов, рефакторинг 12
+  существующих, переписаны все 6 кабинетов. Анимации: page-fade, BarRow
+  fill-on-view, card hover-lift, count-up KPI, status pulse. Pipeline (Rule C):
+  typecheck 10/10, lint 10/10, build 6/6, unit 9/9, e2e **44/44** PASS in 24.8s.
+  Дизайн утверждён владельцем. Подробнее — `Docs/log.md`.
+- **2026-05-05** — **Design system overhaul Phase 1+2+3** (`feature/prototype`).
+  12 компонентов (warm cream + coral + Manrope), AppShell во всех 6 кабинетах,
+  15+ эмодзи → lucide icons. Исправлены 2 бага Phase 2 (двойной disabled-placeholder
+  в warehouse-mobile Select). Pipeline (Rule C): typecheck 10/10, lint 10/10,
+  build 6/6, unit 9/9, e2e **44/44** PASS in 13.4s. Подробнее — `Docs/log.md`.
+- **2026-05-05** — **Прототип готов** (`feature/prototype`, 17 задач за один день).
+  Turborepo + Next.js 16 + 6 кабинетов на моках MSW. 16/16 Playwright smoke
+  pass. BR-01/02/03/09/21/31 enforced в handlers и UI. Pipeline:
+  10 packages typecheck PASS, 6 apps build PASS. Готово к manual Vercel
+  deploy владельцем (плюс merge в `main`).
+- **2026-05-05** — Spec pack: `Docs/00-summary.md` … `10-bpmn.md`,
+  `BUSINESS_RULES.md` (36 BR), скелеты `03/05/09`. ~9700 строк документации
+  через делегирование cs-product-strategist + cs-product-manager +
+  cs-senior-engineer (opus). Plan `Docs/superpowers/plans/prototype.md`
+  + execution через subagent-driven-development.
 - **2026-05-05** — Owner answers (14/20 закрыто): Mobile=PWA,
   Telegram out of product, Yandex Maps + Yandex Object Storage,
   GitHub Issues, 2-нед спринты, Vercel preview, документооборот = PDF,
@@ -451,29 +598,42 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
   Memory: `project_owner_answers_2026-05-05`.
 - **2026-05-05** — Bootstrap документации: `CLAUDE.md`,
   `Docs/team-structure.md` (18 ролей + R3 полиграфический консультант),
-  `Docs/onboarding/owner-questions.md` (20 Q с шаблоном ответов),
-  скелеты `03-architecture`, `05-integrations`, `09-compliance` с
-  TBD-маркерами.
+  `Docs/onboarding/owner-questions.md` (20 Q с шаблоном ответов).
 - **2026-05-04** — `git init`, remote `github.com/SigmeD/uniprint.git`,
-  `Docs/tz-*.md` сконвертированы из исходных .docx и закоммичены
+  `Docs/tz-*.md` сконвертированы из исходных .docx
   (`9d0aae2 docs: convert ТЗ to markdown`).
 
-**Полная история — `Docs/log.md`** (создаётся в первом sprint-0 шаге).
+**Полная история — `Docs/log.md`**.
 
-### Не сделано / следующее (текущая итерация)
+### Не сделано / следующее
 
-- [ ] **Спека** (в работе фоновыми агентами): `Docs/00-summary.md`,
-      `01-vision.md`, `02-user-journeys.md`, `04-modules.md`,
-      `08-risks.md`, `10-bpmn.md`, `BUSINESS_RULES.md`
-- [ ] Обновить скелеты 03/05/09 под закреплённые ответы
-      (Mobile=PWA, Telegram out, Yandex stack, B2C+B2B)
-- [ ] **Прототип** на моках (Turborepo, 6 кабинетов, deploy → Vercel preview)
+**Пауза взята 2026-05-07** на текущем месте — продолжить можно с любого пункта:
+
+**S8 Closure** (последний спринт by-cabinet roadmap'а, ~1-2ч):
+- [ ] Финальный summary-документ + retro
+- [ ] `Docs/07-roadmap.md` — пометить Phase 1+2 как closed
+- [ ] CHANGELOG.md обновить (если применимо)
+
+**Backlog для будущих спринтов** (накоплено за S1-S7):
+- [ ] PWA sub-screens — 4 экрана: production «Смена» / «Заработок» / «История»,
+      warehouse «Остатки». Сейчас stub'ы через `<ComingSoon>`. См. memory
+      `project_pwa_tabs_dead.md`. Связать с PRD модулей 6.20 (Face Control)
+      и 6.22 (ЗП/баланс BR-05).
+- [ ] owner-dashboard /profit и /defects — сейчас `<ComingSoon>` stub'ы
+      (S0-S7 cosmetic 2026-05-07 закрыл hrefs кнопок). Полные экраны после PRD
+      модулей детализации маржи и журнала брака.
+- [x] drill-down hrefs для buttons на owner-dashboard (закрыто 2026-05-07)
+- [x] Admin table rows order vs reference (закрыто 2026-05-07: sort by lastLoginAt)
+- [x] Fixture cli distribution для UNI-00002..00006 (закрыто 2026-05-07: display override в manager-web)
+
+**Compliance / архитектура (после ответов 🔴 Q1-Q5):**
+- [ ] Manual Vercel deploy 6 кабинетов владельцем (см. `prototype/README.md`)
 - [ ] ADR-0001 (Mobile=PWA — закрыт ответом Q6, оформить документ)
 - [ ] ADR-0002 Face Control vendor, ADR-0003 хостинг,
       ADR-0004 миграция, ADR-0005 эквайринг — **после ответов 🔴 Q1-Q5**
 - [ ] `Docs/06-estimate.md`, `07-roadmap.md`, `kp/kp-with-cost.md` —
       **после ответов 🔴 Q1-Q5**
-- [ ] `.env.example` (с placeholder ENV-vars)
+- [ ] Merge `feature/prototype` → `main` после ревью владельца
 
 ### Открытые блокеры
 
@@ -497,7 +657,7 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 
 ## Ссылки внутрь
 
-- [README.md](README.md) — короткая презентация (TBD)
+- [README.md](README.md) — короткая презентация проекта
 - [Docs/tz-po-uniprint.md](Docs/tz-po-uniprint.md) — основной ТЗ заказчика
 - [Docs/tz-dop-modules.md](Docs/tz-dop-modules.md) — дополнение ТЗ
 - [Docs/log.md](Docs/log.md) — журнал изменений (devlog)
@@ -506,3 +666,5 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 - [Docs/team-structure.md](Docs/team-structure.md) — команда → агенты + model-routing
 - [Docs/onboarding/owner-questions.md](Docs/onboarding/owner-questions.md) — вопросы заказчику
 - [BUSINESS_RULES.md](BUSINESS_RULES.md) — инварианты BR-XXX
+- [Docs/DESIGN_SYSTEM.md](Docs/DESIGN_SYSTEM.md) — токены, компоненты, layout-правила (правило A1)
+- [Docs/AGENT_BRIEF.md](Docs/AGENT_BRIEF.md) — алгоритм выполнения UI-задачи для агента

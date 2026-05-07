@@ -1,0 +1,34 @@
+PROTOTYPE — UniPrint ERP & Client System
+=========================================
+
+Этот прототип построен на МОКАХ:
+
+- Все API-вызовы перехватываются MSW (mockServiceWorker.js).
+- Никакого реального backend нет.
+- Никаких реальных ПДн (152-ФЗ): фикстуры синтетические.
+- Никаких реальных интеграций (Face Control / эквайринг / ОФД /
+  Yandex Maps / Yandex Object Storage) — только UI-эмуляция.
+- Деплой на Vercel preview допустим именно потому, что данные
+  синтетические; для prod-фазы хостинг — РФ-юрисдикция (после Q3).
+
+Цель прототипа — валидация UX и BPMN-схем перед sprint-1.
+
+Закреплённые в прототипе ответы владельца от 2026-05-05:
+  Q6  Mobile = PWA mobile-first (без native)
+  Q7  Telegram НЕ используется в продукте
+  Q9  Один цех + один склад MVP
+  Q10 Карты = Yandex Maps
+  Q11 Хранилище макетов = Yandex Object Storage
+  Q13 Документооборот = простая генерация PDF
+  Q14 Чеки 54-ФЗ — микс B2B + B2C → ОФД нужен
+  Q16 Tracker = GitHub Issues
+  Q17 Спринт-каденция 2 нед
+  Q18 Demo URL: прототип = Vercel preview (публично),
+                prod = закрытый VPN/IP-allowlist (после Q3)
+
+Открытые блокеры (мокаются в прототипе, реал — после sprint-0):
+  Q1  Юрисдикция / юр-лицо
+  Q2  Face Control vendor (NtechLab/Hikvision/Suprema/самописный)
+  Q3  Хостинг (Yandex.Cloud/Selectel/VK Cloud/on-prem)
+  Q4  Миграция legacy (1С/Excel/нет)
+  Q5  Эквайринг + конкретный ОФД-провайдер
