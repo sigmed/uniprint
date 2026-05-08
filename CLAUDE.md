@@ -553,6 +553,15 @@ PostgreSQL ─ Redis ─ S3 (макеты) ─ Face Control SDK adapter
 
 **Memory** — `~/.claude/projects/D--Projects-Uniprint/memory/` (auto-memory).
 
+**Cross-project knowledge accumulator** (с 2026-05-08):
+`SigmeD/claude-md-templates` (private, локально `D:\Projects\claude-md-templates`)
+— общая база знаний команды для антихрупкого аккумулирования lessons-learned.
+UniPrint — основной источник lessons для шаблона: §3.7 Vercel deploy + §3.8
+monorepo recipe + §8.2 UI anti-patterns + §8.3 deploy anti-patterns (все из
+шаблона v5+v6, истоки — инциденты UniPrint 2026-05-06/07). Триггер
+«Обнови документацию» из `~/.claude/CLAUDE.md` (Ветка A шаг 2) проверяет
+promotion-кандидатов из текущей сессии.
+
 ## Текущий статус (2026-05-08)
 
 **Фаза:** Phase-0 (discovery / спецификация / прототип на моках) **закрыта**.
